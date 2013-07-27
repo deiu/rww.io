@@ -1,0 +1,15 @@
+RewriteEngine On
+RewriteCond %{REQUEST_FILENAME}.php -f
+RewriteRule (.+) $1.php
+
+<IfModule mod_fcgid.c>
+    AddHandler fcgid-script .php
+    AddHandler fcgid-script .py
+    DirectoryIndex index.php
+    <Files *.php>
+        Options +ExecCGI
+    </Files>
+    <Files *.py>
+        Options +ExecCGI
+    </Files>
+</IfModule>

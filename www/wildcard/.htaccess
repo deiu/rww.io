@@ -1,0 +1,19 @@
+# $Id$
+
+RewriteEngine On
+
+RewriteCond %{REQUEST_METHOD} =GET [OR]
+RewriteCond %{REQUEST_METHOD} =HEAD [OR]
+RewriteCond %{REQUEST_METHOD} =OPTIONS
+RewriteCond %{REQUEST_URI} !/common/
+RewriteRule ^(.*)$ GET.php [L]
+
+RewriteCond %{REQUEST_METHOD} =MKCOL [OR]
+RewriteCond %{REQUEST_METHOD} =PATCH [OR]
+RewriteCond %{REQUEST_METHOD} =POST [OR]
+RewriteCond %{REQUEST_METHOD} =PUT [OR]
+RewriteCond %{REQUEST_METHOD} =DELETE
+RewriteRule ^(.*)$ %{REQUEST_METHOD}.php [L]
+
+# drop all other Apache responses
+#RewriteRule .* - [L,R=501]

@@ -1,0 +1,69 @@
+/* $Id$ */
+
+body { line-height: 1.25; }
+a { text-decoration: underline; vertical-align: top; }
+hr { background-color: silver; }
+
+input { border-radius: 3px; -moz-border-radius: 3px; -webkit-border-radius:3px; }
+div { border-radius: 10px; -moz-border-radius: 10px; -webkit-border-radius:10px; }
+#login input { border-radius: 0; -moz-border-radius: 0; -webkit-border-radius:0; }
+
+address { color: gray; }
+#codeID { float: left; }
+#codeID a { color: gray; }
+#codeTime { float: right; }
+
+.options {
+    width: 25px;
+    padding: 4px 0px 4px 0px;
+}
+
+/* Style for WebID generator form (popup) */
+#webid-gen {
+    background: #FFF6BF;
+    position: absolute;
+    left: 20%;        /* Start with top left in the center */
+    top: 20%;
+    margin-left: -100px;     /* Shift over half the width */
+    margin-top: -50px;      /* Shift up half the height */
+    border: 1px solid black; /* Just for demo */
+    -moz-box-shadow: 0px 8px 8px #000; width: 200px;
+    -webkit-box-shadow: 0px 8px 8px #000; width: 200px;
+    box-shadow: 0px 8px 8px #000; width: 200px;
+    
+    border-radius: 10px;
+    -moz-border-radius: 10px;
+    -webkit-border-radius:10px;
+}
+
+/* Overwriting previous table style */
+#webid-gen tbody tr:nth-child(even) td, tbody tr.even td {
+    background:#FFF6BF;
+}
+
+input[type=submit], input[type=button] {
+    border: 1px solid black;
+    border-collapse: collapse;
+}
+#login input[type=submit] {
+    background-color: #6078AB;
+    color: white;
+    font-weight: bold;
+}
+div.span-icon {
+    height: 16px;
+    width: 16px;
+    vertical-align: middle;
+}
+#identity { float: right; }
+#identity a { text-decoration: none; }
+#login { float: left; }
+#status { float: left; text-align: center; width: 32px; }
+#status img { vertical-align: middle; }
+#title { float: left; }
+#welcome { float: left; clear: left; }
+
+
+.box { border-style: outset; }
+.cleft { clear: left; }
+.cright { clear: right; }
