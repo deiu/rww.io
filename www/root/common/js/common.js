@@ -170,16 +170,29 @@ wac.edit = function(request_path, path) {
 wac.hide = function() {
     $('wac-editor').hide();
 }
+
 wac.put = function(uri, data) {    
     new HTTP(uri, {
         method: 'put',
         body: data,
         requestHeaders: {'Content-Type': 'text/turtle'}, 
         onSuccess: function() {
-//            window.location.reload(true);
+            window.location.reload(true);
         }
     });
 }
+
+wac.post = function(uri, data) {    
+    new HTTP(uri, {
+        method: 'post',
+        body: data,
+        contentType: 'text/turtle',
+        onSuccess: function() {
+            window.location.reload(true);
+        }
+    });
+}
+
 wac.save = function(elt) {
     var path = $('wac-path').innerHTML;
     var reqPath = $('wac-reqpath').innerHTML;
@@ -212,16 +225,19 @@ wac.save = function(elt) {
     
     console.log('path='+path);
     console.log('reqPath='+reqPath);
+    console.log('resource='+metaBase+path);
     console.log('metaBase='+metaBase);
     console.log('metaURI='+metaURI);
 
     // Create a new graph
     var graph = new $rdf.graph();
+    
+//    console.log("Size: "+graph.statements+"\n")
 
     // path
     graph.add(graph.sym(innerRef),
                 graph.sym('http://www.w3.org/ns/auth/acl#accessTo'),
-                graph.sym(reqPath));
+                graph.sym(metaBase+reqPath));
                 
     // add allowed users
     if ((users.length > 0) && (users[0].length > 0)) {
@@ -256,13 +272,11 @@ wac.save = function(elt) {
                 graph.sym(reqPath));
     }
     console.log(exists);
+    
+    // create default rules for the .meta file itself if we create it for the
+    // first time
     if (exists == '0') {
         // Add the #Default rule for this domain
-/*
-        graph.add(graph.sym(metaURI),
-                graph.sym('http://www.w3.org/ns/auth/acl#accessTo'),
-                graph.sym('http://'+window.location.host+window.location.pathname));
-*/
         graph.add(graph.sym(metaURI),
                 graph.sym('http://www.w3.org/ns/auth/acl#accessTo'),
                 graph.sym(metaURI));               
@@ -278,20 +292,67 @@ wac.save = function(elt) {
         graph.add(graph.sym(metaURI),
                 graph.sym('http://www.w3.org/ns/auth/acl#mode'),
                 graph.sym('http://www.w3.org/ns/auth/acl#Write'));
+
+        // serialize
+        var data = new $rdf.Serializer(graph).toN3(graph);
+        // POST the new rules to the server .meta file
+        wac.post(metaURI, data);
+
+
+    } else {
+        // copy rules from old meta
+        var g = $rdf.graph();
+        var fetch = $rdf.fetcher(g);
+        var RDF = $rdf.Namespace("http://www.w3.org/1999/02/22-rdf-syntax-ns#");
+        var WAC = $rdf.Namespace("http://www.w3.org/ns/auth/acl#");
+              
+        fetch.nowOrWhenFetched(metaURI,undefined,function(){
+            // add accessTo
+            graph.add(graph.sym(metaURI),
+                graph.sym('http://www.w3.org/ns/auth/acl#accessTo'),
+                graph.sym(metaURI));
+                
+            // add agents
+            var agents = g.each(g.sym(metaURI), WAC('agent'));
+
+            if (agents.length > 0) {
+                var i, n = agents.length;
+                for (i=0;i<n;i++) {
+                    var agent = agents[i]['uri'];
+                    graph.add(graph.sym(metaURI),
+                        WAC('agent'),
+                        graph.sym(agent));
+                }
+            } else {
+                graph.add(graph.sym(metaURI),
+                        WAC('agentClass'),
+                        graph.sym('http://xmlns.com/foaf/0.1/Agent'));
+            }
+            // add permissions
+            var perms = g.each($rdf.sym(metaURI), WAC('mode'));
+            if (perms.length > 0) {
+                var i, n = perms.length;
+                for (i=0;i<n;i++) {
+                    var perm = perms[i]['uri'];
+                    graph.add(graph.sym(metaURI),
+                        WAC('mode'),
+                        graph.sym(perm));
+                }
+            }
+
+            // serialize
+            var data = new $rdf.Serializer(graph).toN3(graph);
+            // POST the new rules to the server .meta file
+            wac.put(metaURI, data);
+
+        });
+    
     }
     
-    // serialize
-    var s = new $rdf.Serializer(graph);
-    var data = s.toN3(graph);
     
-    // debug
-    console.log(data);
-    
-    
-    // POST the new rules to the server .meta file
-    wac.put(metaURI, data);
     // hide the editor
     $('wac-editor').hide();
+
     /*
     $('wac-editor').ajaxComplete(function() {
         window.location.reload();
@@ -410,6 +471,7 @@ Ajax.Responders.register({
                 msg = q.body.length.toString()+' byte(s): '+msg;
             }
         }
+        console.log(msg);
         cloud.alert(method+' '+msg, cls);
         window.setTimeout("cloud.alert()", 3000);
     },
