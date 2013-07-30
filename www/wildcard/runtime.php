@@ -7,6 +7,8 @@
 
 define('METHODS_S', 'GET, PUT, POST, OPTIONS, HEAD, MKCOL, DELETE, PATCH');
 
+define('DEBUG', true);
+
 require_once(dirname(__FILE__).'/../inc/runtime.inc.php');
 
 $_RAW_EXT = array(
@@ -63,9 +65,6 @@ if (isset($_SERVER['HTTP_ORIGIN'])) {
     header('Access-Control-Allow-Credentials: true');
 }
 
-// Web Access Control
-$_aclbase = $_filebase.$_options->base_url;
-$_wac = new WAC($_user, $_filename, $_filebase, $_base, $_options);
 
 // HTTP Methods
 $_method = '';

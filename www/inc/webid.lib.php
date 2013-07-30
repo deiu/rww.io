@@ -33,6 +33,7 @@ function webid_query($uri, $g=null) {
     $q = $g->SELECT(sprintf("PREFIX : <http://www.w3.org/ns/auth/cert#> SELECT ?m ?e WHERE { <%s> :key [ :modulus ?m; :exponent ?e; ] . }", $uri));
     if (isset($q['results']) && isset($q['results']['bindings']))
         $r = $q['results']['bindings'];
+      
     return $r;
 }
 
@@ -48,4 +49,15 @@ function webid_verify() {
         }
     }
     return '';
+}
+
+function webid_getinfo($uri) {
+    $g = new Graph('uri', $uri, '', $uri);
+    $q = $g->SELECT(sprintf("PREFIX : <http://xmlns.com/foaf/0.1/> SELECT ?name ?pic FROM <%s> WHERE { ?s :name ?name . ?s :img ?pic; .}", $uri));
+
+    if (isset($q['results']) && isset($q['results']['bindings']))
+        $r = $q['results']['bindings']; 
+
+    return array('name' => $r[0]['name']['value'], 
+                 'pic'  => $r[0]['pic']['value']);
 }

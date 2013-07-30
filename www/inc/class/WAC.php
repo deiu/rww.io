@@ -7,7 +7,8 @@
 class WAC {
     private $_req_user;
     private $_meta_name;
-    private $_base_meta;
+    private $_meta_file;
+    private $_base_path;
     private $_graph;
     private $_options;
 
@@ -26,6 +27,8 @@ class WAC {
         if (substr($aclbase, -1) == '/')
             $aclbase = substr($aclbase, 0, -1);
 
+        $this->_base_path = $base_path;
+        
         // methods: Read/Write/Control
         $this->_resource_uri = $resource_uri;
 
@@ -34,22 +37,29 @@ class WAC {
         // building the absolute path for the corresponding meta file
         if ($base_path == $aclbase) {// we're at the root level 
             $this->_meta_name = '.meta';
-            $this->_base_meta = $aclbase.'/'.$this->_meta_name;
+            $this->_meta_file = $aclbase.'/'.$this->_meta_name;
+        } else if (substr(basename($aclbase), 0, 5) == '.meta') {
+            $this->_meta_name = basename($aclbase);
+            $this->_meta_file = dirname($aclbase).'/'.$this->_meta_name;
         } else {
-            $this->_meta_name = '.meta.'.basename($aclbase);
-            $this->_base_meta = dirname($aclbase).'/'.$this->_meta_name;
+            $this->_meta_name = basename($aclbase);
+            $this->_meta_file = dirname($aclbase).'/.meta.'.$this->_meta_name;
         }
         
         $this->_options = $options;
         
-        /*
-        echo "\n<!-- meta=".$this->_base_meta.
-            " \n aclbase=".$aclbase.
-            " \n base_path=".$base_path.
-            " \n req_base=".REQUEST_BASE.
-            " \n uri=".$this->_resource_uri." -->\n";
-        */        
-        $this->_graph = new Graph('', $this->_base_meta, '', REQUEST_BASE.'/'.$this->_meta_name);
+        if (DEBUG) {
+            openlog('data.fm', LOG_PID | LOG_ODELAY,LOG_LOCAL4);
+            syslog(LOG_INFO, "<--------WAC--------->");
+            syslog(LOG_INFO, "meta_file=".$this->_meta_file);
+            syslog(LOG_INFO, "aclbase=".$aclbase);
+            syslog(LOG_INFO, "base_path=".$base_path);
+            syslog(LOG_INFO, "req_base=".REQUEST_BASE);
+            syslog(LOG_INFO, "uri=".$this->_resource_uri);
+            closelog();
+        }
+    
+        $this->_graph = new Graph('', $this->_meta_file, '', REQUEST_BASE.'/'.$this->_meta_name);
         if ($options->linkmeta || $this->_graph->exists())
             header('Link: <'.dirname($this->_resource_uri).'/'.$this->_meta_name.'>; rel=meta');
 
@@ -71,13 +81,35 @@ class WAC {
     function can($method, $uri=null) {
         // there is no .meta file present
         if ($this->_options->open && !$this->_graph->size()) {
-            $this->_reason .= 'No .meta file found. in '.REQUEST_BASE."\n";
+            $this->_reason .= 'No .meta file found in '.REQUEST_BASE.'/'.$this->_meta_name;
             return true;
         }
 
+        // check if we are the domain owner
+        $g = new Graph('', $this->_base_path.'/.meta', '',REQUEST_BASE.'/.meta');
+        
+        if ($g->size()) {
+            $rootURI = REQUEST_BASE;
+            $q = "PREFIX acl: <http://www.w3.org/ns/auth/acl#>
+                  SELECT ?z WHERE { 
+                    ?z acl:agent <".$this->_req_user.">;
+                    acl:defaultForNew <$rootURI> . 
+                    }";
+            $r = $g->SELECT($q);
+            if (isset($r['results']['bindings']) && count($r['results']['bindings']) > 0) {
+                $this->_reason .= "Authenticated as owner!\n";
+                if (DEBUG) {
+                    openlog('data.fm', LOG_PID | LOG_ODELAY,LOG_LOCAL4);
+                    syslog(LOG_INFO, $this->getReason());
+                    closelog();
+                }
+                return true;
+            }
+        }
+        
+        // proceed to check the corresponding .meta for the file
         $uri = is_null($uri) ? $this->_resource_uri : $uri;
         
-//        $verb = ($p == $uri) ? 'accessTo' : 'defaultForNew';
         $verb = 'accessTo';
         // specific authorization
         $q = "PREFIX acl: <http://www.w3.org/ns/auth/acl#>
@@ -89,6 +121,12 @@ class WAC {
         $r = $this->_graph->SELECT($q);
         if (isset($r['results']['bindings']) && count($r['results']['bindings']) > 0) {
             $this->_reason .= 'User '.$this->_req_user.' is allowed '.$method.' access to '.$uri."\n";
+            if (DEBUG) {
+                openlog('data.fm', LOG_PID | LOG_ODELAY,LOG_LOCAL4);
+                syslog(LOG_INFO, $this->getReason());
+                closelog();
+            }
+            
             return true;
         }
         // public authorization
@@ -101,10 +139,19 @@ class WAC {
         $r = $this->_graph->SELECT($q);
         if (isset($r['results']['bindings']) && count($r['results']['bindings']) > 0) {
             $this->_reason .= 'Everyone is allowed '.$method.' access to '.$uri."\n";
+            if (DEBUG) {
+                openlog('data.fm', LOG_PID | LOG_ODELAY,LOG_LOCAL4);
+                syslog(LOG_INFO, $this->getReason());
+                closelog();
+            }
             return true;
         }
-
         $this->_reason .= 'User '.$this->_req_user.' is NOT allowed '.$method.' access to '.$uri."\n";
+        if (DEBUG) {
+            openlog('data.fm', LOG_PID | LOG_ODELAY,LOG_LOCAL4);
+            syslog(LOG_INFO, $this->getReason());
+            closelog();
+        }        
         return false;
     }
 

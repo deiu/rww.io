@@ -2,20 +2,125 @@
 
 body { line-height: 1.25; }
 a { text-decoration: underline; vertical-align: top; }
-hr { background-color: silver; }
+hr { background-color: #f2f2f2; width: auto; width: 1024px; min-width: 1024px !important;}
 
 input { border-radius: 3px; -moz-border-radius: 3px; -webkit-border-radius:3px; }
 div { border-radius: 10px; -moz-border-radius: 10px; -webkit-border-radius:10px; }
 #login input { border-radius: 0; -moz-border-radius: 0; -webkit-border-radius:0; }
 
+.r3 {border-radius: 3px; -moz-border-radius: 3px; -webkit-border-radius:3px; }
+.r5 {border-radius: 5px; -moz-border-radius: 5px; -webkit-border-radius:5px; }
+.r7 {border-radius: 7px; -moz-border-radius: 7px; -webkit-border-radius:7px; }
+
 address { color: gray; }
-#codeID { float: left; }
+#codeID { float: right; color:gray; }
 #codeID a { color: gray; }
-#codeTime { float: right; }
+#codeTime { padding-right:5px;width: auto; width: 1024px; min-width: 1024px !important; }
+
+.files {
+    z-index: 1;
+    position: relative;
+    margin-top: 10px;
+    width: auto !important;
+    width: 1024px;
+    min-width: 1024px;
+}
+.center {
+    text-align:center;
+}
+
+.topnav {
+    margin-top: 10px;
+    position: relative;
+    width: auto;
+    width: 1024px;
+    min-width: 1024px !important;
+    height: 40px;
+    background: #1d2124;
+    color: #fff;
+    z-index: 100;
+    border-top-right-radius:5px; -moz-border-radius-topright:5px; -webkit-border-top-right-radius:5px;
+    border-top-left-radius:5px; -moz-border-radius-topleft:5px; -webkit-border-top-left-radius:5px;
+    border-bottom-left-radius:0px; -moz-border-radius-bottomleft:0px; -webkit-border-bottom-left-radius:0px;
+    border-bottom-right-radius:0px; -moz-border-radius-bottomright:0px; -webkit-border-bottom-right-radius:0px;  
+}
+
+.title {
+    vertical-align:middle;
+    color: #fff;
+    float: left;
+    text-align: left;
+    font-size: 2em;
+    font-weight: bold;
+    padding: 5px;
+}
+
+.login {
+    float: right;
+    padding: 5px;
+    text-align: center;
+    min-width: 40px !important;
+    width: auto;
+    background: #e7604a;
+    color: #fff;
+    height: 30px;
+    border-top-right-radius:5px; -moz-border-radius-topright:5px; -webkit-border-top-right-radius:5px;
+    border-top-left-radius:0px; -moz-border-radius-topleft:0px; -webkit-border-top-left-radius:0px; 
+    border-bottom-right-radius:0px; -moz-border-radius-bottomright:0px; -webkit-border-bottom-right-radius:0px;
+    border-bottom-left-radius:0px; -moz-border-radius-bottomleft:0px; -webkit-border-bottom-left-radius:0px; 
+}
+
+a.white:link, a.white:visited{
+    color:#FFFFFF;
+    vertical-align:middle;
+    text-decoration: none;
+}
+a.white:hover {
+    text-decoration: underline;
+}
+
+.login-photo { 
+    text-align: center;
+    height:30px;
+    display:inline;
+    float:left;
+}
+
+.login-links {
+    position: relative;
+    float:left;
+    display:table-cell;
+    vertical-align:middle;
+    padding-right:5px;
+    padding-bottom:5px;
+    margin-top:-5px;
+    font-weight: bold;
+    text-align: right;
+}
+
+.align-right {
+    text-align: right;
+}
+
+.width-1024 {
+    width: auto;
+    width: 1024px !important;
+    min-width: 1024px;
+}
 
 .options {
     width: 25px;
     padding: 4px 0px 4px 0px;
+}
+
+.button-new {
+    background: #258cd1;
+    color: #fff;
+}
+
+.cloud-icon {
+    padding-left: 5px;
+    padding-top: 5px;
 }
 
 /* Style for WebID generator form (popup) */

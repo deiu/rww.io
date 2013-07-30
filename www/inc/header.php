@@ -9,6 +9,20 @@ define('HEADER', 1);
 if (!isset($TITLE)) {
     $TITLE = 'data cloud';
 }
+
+$user_link = sess('u:link');
+$user_pic = '/common/images/nouser.png';
+
+if (substr($_user, 0, 4) == 'dns:') {
+    $user_name = $_user;
+} else if (is_null(sess('u:name'))) {
+    if (is_null($user_name) || !strlen($user_name))
+        $user_name = $_user;
+} else {
+    $user_name = sess('u:name');
+    $user_pic = sess('u:pic');
+}
+
 ?><!DOCTYPE html>
 <html>
 <head>
@@ -23,11 +37,11 @@ if (!isset($TITLE)) {
     cloud.init({request_base:'<?=REQUEST_BASE?>',request_url:'<?=REQUEST_URL?>',user:'<?=$_user?>'});
     </script>
 </head>
-<body style="padding: 1.5em;">
+<body>
     <div id="alert" style="position: absolute; top: 0; left: 0; width: 100%; padding-top: 5px; text-align: center; z-index: 1000; display: none;">
         <div id="alertbody" style="display: inline;"></div>
     </div>
     <div id="title" style="display: none;"><?=$TITLE?></div>
-    <div id="container" style="position: relative;">
 <?php
 TAG(__FILE__, __LINE__, '$Id$');
+

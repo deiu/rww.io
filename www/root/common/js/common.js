@@ -114,6 +114,7 @@ wac.get = function(request_path, path) {
         var metaURI = metaBase+File; 
         var innerRef = metaURI;
     }
+    // DEBUG 
     
     console.log('resource='+path);
     console.log('RDFresource='+innerRef);
@@ -129,7 +130,7 @@ wac.get = function(request_path, path) {
 
     var resource = $rdf.sym(innerRef);
     var fetch = $rdf.fetcher(graph);
-    
+    // DEBUG
 //    console.log("Size: "+graph.statements+"\n")
 
     fetch.nowOrWhenFetched(metaURI,undefined,function(){
@@ -170,25 +171,27 @@ wac.edit = function(request_path, path) {
 wac.hide = function() {
     $('wac-editor').hide();
 }
-
-wac.put = function(uri, data) {    
+// overwrite
+wac.put = function(uri, data, refresh) {    
     new HTTP(uri, {
         method: 'put',
         body: data,
         requestHeaders: {'Content-Type': 'text/turtle'}, 
         onSuccess: function() {
-            window.location.reload(true);
+            if (refresh == true)
+                window.location.reload(true);
         }
     });
 }
-
-wac.post = function(uri, data) {    
+// append
+wac.post = function(uri, data, refresh) {    
     new HTTP(uri, {
         method: 'post',
         body: data,
         contentType: 'text/turtle',
         onSuccess: function() {
-            window.location.reload(true);
+            if (refresh == true)
+                window.location.reload(true);
         }
     });
 }
@@ -202,7 +205,68 @@ wac.save = function(elt) {
     var recursive = $('wac-recursive').checked;
     var exists = $('wac-exists').value;
     var owner = $('wac-owner').value;
+
+    // For quick access to those namespaces:
+    var RDF = $rdf.Namespace("http://www.w3.org/1999/02/22-rdf-syntax-ns#");
+    var WAC = $rdf.Namespace("http://www.w3.org/ns/auth/acl#");
+
+/**** Domain specific meta ****/
+    // If there is no .meta at the root level, we must create one!
+    var rootMeta = window.location.protocol+'//'+window.location.host+'/.meta';
+    var rootDir = window.location.protocol+'//'+window.location.host+'/';
+    // check if we have a meta for domain control
+    // DEBUG    
+    console.log("rootMeta="+rootMeta);
     
+    var gotRootMeta = false;
+    new HTTP(rootMeta, {
+        method: 'get',
+        requestHeaders: {'Content-Type': 'text/turtle'}, 
+        onSuccess: function() {
+             gotRootMeta = true;
+        }
+    });
+
+    if (gotRootMeta == false) {
+        var ng = new $rdf.graph();
+        // add default rules
+        ng.add($rdf.sym(rootMeta),
+                WAC('accessTo'),
+                $rdf.sym(window.location.protocol+'//'+window.location.host+'/'));
+        ng.add($rdf.sym(rootMeta),
+                WAC('accessTo'),
+                $rdf.sym(rootMeta));
+        ng.add($rdf.sym(rootMeta),
+                WAC('agent'),
+                $rdf.sym(owner));
+        ng.add($rdf.sym(rootMeta),
+                WAC('defaultForNew'),
+                $rdf.sym(window.location.protocol+'//'+window.location.host+'/'));
+        ng.add($rdf.sym(rootMeta),
+                WAC('mode'),
+                WAC('Read'));
+        ng.add(ng.sym(rootMeta),
+                WAC('mode'),
+                WAC('Write'));
+        // add read for all
+        ng.add($rdf.sym(rootDir),
+                WAC('accessTo'),
+                $rdf.sym(window.location.protocol+'//'+window.location.host+'/'));
+        ng.add($rdf.sym(rootDir),
+                WAC('accessTo'),
+                $rdf.sym(rootDir));
+        ng.add($rdf.sym(rootDir),
+                WAC('agentClass'),
+                $rdf.sym('http://xmlns.com/foaf/0.1/Agent'));
+        ng.add($rdf.sym(rootDir),
+                WAC('mode'),
+                WAC('Read'));
+        var data = new $rdf.Serializer(ng).toN3(ng);
+        wac.post(rootMeta, data, false);
+    }
+
+
+/**** File specific meta ****/
     var metaBase = window.location.protocol+'//'+window.location.host+dirname(reqPath)+'/';
 
     // Remove preceeding / from path
@@ -222,7 +286,7 @@ wac.save = function(elt) {
         path = reqPath;
         var innerRef = metaURI;
     }
-    
+    // DEBUG
     console.log('path='+path);
     console.log('reqPath='+reqPath);
     console.log('resource='+metaBase+path);
@@ -231,12 +295,10 @@ wac.save = function(elt) {
 
     // Create a new graph
     var graph = new $rdf.graph();
-    
-//    console.log("Size: "+graph.statements+"\n")
 
     // path
     graph.add(graph.sym(innerRef),
-                graph.sym('http://www.w3.org/ns/auth/acl#accessTo'),
+                WAC('accessTo'),
                 graph.sym(metaBase+reqPath));
                 
     // add allowed users
@@ -245,71 +307,60 @@ wac.save = function(elt) {
         for (i=0;i<n;i++) {
             var user = users[i].replace(/\s+|\n|\r/g,'');
             graph.add(graph.sym(innerRef),
-                graph.sym('http://www.w3.org/ns/auth/acl#agent'),
+                WAC('agent'),
                 graph.sym(user));
         }
     } else {
         graph.add(graph.sym(innerRef),
-                graph.sym('http://www.w3.org/ns/auth/acl#agentClass'),
+                WAC('agentClass'),
                 graph.sym('http://xmlns.com/foaf/0.1/Agent'));
     }
     
     // add access modes
     if (read == true) {
         graph.add(graph.sym(innerRef),
-            graph.sym('http://www.w3.org/ns/auth/acl#mode'),
-            graph.sym('http://www.w3.org/ns/auth/acl#Read'));
+            WAC('mode'),
+            WAC('Read'));
     }
     if (write == true) {
         graph.add(graph.sym(innerRef),
-            graph.sym('http://www.w3.org/ns/auth/acl#mode'),
-            graph.sym('http://www.w3.org/ns/auth/acl#Write'));
+            WAC('mode'),
+            WAC('Write'));
     }
-    
-    if (recursive == true) {
-        graph.add(graph.sym(innerRef),
-                graph.sym('http://www.w3.org/ns/auth/acl#defaultForNew'),
-                graph.sym(reqPath));
-    }
-    console.log(exists);
     
     // create default rules for the .meta file itself if we create it for the
     // first time
     if (exists == '0') {
         // Add the #Default rule for this domain
         graph.add(graph.sym(metaURI),
-                graph.sym('http://www.w3.org/ns/auth/acl#accessTo'),
+                WAC('accessTo'),
                 graph.sym(metaURI));               
         graph.add(graph.sym(metaURI),
-                graph.sym('http://www.w3.org/ns/auth/acl#accessTo'),
+                WAC('accessTo'),
                 graph.sym(metaURI));
         graph.add(graph.sym(metaURI),
-                graph.sym('http://www.w3.org/ns/auth/acl#agent'),
+                WAC('agent'),
                 graph.sym(owner));
         graph.add(graph.sym(metaURI),
-                graph.sym('http://www.w3.org/ns/auth/acl#mode'),
-                graph.sym('http://www.w3.org/ns/auth/acl#Read'));
+                WAC('mode'),
+                WAC('Read'));
         graph.add(graph.sym(metaURI),
-                graph.sym('http://www.w3.org/ns/auth/acl#mode'),
-                graph.sym('http://www.w3.org/ns/auth/acl#Write'));
+                WAC('mode'),
+                WAC('Write'));
 
         // serialize
         var data = new $rdf.Serializer(graph).toN3(graph);
         // POST the new rules to the server .meta file
-        wac.post(metaURI, data);
-
-
+        wac.post(metaURI, data, false);
     } else {
         // copy rules from old meta
         var g = $rdf.graph();
         var fetch = $rdf.fetcher(g);
-        var RDF = $rdf.Namespace("http://www.w3.org/1999/02/22-rdf-syntax-ns#");
-        var WAC = $rdf.Namespace("http://www.w3.org/ns/auth/acl#");
               
         fetch.nowOrWhenFetched(metaURI,undefined,function(){
             // add accessTo
             graph.add(graph.sym(metaURI),
-                graph.sym('http://www.w3.org/ns/auth/acl#accessTo'),
+                WAC('accessTo'),
                 graph.sym(metaURI));
                 
             // add agents
@@ -342,21 +393,16 @@ wac.save = function(elt) {
 
             // serialize
             var data = new $rdf.Serializer(graph).toN3(graph);
-            // POST the new rules to the server .meta file
-            wac.put(metaURI, data);
-
+            // DEBUG
+            console.log(data);
+            // PUT the new rules to the server .meta file
+            wac.put(metaURI, data, false);
         });
     
     }
-    
-    
+
     // hide the editor
     $('wac-editor').hide();
-
-    /*
-    $('wac-editor').ajaxComplete(function() {
-        window.location.reload();
-    });*/
 }
 
 cloud = {};
@@ -471,6 +517,7 @@ Ajax.Responders.register({
                 msg = q.body.length.toString()+' byte(s): '+msg;
             }
         }
+        // DEBUG
         console.log(msg);
         cloud.alert(method+' '+msg, cls);
         window.setTimeout("cloud.alert()", 3000);
