@@ -3,8 +3,6 @@
 body { line-height: 1.25; }
 a { text-decoration: underline; vertical-align: top; }
 hr { background-color: #f2f2f2; width: auto; width: 1024px; min-width: 1024px !important;}
-
-input { border-radius: 3px; -moz-border-radius: 3px; -webkit-border-radius:3px; }
 div { border-radius: 10px; -moz-border-radius: 10px; -webkit-border-radius:10px; }
 #login input { border-radius: 0; -moz-border-radius: 0; -webkit-border-radius:0; }
 
@@ -16,6 +14,22 @@ address { color: gray; }
 #codeID { float: right; color:gray; }
 #codeID a { color: gray; }
 #codeTime { padding-right:5px;width: auto; width: 1024px; min-width: 1024px !important; }
+
+.cell {
+    display: table-cell;
+}
+
+.inline-block {
+    display:inline-block;
+}
+
+.pointer {
+    cursor: pointer;
+}
+
+.filename {
+    width: 50%;
+}
 
 .files {
     z-index: 1;
@@ -35,7 +49,7 @@ address { color: gray; }
     width: auto;
     width: 1024px;
     min-width: 1024px !important;
-    height: 40px;
+    height: 50px;
     background: #1d2124;
     color: #fff;
     z-index: 100;
@@ -53,17 +67,20 @@ address { color: gray; }
     font-size: 2em;
     font-weight: bold;
     padding: 5px;
+    padding-top:10px;
 }
 
 .login {
     float: right;
     padding: 5px;
+    padding-top: 10px;
+    padding-right: 10px;
     text-align: center;
     min-width: 40px !important;
     width: auto;
     background: #e7604a;
     color: #fff;
-    height: 30px;
+    height: 35px;
     border-top-right-radius:5px; -moz-border-radius-topright:5px; -webkit-border-top-right-radius:5px;
     border-top-left-radius:0px; -moz-border-radius-topleft:0px; -webkit-border-top-left-radius:0px; 
     border-bottom-right-radius:0px; -moz-border-radius-bottomright:0px; -webkit-border-bottom-right-radius:0px;
@@ -71,7 +88,7 @@ address { color: gray; }
 }
 
 a.white:link, a.white:visited{
-    color:#FFFFFF;
+    color:#FFFFFF !important;
     vertical-align:middle;
     text-decoration: none;
 }
@@ -84,6 +101,11 @@ a.white:hover {
     height:30px;
     display:inline;
     float:left;
+}
+
+.img-border {
+   border:1px solid #fff;
+   background-color:#fff;
 }
 
 .login-links {
@@ -102,6 +124,11 @@ a.white:hover {
     text-align: right;
 }
 
+.float-right {
+    position: relative;
+    float: right;
+}
+
 .width-1024 {
     width: auto;
     width: 1024px !important;
@@ -118,36 +145,128 @@ a.white:hover {
     color: #fff;
 }
 
+.actions {
+    padding-right: 5px;
+}
+
 .cloud-icon {
     padding-left: 5px;
-    padding-top: 5px;
+    padding-top: 10px;
+}
+
+.hidden {
+    visibility: hidden;
+}
+
+.wac-editor {
+    color: #fff;
+    padding: 10px;
+    background: #607891;
+    width: 400px;
+    z-index: 1000;
+    position: fixed;
+    top: 5%;
+    left: 40%;   
+}
+.wac-editor h3 {
+    color: #fff !important;
+}
+.wac-editor small {
+    color: #fff;
+}
+
+.editor {
+    padding: 10px;
+    background: #607891;
+    width: 950px;
+    z-index: 1000;
+    position: fixed;
+    top: 5%;
+    left: 20%;   
+}
+
+.editor-content {
+    width: 935px;
+    bottom: 2em;
+    border-color: #ddd;
+}
+
+#editorType {
+    padding: 10px;
+    margin-left: 10px;
 }
 
 /* Style for WebID generator form (popup) */
 #webid-gen {
+    z-index: 1000;
+    width: 300px;
     background: #FFF6BF;
     position: absolute;
-    left: 20%;        /* Start with top left in the center */
-    top: 20%;
-    margin-left: -100px;     /* Shift over half the width */
-    margin-top: -50px;      /* Shift up half the height */
-    border: 1px solid black; /* Just for demo */
-    -moz-box-shadow: 0px 8px 8px #000; width: 200px;
-    -webkit-box-shadow: 0px 8px 8px #000; width: 200px;
-    box-shadow: 0px 8px 8px #000; width: 200px;
+
+    border: 1px solid white; /* Just for demo */
+    -moz-box-shadow: 0px 5px 8px #000; 
+    -webkit-box-shadow: 0px 5px 8px #000; 
+    box-shadow: 0px 5px 8px #000;
     
     border-radius: 10px;
     -moz-border-radius: 10px;
     -webkit-border-radius:10px;
 }
 
-/* Overwriting previous table style */
-#webid-gen tbody tr:nth-child(even) td, tbody tr.even td {
-    background:#FFF6BF;
+.label {
+    background: #f2f2f2;
+}
+.keygen {
+    height:1px;
 }
 
-input[type=submit], input[type=button] {
-    border: 1px solid black;
+.meta td, span {
+    padding-right: 10px;
+}
+
+.cloudactions {
+    height: 40px;
+}
+
+.cloudactions td {
+    vertical-align:top;
+    padding-bottom: 20px;
+}
+
+.newitems {
+    position: fixed;
+
+    vertical-align: top;
+}
+
+.newitem {
+    vertical-align:middle;
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+input.item {
+    height:20px;
+    margin: 0px;
+    margin-left: 5px;
+}
+
+/* Overwriting previous table style */
+#webid-get input[type=text] {height: 30px;}
+#webid-gen table {margin-bottom:1em;border-collapse:collapse;border-spacing:1;}
+#webid-gen th {font-weight:bold;}
+#webid-gen thead th {background:#34495e;color:#fff;}
+#webid-gen th, caption {padding:10px 10px 10px 5px;}
+#webid-gen td {padding:5px; vertical-align:middle;font-size:1.1em;}
+#webid-gen tr {background:#fff;}
+#webid-gen tbody tr:nth-child(even) td, tbody tr.even td {background:#fff;}
+#webid-gen tfoot tr:nth-child(odd) tr.odd {background:#fff;}
+
+#webid-gen input[type=submit], input[type=button] {
+    background: #2582b1;
+    color: #fff;
+    height: 30px;
+    border: 1px solid #ddd;
     border-collapse: collapse;
 }
 #login input[type=submit] {

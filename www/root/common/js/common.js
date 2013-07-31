@@ -80,6 +80,36 @@ newJS = function(url, callback){
     return script;
 }
 
+/** Cookies **/
+function setCookie(name,value,days) {
+    console.log('name='+name+' | val='+value+' | days='+days);
+    if (days) {
+        var date = new Date();
+        date.setTime(date.getTime()+(days*24*60*60*1000));
+        var expires = "; expires="+date.toGMTString();
+    }
+    else var expires = "";
+    document.cookie = name+"="+value+expires+"; path=/";
+    // reload
+    window.location.reload(true);
+}
+
+function readCookie(name) {
+    var nameEQ = name+"=";
+    var ca = document.cookie.split(';');
+    for(var i=0;i < ca.length;i++) {
+        var c = ca[i];
+        while (c.charAt(0)==' ') c = c.substring(1,c.length);
+        if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+    }
+    return null;
+}
+
+function deleteCookie(name) {
+    setCookie(name,"",-1);
+}
+
+/** Web ACLs **/
 wac = {};
 wac.get = function(request_path, path) {
     // remove trailing / from the file name we append after .meta
@@ -117,8 +147,8 @@ wac.get = function(request_path, path) {
     // DEBUG 
     
     console.log('resource='+path);
-    console.log('RDFresource='+innerRef);
     console.log('metafile='+metaFile);
+    console.log('RDFresource='+innerRef);
     console.log('metaBase='+metaBase);
     console.log('metaURI='+metaURI);
 
@@ -261,8 +291,8 @@ wac.save = function(elt) {
         ng.add($rdf.sym(rootDir),
                 WAC('mode'),
                 WAC('Read'));
-        var data = new $rdf.Serializer(ng).toN3(ng);
-        wac.post(rootMeta, data, false);
+        var rootMetaData = new $rdf.Serializer(ng).toN3(ng);
+        wac.post(rootMeta, rootMetaData, false);
     }
 
 
@@ -351,7 +381,7 @@ wac.save = function(elt) {
         // serialize
         var data = new $rdf.Serializer(graph).toN3(graph);
         // POST the new rules to the server .meta file
-        wac.post(metaURI, data, false);
+        wac.post(metaURI, data, true);
     } else {
         // copy rules from old meta
         var g = $rdf.graph();
@@ -396,7 +426,7 @@ wac.save = function(elt) {
             // DEBUG
             console.log(data);
             // PUT the new rules to the server .meta file
-            wac.put(metaURI, data, false);
+            wac.put(metaURI, data, true);
         });
     
     }
@@ -438,12 +468,23 @@ cloud.mkdir = function(path) {
 cloud.put = function(path, data, type) {
     if (!type) type = 'text/turtle';
     new HTTP(this.request_url+path, { method: 'put', body: data, requestHeaders: {'Content-Type': type}, onSuccess: function() {
-        //window.location.reload();
+        window.location.reload();
     }});
 }
 cloud.rm = function(path) {
-    new HTTP(this.request_url+path, { method: 'delete', onSuccess: function() {
-        window.location.reload();
+    // also removes the corresponding .meta file if it exists
+    var url = this.request_url;
+
+    new HTTP(url+path, { method: 'delete', onSuccess: function() {
+        if (path.substr(0, 5) != '.meta') {
+            new HTTP(url+'.meta.'+path, { method: 'delete', onSuccess: function() {                
+                    window.location.reload();
+                }, onFailure: function() {
+                    // refresh anyway
+                    window.location.reload(); 
+                }
+            });
+        }
     }});
 }
 cloud.edit = function(path) {
