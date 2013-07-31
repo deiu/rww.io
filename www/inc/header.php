@@ -42,6 +42,27 @@ if (substr($_user, 0, 4) == 'dns:') {
         <div id="alertbody" style="display: inline;"></div>
     </div>
     <div id="title" style="display: none;"><?=$TITLE?></div>
+    
+    <div id="topnav" class="topnav center">
+    <img src="/common/images/logo.svg" class="logo-icon left" /><span class="title" title="Home"><a href="/">RWW.I/O</a></span>
+    <?php
+    if ($user_link) { ?>
+        <div class="login">
+            <span class="login-links">
+                <a class="white" href="<?=$user_link?>" target="_blank"><?=$user_name?></a><br />
+                <a class="white" href="/logout">Logout</a>
+            </span>
+            <a class="white" href="<?=$user_link?>" target="_blank">
+                <img class="login-photo img-border r3" src="<?=$user_pic?>" title="View profile" /></a>
+        </div>
+    <?php } else { ?> 
+        <div class="login"> 
+            <span class="login-links"><a class="white" href="https://<?=BASE_DOMAIN?>">WebID Login</a>
+            <br/><a class="white" href="#" onclick="showWebID()">Get a WebID</a></span>
+            <img class="login-photo" src="/common/images/nouser.png" />
+        </div>
+    <?php } ?>
+</div>
 <?php
 TAG(__FILE__, __LINE__, '$Id$');
 

@@ -26,11 +26,7 @@ if (isset($timings)) {
     if (is_null($user_name) || !strlen($user_name))
         $user_name = $_user;
 ?>
-<span style="float: left; clear: left">
 
-
-
-</span>
 <div onclick="$('codeID').toggle();">
 <?php
 
@@ -38,17 +34,23 @@ if ($_options->coderev) {
 $src = explode('/', __FILE__);
 $src = array_slice($src, array_search('www', $src));
 $src = implode('/', $src);
-$src = "https://github.com/linkeddata/data.fm/tree/master/$src";
+$src = "https://github.com/deiu/rww.io/tree/master/$src";
 ?>
+<div class="footer">
+<span class="left">Powered by <a href="https://github.com/deiu/rww.io" target="_blank">RWW.IO</a></span>
 <span id="codeID" class="align-right" style="display:none;">
-/ <?php echo implode(' / ', array(
+ request completed in <?=substr($time, 0, 6)?>s
+<?=$sparql_n<1?'':sprintf('with %d quer%s in %ss', $sparql_n, $sparql_n>1?'ies':'y', substr($sparql_t, 0, 6))?> 
+ [ <?php echo implode(' / ', array(
     'librdf: '.array_shift(explode(' ',librdf_version_string_get())),
     'raptor: '.array_shift(explode(' ',raptor_version_string_get())),
     'rasqal: '.array_shift(explode(' ',rasqal_version_string_get()))
 )); ?>
+ ]
 </span>
-<span id="codeTime">Completed in <?=substr($time, 0, 6)?>s
-<?=$sparql_n<1?'':sprintf('with %d quer%s in %ss', $sparql_n, $sparql_n>1?'ies':'y', substr($sparql_t, 0, 6))?> </span>
+<span id="codeTime">Performance info...</span>
+</div>
+
 </div>
 </div>
 <?php

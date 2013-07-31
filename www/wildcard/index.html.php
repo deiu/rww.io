@@ -42,7 +42,7 @@ if ($_options->editui) {
         <option>text/html</option>
         <option>text/javascript</option>
     </select>
-    <textarea class="editor-content clear left" id="editorarea" disabled="disabled"></textarea>
+    <textarea class="editor-content clear left" id="editorarea" disabled="disabled"></textarea><br/>
     <button class="right" onclick="$(this).up().hide();">Cancel</button>
     <button class="right" onclick="cloud.save();">Save</button>
 </div>
@@ -55,7 +55,6 @@ if ($_options->editui) {
     <p>
         <input type="checkbox" id="wac-read" name="Read"> Read
         <input type="checkbox" id="wac-write" name="Write"> Write
-        <input type="checkbox" id="wac-recursive" name="Default"> Default
     </p>
     Allow access for:
     <br/>
@@ -71,26 +70,7 @@ if ($_options->editui) {
 
 <div class="center">
 
-<div id="topnav" class="topnav center">
-    <img src="/common/images/cloud.png" class="cloud-icon left" /><span class="title">RWW.I/O</span>
-    <?php
-    if ($user_link) { ?>
-        <div class="login">
-            <span class="login-links">
-                <a class="white" href="<?=$user_link?>" target="_blank"><?=$user_name?></a><br />
-                <a class="white" href="/logout">Logout</a>
-            </span>
-            <a class="white" href="<?=$user_link?>" target="_blank">
-                <img class="login-photo img-border r3" src="<?=$user_pic?>" title="View profile" /></a>
-        </div>
-    <?php } else { ?> 
-        <div class="login"> 
-            <span class="login-links"><a class="white" href="https://<?=BASE_DOMAIN?>">WebID Login</a>
-            <br/><a class="white" href="#" onclick="showWebID()">Get a WebID</a></span>
-            <img class="login-photo" src="/common/images/nouser.png" />
-        </div>
-    <?php } ?>
-</div>
+
 <div>
 <table id="index" class="files center">
 <thead>
@@ -104,29 +84,44 @@ if ($_options->editui) {
 </thead>
 <tbody>
 <?php
+// check if we have a real file structure
 $listing = array();
-if (is_dir($_filename))
+$fake = false;
+if (is_dir($_filename)) {
     $listing = scandir($_filename);
+} else {
+    // set fake dir
+    $listing[] = '.';
+    $fake = true;
+}
 foreach($listing as $item) {
     $len = strlen($item);
-    if (!$len) continue;
-    if (($_request_path == '/' && $item == '..') ||
-        ($item[0] == '.' && $item != '..' && substr($item, 0, 5) != '.meta'))
+    
+    if (!$len)
+        continue;
+    if (($_request_path != '/' && $item == '.'))
+        continue;
+    if (($_request_path == '/' && $item == '..'))
         continue;
     if (($_showMetaFiles == false) && (substr($item, 0, 5) == '.meta'))
         continue;   
 
-    $is_dir = is_dir("$_filename/$item");
+    // fake a valid file structure
+    if ($fake)
+        $is_dir = true;
+    else
+        $is_dir = is_dir("$_filename/$item");
     $item_ext = strrpos($item, '.');
     $item_ext = $item_ext ? substr($item, 1+$item_ext) : '';
     $item_elt = $item;
     if (in_array($item_ext, array('sqlite')))
         $item_elt = substr($item_elt, 0, -strlen($item_ext)-1);
+    
     if ($is_dir)
-        $item_elt = "$item_elt/";
+        $item_elt = ($item_elt != '.')?"$item_elt/":'/';
     elseif (isset($_ext) && (!$item_ext || $item_ext == 'sqlite'))
         $item_elt = "$item_elt$_ext";
-    
+
     echo '<tr>';
     echo '<td class="filename"><a href="', $item_elt, '">', $item_elt, '</a>';
     if ($item_ext == 'sqlite')
@@ -135,7 +130,7 @@ foreach($listing as $item) {
     echo '<td>'.(!$is_dir?filesize("$_filename/$item"):'-').'</td>';
     echo '<td>';
     if ($is_dir) {
-        echo 'Directory';
+        echo ($item_elt != '/')?'Directory':'Root';
     } elseif (substr($item_elt, 0, 5) == '.meta') {
         echo 'text/turtle';
     } elseif (isset($_RAW_EXT[$item_ext])) {
@@ -147,7 +142,7 @@ foreach($listing as $item) {
     echo '</td>';
     echo '<td class="options">';
     if ($_options->editui && !$is_dir) {
-        echo '<a href="javascript:cloud.edit(\''.$item_elt.'\');"><img class="actions" src="/common/images/22/edit.png" title="Editor" /></a>';
+        echo '<a href="javascript:cloud.edit(\''.$item_elt.'\');"><img class="actions" src="/common/images/22/edit.png" title="Edit contents" /></a>';
     }
     echo '</td>';
     echo '<td class="options">';
@@ -166,10 +161,11 @@ foreach($listing as $item) {
     <tr>
         <td colspan="3">
             <div class="newitems">
-            <div class="left cell inline-block"><img class="pointer newitem" src="/common/images/refresh.png" title="Refresh current location" onclick="window.location.reload(true);" /></div>
-            <div class="left cell inline-block"><img class="pointer newitem" src="/common/images/add_file.png" title="Add new file" onclick="showCloudNew('file');" /></div>
-            <div class="left cell inline-block"><img class="pointer newitem" src="/common/images/add_folder.png" title="Add new dir" onclick="showCloudNew('dir');" /></div>
+            <div class="left cell inline-block"><img class="pointer newitem" src="/common/images/refresh.png" title="Refresh list" onclick="window.location.reload(true);" /></div>
+            <div class="left cell inline-block"><img class="pointer newitem" src="/common/images/add_folder.png" title="Create a new directory" onclick="showCloudNew('dir');" /></div>
+            <div class="left cell inline-block"><img class="pointer newitem" src="/common/images/add_file.png" title="Create a new file" onclick="showCloudNew('file');" /></div>
             <div class="left cell inline-block"><input id="create-item" class="item" type="text" name="" style="display:none;" onkeypress="cloudSumit(event)" /></div>
+            <div class="left cell inline-block"><img id="cancel-item" class="pointer newitem" src="/common/images/cancel.png" title="Cancel" style="display:none;" onclick="hideCloud();" /></div>
             </div>
         </td>
         <td colspan="4" class="meta align-right">
@@ -208,7 +204,7 @@ function hideWebID() {
 }
 
 function cloudSumit(e) {
-    if (event.which == 13 || event.keyCode == 13) {
+    if (e.which == 13 || e.keyCode == 13) {
         var res = document.getElementById("create-item");
         console.log(res.name+' / val='+res.value);
         if (res.name == 'file')
@@ -227,6 +223,14 @@ function showCloudNew(type) {
     $('create-item').setAttribute('name', type);
     $('create-item').setAttribute('placeholder', text);    
     $('create-item').show();
+    $('create-item').focus();
+    $('cancel-item').show();
+}
+
+function hideCloud() {
+    $('create-item').hide();
+    $('create-item').clear();
+    $('cancel-item').hide();
 }
 
 $(document).observe('keydown', function(e) {
@@ -235,6 +239,7 @@ $(document).observe('keydown', function(e) {
         $('webid-gen').hide();
         $('wac-editor').hide();
         $('create-item').hide();
+        $('cancel-item').hide();
     }
 });
 </script>
