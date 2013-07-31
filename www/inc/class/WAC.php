@@ -33,35 +33,42 @@ class WAC {
         $this->_resource_uri = $resource_uri;
 
         $this->_req_user = $req_user;
+
+        
         // building the meta file name
         // building the absolute path for the corresponding meta file
-        if ($base_path == $aclbase) {// we're at the root level 
+        if (substr(basename($resource_uri), 0, 5) == '.meta') {      
+            $this->_meta_name = basename($resource_uri);
+            $this->_meta_file = $aclbase;
+            $meta_uri = REQUEST_BASE.'/'.$this->_meta_name;
+        } else if ($_SERVER['SERVER_NAME'] == basename($aclbase)) {// we're at the root level
             $this->_meta_name = '.meta';
             $this->_meta_file = $aclbase.'/'.$this->_meta_name;
-        } else if (substr(basename($aclbase), 0, 5) == '.meta') {
-            $this->_meta_name = basename($aclbase);
-            $this->_meta_file = dirname($aclbase).'/'.$this->_meta_name;
+            $meta_uri = REQUEST_BASE.'/'.$this->_meta_name;
         } else {
-            $this->_meta_name = basename($aclbase);
-            $this->_meta_file = dirname($aclbase).'/.meta.'.$this->_meta_name;
+            $this->_meta_name = '.meta.'.basename($aclbase);
+            $this->_meta_file = dirname($aclbase).'/'.$this->_meta_name;
+            $meta_uri = dirname($this->_resource_uri).'/'.$this->_meta_name;
         }
         
         $this->_options = $options;
         
         if (DEBUG) {
-            openlog('data.fm', LOG_PID | LOG_ODELAY,LOG_LOCAL4);
+            openlog('RWW.IO', LOG_PID | LOG_ODELAY,LOG_LOCAL4);
             syslog(LOG_INFO, "<--------WAC--------->");
+            syslog(LOG_INFO, "meta_name=".$this->_meta_name);
             syslog(LOG_INFO, "meta_file=".$this->_meta_file);
+            syslog(LOG_INFO, "meta_uri=".$meta_uri);
             syslog(LOG_INFO, "aclbase=".$aclbase);
-            syslog(LOG_INFO, "base_path=".$base_path);
             syslog(LOG_INFO, "req_base=".REQUEST_BASE);
             syslog(LOG_INFO, "uri=".$this->_resource_uri);
             closelog();
         }
     
         $this->_graph = new Graph('', $this->_meta_file, '', REQUEST_BASE.'/'.$this->_meta_name);
+        // @@@FIX
         if ($options->linkmeta || $this->_graph->exists())
-            header('Link: <'.dirname($this->_resource_uri).'/'.$this->_meta_name.'>; rel=meta');
+            header('Link: <'.REQUEST_BASE.'/'.$this->_meta_name.'>; rel=meta');
 
         return true;
     }
@@ -85,21 +92,28 @@ class WAC {
             return true;
         }
 
+        // set the resource URI
+        $uri = is_null($uri) ? $this->_resource_uri : $uri;
+
         // check if we are the domain owner
         $g = new Graph('', $this->_base_path.'/.meta', '',REQUEST_BASE.'/.meta');
         
-        if ($g->size()) {
-            $rootURI = REQUEST_BASE;
+        if ($g->size() > 0) {
+            // for the domain owner
+            if (DEBUG) {
+                openlog('RWW.IO', LOG_PID | LOG_ODELAY,LOG_LOCAL4);
+                syslog(LOG_INFO, "G size=".$g->size());
+                closelog();
+            }
             $q = "PREFIX acl: <http://www.w3.org/ns/auth/acl#>
                   SELECT ?z WHERE { 
-                    ?z acl:agent <".$this->_req_user.">;
-                    acl:defaultForNew <$rootURI> . 
+                    ?z acl:agent <".$this->_req_user."> .
                     }";
             $r = $g->SELECT($q);
             if (isset($r['results']['bindings']) && count($r['results']['bindings']) > 0) {
-                $this->_reason .= "Authenticated as owner!\n";
+                $this->_reason .= "User ".$this->_req_user." was authenticated as owner!";
                 if (DEBUG) {
-                    openlog('data.fm', LOG_PID | LOG_ODELAY,LOG_LOCAL4);
+                    openlog('RWW.IO', LOG_PID | LOG_ODELAY,LOG_LOCAL4);
                     syslog(LOG_INFO, $this->getReason());
                     closelog();
                 }
@@ -108,10 +122,6 @@ class WAC {
         }
         
         // proceed to check the corresponding .meta for the file
-        $uri = is_null($uri) ? $this->_resource_uri : $uri;
-        
-        $verb = 'accessTo';
-        // specific authorization
         $q = "PREFIX acl: <http://www.w3.org/ns/auth/acl#>
               SELECT * WHERE { 
                 ?z acl:agent <".$this->_req_user.">; 
@@ -122,7 +132,7 @@ class WAC {
         if (isset($r['results']['bindings']) && count($r['results']['bindings']) > 0) {
             $this->_reason .= 'User '.$this->_req_user.' is allowed '.$method.' access to '.$uri."\n";
             if (DEBUG) {
-                openlog('data.fm', LOG_PID | LOG_ODELAY,LOG_LOCAL4);
+                openlog('RWW.IO', LOG_PID | LOG_ODELAY,LOG_LOCAL4);
                 syslog(LOG_INFO, $this->getReason());
                 closelog();
             }
@@ -134,13 +144,13 @@ class WAC {
               SELECT * WHERE { 
                 ?z acl:agentClass <http://xmlns.com/foaf/0.1/Agent>; 
                 acl:mode acl:$method; 
-                acl:$verb <$uri> . 
+                acl:accessTo <$uri> . 
                 }";
         $r = $this->_graph->SELECT($q);
         if (isset($r['results']['bindings']) && count($r['results']['bindings']) > 0) {
             $this->_reason .= 'Everyone is allowed '.$method.' access to '.$uri."\n";
             if (DEBUG) {
-                openlog('data.fm', LOG_PID | LOG_ODELAY,LOG_LOCAL4);
+                openlog('RWW.IO', LOG_PID | LOG_ODELAY,LOG_LOCAL4);
                 syslog(LOG_INFO, $this->getReason());
                 closelog();
             }
@@ -148,7 +158,7 @@ class WAC {
         }
         $this->_reason .= 'User '.$this->_req_user.' is NOT allowed '.$method.' access to '.$uri."\n";
         if (DEBUG) {
-            openlog('data.fm', LOG_PID | LOG_ODELAY,LOG_LOCAL4);
+            openlog('RWW.IO', LOG_PID | LOG_ODELAY,LOG_LOCAL4);
             syslog(LOG_INFO, $this->getReason());
             closelog();
         }        

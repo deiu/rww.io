@@ -28,28 +28,7 @@ if (isset($timings)) {
 ?>
 <span style="float: left; clear: left">
 
-&nbsp;&nbsp;&nbsp;<a id="create-webid" name="create[webid]" />create id</a>
-<table id="webid-gen" style="display:none;">
-    <form method="POST" action="">
-        <tr><td>Your name: </td><td><input type="text" name="name" size="40" class="required"></td></tr>
-        <tr><td>Preferred identifier: </td><td><input type="text" name="path" size="40" value="card#me" class="required"></td></tr>
-        <tr><td>Email (recovery): </td><td><input type="text" name="email" size="40"></td></tr>
-        <tr><td colspan="2"><keygen name="SPKAC" challenge="randomchars" keytype="rsa" hidden></td></tr>
-        <tr><td colspan="2"><input type="submit" value="Generate" onclick="hideWebID()"> <input type="button" value="Cancel" onclick="hideWebID()"></td></tr>
-    </form>
-</table>
-<script>
-$('create-webid').observe('click', function(e) {
-  $('webid-gen').setStyle({
-    top: e.pageY,
-    left: e.pageX
-  });
-  $('webid-gen').show();
-});
-function hideWebID() {
-    $('webid-gen').hide();
-}
-</script>
+
 
 </span>
 <div onclick="$('codeID').toggle();">

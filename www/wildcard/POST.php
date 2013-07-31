@@ -18,7 +18,6 @@ if (empty($_user))
     httpStatusExit(401, 'Unauthorized');
 
 // Web Access Control
-$_wac = new WAC($_user, $_filename, $_filebase, $_base, $_options);
 if ($_wac->can('Write') == false) {
     if (DEBUG) {
         openlog('data.fm', LOG_PID | LOG_ODELAY,LOG_LOCAL4);

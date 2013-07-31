@@ -11,6 +11,14 @@ define('DEBUG', true);
 
 require_once(dirname(__FILE__).'/../inc/runtime.inc.php');
 
+// cookie for displaying .meta files in the list
+if (!isset($_COOKIE['showMetaFiles'])) {
+    setcookie('showMetaFiles', true, time()+3600);
+} 
+
+$_showMetaFiles = $_COOKIE['showMetaFiles'];
+$_checkedShowMeta = ($_showMetaFiles == true)?'checked':'';
+
 $_RAW_EXT = array(
     'css'=>'text',
     'htm'=>'text',
@@ -45,6 +53,9 @@ $_request_path = substr($_filename, strlen($_filebase));
 if ($_options->debug) {
     header('Filename: '.$_filename);
 }
+
+// Web Access Control
+$_wac = new WAC($_user, $_filename, $_filebase, $_base, $_options);
 
 // WebDAV
 header('MS-Author-Via: DAV, SPARQL');

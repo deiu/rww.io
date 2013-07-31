@@ -65,7 +65,7 @@ if (!file_exists($_filename) && in_array($_filename_ext, array('turtle','n3','js
 }
 
 if (DEBUG) {
-    openlog('data.fm', LOG_PID | LOG_ODELAY,LOG_LOCAL4);
+    openlog('RWW.IO', LOG_PID | LOG_ODELAY,LOG_LOCAL4);
     syslog(LOG_INFO, "<---------GET--------->");
     syslog(LOG_INFO, 'User: '.$_user.' -> '.$_filename);
     closelog();
@@ -76,11 +76,8 @@ if (empty($_user)) {
 } 
 
 
-// Web Access Control
-$_wac = new WAC($_user, $_filename, $_filebase, $_base, $_options);
 if ($_wac->can('Read') == false)  {
     httpStatusExit(403, 'Forbidden', '403-404.php');
-    
 }
 
 // directory indexing

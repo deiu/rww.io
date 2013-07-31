@@ -27,6 +27,14 @@ require_once('runtime.php');
 if (empty($_user))
     httpStatusExit(401, 'Unauthorized');
 
+
+if (DEBUG) {
+    openlog('RWW.IO', LOG_PID | LOG_ODELAY,LOG_LOCAL4);
+    syslog(LOG_INFO, "<---------DEL--------->");
+    syslog(LOG_INFO, 'User: '.$_user.' -> '.$_filename);
+    closelog();
+}
+// Web Access Control
 if (!$_wac->can('Write'))
     httpStatusExit(403, 'Forbidden');
 
