@@ -1,5 +1,4 @@
 /* $Id$ */
-
 body { line-height: 1.25; }
 a { text-decoration: underline; vertical-align: top; }
 hr { background-color: #f2f2f2; width: auto; width: 1024px; min-width: 1024px !important;}
@@ -69,6 +68,10 @@ address { color: gray; }
     padding: 5px;
     padding-top:10px;
 }
+.title a {
+    color: #fff;
+    text-decoration: none;
+}
 
 .login {
     float: right;
@@ -113,9 +116,10 @@ a.white:hover {
     float:left;
     display:table-cell;
     vertical-align:middle;
+    padding-left:5px;
     padding-right:10px;
     padding-bottom:5px;
-    margin-top:-5px;
+    margin-top:-4px;
     font-weight: bold;
     text-align: right;
 }
@@ -140,6 +144,11 @@ a.white:hover {
     padding: 4px 0px 4px 0px;
 }
 
+.footer {
+    color: gray;
+    text-shadow: 1px 1px 1px #ddd;
+}
+
 .button-new {
     background: #258cd1;
     color: #fff;
@@ -149,9 +158,10 @@ a.white:hover {
     padding-right: 5px;
 }
 
-.cloud-icon {
+.logo-icon {
+    height: 40px;
     padding-left: 5px;
-    padding-top: 10px;
+    padding-top: 5px;
 }
 
 .hidden {
@@ -174,11 +184,15 @@ a.white:hover {
 .wac-editor small {
     color: #fff;
 }
+.wac-editor input[type=checkbox] {
+    height: 15px;
+    width: 15px;
+}
 
 .editor {
     padding: 10px;
     background: #607891;
-    width: 950px;
+    width: auto;
     z-index: 1000;
     position: fixed;
     top: 5%;
@@ -186,7 +200,7 @@ a.white:hover {
 }
 
 .editor-content {
-    width: 935px;
+    min-width: 935px;
     bottom: 2em;
     border-color: #ddd;
 }
@@ -249,6 +263,7 @@ input.item {
     height:20px;
     margin: 0px;
     margin-left: 5px;
+    padding: 2px 5px 2px 5px;
 }
 
 /* Overwriting previous table style */
