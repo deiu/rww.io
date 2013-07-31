@@ -138,7 +138,10 @@ foreach($listing as $item) {
     } elseif (!strlen($item_ext)) {
         echo 'text/turtle';
     }
-    echo '</td><td>'.strftime('%F %X %Z', filemtime("$_filename/$item")).'</td>';
+    if ($fake)
+        echo '</td><td>'.strftime('%F %X %Z', time()).'</td>';
+    else
+        echo '</td><td>'.strftime('%F %X %Z', filemtime("$_filename/$item")).'</td>';
     echo '</td>';
     echo '<td class="options">';
     if ($_options->editui && !$is_dir) {
