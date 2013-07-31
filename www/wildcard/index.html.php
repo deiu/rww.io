@@ -161,8 +161,9 @@ foreach($listing as $item) {
     <tr>
         <td colspan="3">
             <div class="newitems">
-            <div class="left cell inline-block"><img class="pointer newitem" src="/common/images/refresh.png" title="Refresh list" onclick="window.location.reload(true);" /></div>
-            <div class="left cell inline-block"><img class="pointer newitem" src="/common/images/add_folder.png" title="Create a new directory" onclick="showCloudNew('dir');" /></div>
+            <div class="left cell inline-block sep-right"><img class="pointer newitem" src="/common/images/refresh.png" title="Refresh list" onclick="window.location.reload(true);" /></div>
+            <div class="left cell inline-block sep-right"><img class="pointer newitem" src="/common/images/home.png" title="Go to top level" onclick="window.location.replace('/');" /></div>
+            <div class="left cell inline-block actions"><img class="pointer newitem" src="/common/images/add_folder.png" title="Create a new directory" onclick="showCloudNew('dir');" /></div>
             <div class="left cell inline-block"><img class="pointer newitem" src="/common/images/add_file.png" title="Create a new file" onclick="showCloudNew('file');" /></div>
             <div class="left cell inline-block"><input id="create-item" class="item" type="text" name="" style="display:none;" onkeypress="cloudSumit(event)" /></div>
             <div class="left cell inline-block"><img id="cancel-item" class="pointer newitem" src="/common/images/cancel.png" title="Cancel" style="display:none;" onclick="hideCloud();" /></div>
@@ -181,7 +182,7 @@ foreach($listing as $item) {
 <?php } ?>
 </table>
 </div>
-<hr class="center" />
+
 <div class="clear"></div>
 </div>
 
@@ -244,10 +245,7 @@ $(document).observe('keydown', function(e) {
 });
 </script>
 
-<?php if ($_options->editui) { ?>
-<!-- <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script> -->
-
 <?php
-}
+
 TAG(__FILE__, __LINE__, '$Id$');
 defined('FOOTER') || include_once('footer.php');
