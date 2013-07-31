@@ -130,15 +130,27 @@ wac.get = function(request_path, path) {
             var metaURI = metaBase+metaFile;
             var innerRef = window.location.pathname; // the resource as inner ref
             var requestPath = request_path;
+            // Remove preceeding / from path
+            if (innerRef.substr(0, 1) == '/')
+                innerRef = innerRef.substring(1);
+            innerRef = metaURI+'#'+innerRef;
+        } else if (File == '') {
+            path = '/';
+            var metaBase = window.location.protocol+'//'+window.location.host+'/';
+            var metaFile = '.meta';
+            var metaURI = metaBase+metaFile;
+            var innerRef = metaBase; // the resource as inner ref
+            var requestPath = request_path;
+            
         } else {
             var metaFile = '.meta.'+File;
             var metaURI = metaBase+metaFile;
             var innerRef = window.location.pathname+path; // the resource as inner ref
+            // Remove preceeding / from path
+            if (innerRef.substr(0, 1) == '/')
+                innerRef = innerRef.substring(1);
+            innerRef = metaURI+'#'+innerRef;
         }
-        // Remove preceeding / from path
-        if (innerRef.substr(0, 1) == '/')
-            innerRef = innerRef.substring(1);
-        innerRef = metaURI+'#'+innerRef;
     } else { // the resource IS the meta file
         var metaFile = File;
         var metaURI = metaBase+File; 
@@ -160,8 +172,6 @@ wac.get = function(request_path, path) {
 
     var resource = $rdf.sym(innerRef);
     var fetch = $rdf.fetcher(graph);
-    // DEBUG
-//    console.log("Size: "+graph.statements+"\n")
 
     fetch.nowOrWhenFetched(metaURI,undefined,function(){
         var perms = graph.each(resource, WAC('mode'));
@@ -232,7 +242,6 @@ wac.save = function(elt) {
     var users = $('wac-users').value.split(",");
     var read = $('wac-read').checked;
     var write = $('wac-write').checked;
-    var recursive = $('wac-recursive').checked;
     var exists = $('wac-exists').value;
     var owner = $('wac-owner').value;
 
@@ -308,7 +317,10 @@ wac.save = function(elt) {
         path = path.substring(0, path.length - 1);
         
     // Build the full .meta path URI
-    if (path.substr(0, 5) != '.meta') {
+    if (path == '') {
+        var metaURI = metaBase+'.meta';
+        var innerRef = metaBase;
+    } else if (path.substr(0, 5) != '.meta') {
         var metaURI = metaBase+'.meta.'+path;
         var innerRef = '#'+reqPath;
     } else {
@@ -474,9 +486,13 @@ cloud.put = function(path, data, type) {
 cloud.rm = function(path) {
     // also removes the corresponding .meta file if it exists
     var url = this.request_url;
-
+    console.log('url='+url+' / path='+path);
     new HTTP(url+path, { method: 'delete', onSuccess: function() {
         if (path.substr(0, 5) != '.meta') {
+            // remove trailing slash
+            if (path.substring(path.length - 1) == '/')
+                path = path.substring(0, path.length - 1);
+            // remove the .meta file
             new HTTP(url+'.meta.'+path, { method: 'delete', onSuccess: function() {                
                     window.location.reload();
                 }, onFailure: function() {
@@ -484,6 +500,8 @@ cloud.rm = function(path) {
                     window.location.reload(); 
                 }
             });
+        } else {
+            window.location.reload();
         }
     }});
 }
