@@ -9,8 +9,11 @@ require_once('runtime.php');
 
 defined('HEADER') || include_once('header.php');
 ?>
-<a href="https://github.com/linkeddata/data.fm"><img style="position: fixed; top: 0; right: 0; border: 0;" src="//s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png" alt="Fork me on GitHub" /></a>
 
+<div class="center width-1024">
+
+<a href="https://github.com/deiu/rww.io" target="_blank"><img style="position: fixed; top: 0; right: 0; border: 0;" src="//s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png" alt="Fork me on GitHub" /></a>
+<br/>
 <p class="cleft left">This web data platform supports the latest standards and recommendations:</p>
 <ul class="cleft left">
 <li>Read/Write Web: DAV, AJAX, <a target="_blank" href="http://en.wikipedia.org/wiki/JSONP">JSONP</a>, <a target="_blank" href="http://enable-cors.org/">CORS</a></li>
@@ -70,8 +73,14 @@ Specify your response type preference with an <code>Accept</code> HTTP header.</
 <p>Some query string options and response (HTTP Accept) media types are complementary.</p>
 </div>
 
+
+</div>
+<div class="clear"></div>
 <?php if (substr($_SERVER['SERVER_ADDR'], 0, 3) == '18.') { ?>
 <p class="clear left">All uses of this service must comply with the <a target="_blank" href="http://ist.mit.edu/services/athena/olh/rules#mitnet">MITnet rules of use</a>.</p>
+
+
+
 <?php }
 TAG(__FILE__, __LINE__, '$Id$');
 defined('FOOTER') || include_once('footer.php');

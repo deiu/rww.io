@@ -18,6 +18,7 @@ if (isset($timings)) {
     }
 }
 ?>
+<hr class="center" />
 <div class="center align-right width-1024">
 <?php
 
