@@ -2,7 +2,7 @@
 body { line-height: 1.25; }
 a { text-decoration: underline; vertical-align: top; }
 hr { background-color: #f2f2f2; width: auto; width: 1024px; min-width: 1024px !important;}
-div { border-radius: 10px; -moz-border-radius: 10px; -webkit-border-radius:10px; }
+
 #login input { border-radius: 0; -moz-border-radius: 0; -webkit-border-radius:0; }
 
 .r3 {border-radius: 3px; -moz-border-radius: 3px; -webkit-border-radius:3px; }
@@ -13,6 +13,18 @@ address { color: gray; }
 #codeID { float: right; color:gray; }
 #codeID a { color: gray; }
 #codeTime { padding-right:5px;width: auto; width: 1024px; min-width: 1024px !important; }
+
+.spacer {
+    padding: 30px;
+}
+
+.sep-right {
+    border-width: 2px;
+    border-right-style: dotted;
+    border-color: gray;
+    padding-right: 5px;
+    padding-left: 5px;
+}
 
 .cell {
     display: table-cell;
@@ -39,7 +51,7 @@ address { color: gray; }
     min-width: 1024px;
 }
 .center {
-    text-align:center;
+    float:center;
 }
 
 .topnav {
@@ -97,6 +109,9 @@ a.white:link, a.white:visited{
 }
 a.white:hover {
     text-decoration: underline;
+}
+a.link, a.link:visited{
+    text-decoration: underline !important;
 }
 
 .login-photo { 
@@ -156,6 +171,7 @@ a.white:hover {
 
 .actions {
     padding-right: 5px;
+    padding-left: 5px;
 }
 
 .logo-icon {
@@ -196,7 +212,8 @@ a.white:hover {
     z-index: 1000;
     position: fixed;
     top: 5%;
-    left: 20%;   
+    left: 20%;
+    font-size:1em;
 }
 
 .editor-content {
@@ -210,21 +227,59 @@ a.white:hover {
     margin-left: 10px;
 }
 
-/* Style for WebID generator form (popup) */
-#webid-gen {
-    z-index: 1000;
-    width: 300px;
-    background: #FFF6BF;
-    position: absolute;
+.welcome {
+    font-size: 1.2em;
+    background: #34495e;
+    color: #fff;
+}
 
-    border: 1px solid white; /* Just for demo */
-    -moz-box-shadow: 0px 5px 8px #000; 
-    -webkit-box-shadow: 0px 5px 8px #000; 
-    box-shadow: 0px 5px 8px #000;
+.getaccount {
+    padding-top: 2em;
+    margin-bottom: 2em;
+    font-size: 1.2em;
+}
+
+.account {
+    color: #000;
+    height: 200px;
+    padding:1.5em 0em 1.5em 0em;
+    margin-top:1.5em;
+    margin-bottom:1.5em;
+    background: #fff;
+}
+
+.account-submit, .account-go {
+    height:55px;
+}
+
+input.account-input {
+    background:#fff;
+    border:1px solid gray;
+    padding:5px;
+    height:43px;
+    margin: 0em !important;
+    font-size: 2em;
+    width:150px;
     
-    border-radius: 10px;
-    -moz-border-radius: 10px;
-    -webkit-border-radius:10px;
+    border: 1px solid #ddd;
+}
+
+.protocol {
+    padding-left: 10px;
+    padding-right: 5px;
+    font-size: 3em;
+    font-family: 'Lato', Arial, sans-serif;
+    background: #34495e ;
+    border:1px solid #fff;
+    color: #fff;
+}
+
+.domain {
+    padding-right: 10px;
+    font-size: 3em;
+    background: #34495e;
+    color: #fff;
+    border:1px solid #fff;
 }
 
 .label {
@@ -266,6 +321,22 @@ input.item {
     padding: 2px 5px 2px 5px;
 }
 
+/* Style for WebID generator form (popup) */
+#webid-gen {
+    z-index: 1000;
+    width: 300px;
+    background: #FFF6BF;
+    position: absolute;
+
+    border: 1px solid white; /* Just for demo */
+    -moz-box-shadow: 0px 5px 8px #000; 
+    -webkit-box-shadow: 0px 5px 8px #000; 
+    box-shadow: 0px 5px 8px #000;
+    
+    border-radius: 10px;
+    -moz-border-radius: 10px;
+    -webkit-border-radius:10px;
+}
 /* Overwriting previous table style */
 #webid-get input[type=text] {height: 30px;}
 #webid-gen table {margin-bottom:1em;border-collapse:collapse;border-spacing:1;}
@@ -300,8 +371,6 @@ div.span-icon {
 #status { float: left; text-align: center; width: 32px; }
 #status img { vertical-align: middle; }
 #title { float: left; }
-#welcome { float: left; clear: left; }
-
 
 .box { border-style: outset; }
 .cleft { clear: left; }

@@ -17,7 +17,7 @@
 html {margin:0;padding:0;border:0;}
 body, div, span, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, code, del, dfn, em, img, q, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, article, aside, dialog, figure, footer, header, hgroup, nav, section {margin:0;padding:0;border:0;font-weight:inherit;font-style:inherit;font-size:100%;font-family:inherit;vertical-align:baseline;}
 article, aside, dialog, figure, footer, header, hgroup, nav, section {display:block;}
-body {line-height:1.5;background:white;padding: 0 1.5em;}
+body {line-height:1.5;background:white;padding: 0 1.5em;font-size:1.2em;}
 caption, th, td {text-align:left;font-weight:normal;float:none !important;}
 table, th, td {vertical-align:middle;}
 blockquote:before, blockquote:after, q:before, q:after {content:'';}
@@ -36,7 +36,7 @@ h4 {font-size:1.2em;line-height:1.25;margin-bottom:1.25em;}
 h5 {font-size:1em;font-weight:bold;margin-bottom:1.5em;}
 h6 {font-size:1em;font-weight:bold;}
 h1 img, h2 img, h3 img, h4 img, h5 img, h6 img {margin:0;}
-p {margin:0 0 1.5em;}
+p {margin:0 0 1.5em;font-size:1.1em;}
 .left {float:left !important;}
 p .left {margin:1.5em 1.5em 1.5em 0;padding:0;}
 .right {float:right !important;}
@@ -52,7 +52,7 @@ address {margin:0 0 1.5em;font-style:italic;}
 del {color:#666;}
 pre {margin:1.5em 0;white-space:pre;}
 pre, code, tt {font:1em 'andale mono', 'lucida console', monospace;line-height:1.5;}
-li ul, li ol {margin:0;}
+li ul, li ol {margin:0;font-size:1em;}
 ul, ol {margin:0 1.5em 1.5em 0;padding-left:1.5em;}
 ul {list-style-type:disc;}
 ol {list-style-type:decimal;}
@@ -64,8 +64,8 @@ th {font-weight:bold;}
 thead th {background:#34495e;color:#fff;font-size:1.2em;height:35px;}
 th, caption {padding:10px 10px 10px 5px;}
 td {padding:13px 10px 13px 5px; vertical-align:middle;font-size:1.1em;}
-tr {background:#fff;}
-tbody tr:nth-child(even) td, tbody tr.even td {background:#f2f2f2;}
+tr {background:#fff; border-top: 1px dotted #ddd;}
+tr:hover {background:#f2f2f2;}
 tfoot tr:nth-child(odd) tr.odd {font-style:italic;background:#e0e0e0 !important;}
 tfoot {border-top: 1px solid #f2f2f2 !important;}
 caption {background:#eee;}
@@ -262,7 +262,8 @@ input.span-24, textarea.span-24 {width:938px;}
 .push-1, .push-2, .push-3, .push-4, .push-5, .push-6, .push-7, .push-8, .push-9, .push-10, .push-11, .push-12, .push-13, .push-14, .push-15, .push-16, .push-17, .push-18, .push-19, .push-20, .push-21, .push-22, .push-23, .push-24 {float:left;position:relative;}
 div.prepend-top, .prepend-top {margin-top:1.5em;}
 div.append-bottom, .append-bottom {margin-bottom:1.5em;}
-.box {padding:1.5em;margin-bottom:1.5em;background:#e5eCf9;}
+.box {padding:1.5em 0em 1.5em 0em;margin-top:1.5em;margin-bottom:1.5em;background:#e5eCf9;}
+.box strong {padding-left: 1em;}
 hr {background:#ddd;color:#ddd;clear:both;float:none;width:100%;height:1px;margin:0 0 1.45em;border:none;}
 hr.space {background:#fff;color:#fff;visibility:hidden;}
 .clearfix:after, .container:after {content:"\0020";display:block;height:0;clear:both;visibility:hidden;overflow:hidden;}
