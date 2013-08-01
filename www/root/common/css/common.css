@@ -15,7 +15,7 @@ address { color: gray; }
 #codeTime { padding-right:5px;width: auto; width: 1024px; min-width: 1024px !important; }
 
 .spacer {
-    padding: 30px;
+    padding: 10px;
 }
 
 .sep-right {
@@ -234,9 +234,16 @@ a.link, a.link:visited{
 }
 
 .getaccount {
+    display: block;
+    position: relative;
+    height: 200px;
     padding-top: 2em;
-    margin-bottom: 2em;
     font-size: 1.2em;
+    background: #fff;
+}
+
+.padded-l-1 {
+    padding-left: 1em;
 }
 
 .account {

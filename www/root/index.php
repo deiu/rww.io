@@ -16,7 +16,7 @@ defined('HEADER') || include_once('header.php');
 </div>
 
 <div class="getaccount center width-1024">
-    <div class="">
+    <div class="padded-l-1">
         <h3>To get your own dedicated storage space, just follow these steps:</h3>
         <ol>
             <li>Check if your domain name is available.</li>
@@ -25,7 +25,7 @@ defined('HEADER') || include_once('header.php');
         </ol>
     </div>
     
-    <div class="">
+    <div class="padded-l-1">
         <div class="left protocol">https://</div>
         <div class="left"><input id="account-name" type="text" class="account-input" name="account-name" /></div>
         <div class="left domain">.<?=$_SERVER['SERVER_NAME']?></div>
