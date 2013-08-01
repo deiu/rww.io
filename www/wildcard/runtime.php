@@ -7,8 +7,6 @@
 
 define('METHODS_S', 'GET, PUT, POST, OPTIONS, HEAD, MKCOL, DELETE, PATCH');
 
-define('DEBUG', true);
-
 require_once(dirname(__FILE__).'/../inc/runtime.inc.php');
 
 // cookie for displaying .meta files in the list
