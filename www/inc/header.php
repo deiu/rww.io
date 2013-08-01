@@ -44,7 +44,7 @@ if (substr($_user, 0, 4) == 'dns:') {
     <div id="title" style="display: none;"><?=$TITLE?></div>
     
     <div id="topnav" class="topnav center">
-    <img src="/common/images/logo.svg" class="logo-icon left" /><span class="title" title="Home"><a href="/">RWW.I/O</a></span>
+    <img src="/common/images/logo.svg" class="logo-icon left" /><span class="title" title="Home"><a href="http://<?=ROOT_DOMAIN?>">RWW.I/O</a></span>
     <?php
     if ($_SERVER['SERVER_NAME'] != ROOT_DOMAIN) {
         if ($user_link) { ?>
