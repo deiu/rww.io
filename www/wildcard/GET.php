@@ -75,7 +75,6 @@ if (empty($_user)) {
     httpStatusExit(401, 'Unauthorized', '401.php');
 } 
 
-
 if ($_wac->can('Read') == false)  {
     httpStatusExit(403, 'Forbidden', '403-404.php');
 }
