@@ -112,6 +112,11 @@ function deleteCookie(name) {
 /** Web ACLs **/
 wac = {};
 wac.get = function(request_path, path) {
+    // reset the checkboxes
+    $('wac-read').checked = false;
+    $('wac-write').checked = false;
+    $('wac-users').value = '';
+    
     // remove trailing / from the file name we append after .meta
     var requestPath = request_path+path;
      
