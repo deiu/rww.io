@@ -20,11 +20,11 @@ defined('HEADER') || include_once('header.php');
         <h3>To get your own dedicated storage space, just follow these steps:</h3>
         <ol>
             <li>Check if your domain name is available.</li>
-            <li>Either login with your WebID, or create a new one. Tip: you can even host it on your own domain!</li>
-            <li>Click on this icon: <img class="actions" src="/common/images/22/acl.png" title="Access Control"> to start protecting your data.</li>
+            <li>Once on your domain, either login with your WebID or create a new one. Tip: you can even host it on your own domain.</li>
+            <li>Do not forget to click on this icon: <img class="actions" src="/common/images/22/acl.png" title="Access Control"> to start protecting your data!</li>
         </ol>
     </div>
-    
+
     <div class="padded-l-1">
         <div class="left protocol">https://</div>
         <div class="left"><input id="account-name" type="text" class="account-input" name="account-name" onkeypress="checkEnter(event)" /></div>
