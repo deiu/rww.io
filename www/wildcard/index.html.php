@@ -72,6 +72,33 @@ if ($_options->editui) {
 
 
 <div>
+
+<div class="cloudactions center width-1024">
+    <div>
+        <div class="newitems">
+        <div class="left cell inline-block sep-right"><img class="pointer newitem" src="/common/images/refresh.png" title="Refresh list" onclick="window.location.reload(true);" /></div>
+        <div class="left cell inline-block sep-right"><img class="pointer newitem" src="/common/images/home.png" title="Go to top level" onclick="window.location.replace('/');" /></div>
+        <div class="left cell inline-block actions"><img class="pointer newitem" src="/common/images/images.png" title="Upload an image" onclick="showImage();" /></div>
+        <div class="left cell inline-block"><img class="pointer newitem" src="/common/images/add_folder.png" title="Create a new directory" onclick="showCloudNew('dir');" /></div>
+        <div class="left cell inline-block"><img class="pointer newitem" src="/common/images/add_file.png" title="Create a new file" onclick="showCloudNew('file');" /></div>
+        <div class="left cell inline-block"><input id="create-item" class="item" type="text" name="" style="display:none;" onkeypress="cloudListen(event)" /></div>
+        <div class="left cell inline-block"><img id="submit-item" class="pointer newitem" src="/common/images/ok.png" title="Create" style="display:none;" onclick="createItem();" /></div>
+        <div class="left cell inline-block"><img id="cancel-item" class="pointer newitem" src="/common/images/cancel.png" title="Cancel" style="display:none;" onclick="hideCloud();" /></div>
+        <div class="left cell inline-block"><form name="imageform" method="post" enctype="multipart/form-data"><input type="file" id="addimage" name="image" style="display:none;" /></form></div>
+        <div class="left cell inline-block"><img id="submit-image" class="pointer newitem" src="/common/images/upload.png" title="Upload" style="display:none;" onclick="submitImage();" /></div>
+        <div class="left cell inline-block"><img id="cancel-image" class="pointer newitem" src="/common/images/cancel.png" title="Cancel" style="display:none;" onclick="hideImage();" /></div>
+        </div>
+    </div>
+    <div class="meta align-right">
+        <?php if ($_showMetaFiles == true) { ?>
+        <a class="pointer" onclick="setCookie('showMetaFiles', '0', '1');">Hide</a>
+        <?php } else { ?>
+        <a class="pointer" onclick="setCookie('showMetaFiles', '1', '1');">Show</a>
+        <?php } ?>
+        <span> .meta files?</span>
+    </div>
+</div>
+
 <table id="index" class="files center">
 <thead>
     <tr>        
@@ -83,6 +110,8 @@ if ($_options->editui) {
     </tr>
 </thead>
 <tbody class="lines">
+    
+
 <?php
 // check if we have a real file structure
 $listing = array();
@@ -134,7 +163,7 @@ foreach($listing as $item) {
     } elseif (substr($item_elt, 0, 5) == '.meta') {
         echo 'text/turtle';
     } elseif (isset($_RAW_EXT[$item_ext])) {
-        echo 'text/', $item_ext=='js'?'javascript':$item_ext;
+        echo $_RAW_EXT[$item_ext].'/', $item_ext=='js'?'javascript':$item_ext;
     } elseif (!strlen($item_ext)) {
         echo 'text/turtle';
     }
@@ -160,28 +189,7 @@ foreach($listing as $item) {
 ?>
 </tbody>
 <?php if ($_options->editui) { ?>
-<tfoot class="cloudactions">
-    <tr>
-        <td colspan="3">
-            <div class="newitems">
-            <div class="left cell inline-block sep-right"><img class="pointer newitem" src="/common/images/refresh.png" title="Refresh list" onclick="window.location.reload(true);" /></div>
-            <div class="left cell inline-block sep-right"><img class="pointer newitem" src="/common/images/home.png" title="Go to top level" onclick="window.location.replace('/');" /></div>
-            <div class="left cell inline-block actions"><img class="pointer newitem" src="/common/images/add_folder.png" title="Create a new directory" onclick="showCloudNew('dir');" /></div>
-            <div class="left cell inline-block"><img class="pointer newitem" src="/common/images/add_file.png" title="Create a new file" onclick="showCloudNew('file');" /></div>
-            <div class="left cell inline-block"><input id="create-item" class="item" type="text" name="" style="display:none;" onkeypress="cloudListen(event)" /></div>
-            <div class="left cell inline-block"><img id="submit-item" class="pointer newitem" src="/common/images/ok.png" title="Create" style="display:none;" onclick="createItem();" /></div>
-            <div class="left cell inline-block"><img id="cancel-item" class="pointer newitem" src="/common/images/cancel.png" title="Cancel" style="display:none;" onclick="hideCloud();" /></div>
-            </div>
-        </td>
-        <td colspan="4" class="meta align-right">
-            <?php if ($_showMetaFiles == true) { ?>
-            <a class="pointer" onclick="setCookie('showMetaFiles', '0', '1');">Hide</a>
-            <?php } else { ?>
-            <a class="pointer" onclick="setCookie('showMetaFiles', '1', '1');">Show</a>
-            <?php } ?>
-            <span> .meta files?</span>
-        </td>
-    </tr>
+<tfoot>
 </tfoot>
 <?php } ?>
 </table>
@@ -208,6 +216,27 @@ function hideWebID() {
     $('webid-gen').hide();
 }
 
+function showImage() {
+    $('addimage').show();
+    $('submit-image').show();
+    $('cancel-image').show();
+}
+
+function hideImage() {
+    document.imageform.reset();
+    $('addimage').hide();
+    $('submit-image').hide();
+    $('cancel-image').hide();
+}
+
+function submitImage() {
+    document.imageform.submit();
+    $('addimage').hide();
+    $('submit-image').hide();
+    $('cancel-image').hide();
+}
+
+
 function createItem() {
     var res = document.getElementById("create-item");
     console.log(res.name+' / val='+res.value);
@@ -218,6 +247,7 @@ function createItem() {
 }
 
 function cloudListen(e) {
+    // 13 = the Enter key
     if (e.which == 13 || e.keyCode == 13) {
         createItem();
     }
@@ -247,11 +277,10 @@ function hideCloud() {
 $(document).observe('keydown', function(e) {
     if (e.keyCode == 27) { // ESC
         $('editor').hide();
-        $('webid-gen').hide();
         $('wac-editor').hide();
-        $('create-item').hide();
-        $('submit-item').hide();
-        $('cancel-item').hide();
+        hideWebID();
+        hideCloud();
+        hideImage();
     }
 });
 </script>

@@ -34,6 +34,40 @@ if (isset($_POST['SPKAC'])) {
     exit;
 }
 
+// intercept requests for images
+if (isset($_FILES["image"])) {
+    // Check if the user uploaded a new picture
+    if ((isset($_FILES['image'])) && ($_FILES['image']['error'] == 0)) {
+        // Allow only pictures with a size smaller than 5MB
+        if ($_FILES['image']['size'] <= 5000000) {
+            // Using getimagesize() to avoid fake mime types 
+            $image_info = exif_imagetype($_FILES['image']['tmp_name']);
+            switch ($image_info) {
+                case IMAGETYPE_GIF:
+                        if (!move_uploaded_file($_FILES['image']['tmp_name'], $_filename.$_FILES['image']['name']))
+                            echo 'Could not copy the picture to the user\'s dir. Please check permissions.';
+                    break;
+                case IMAGETYPE_JPEG:
+                        if (!move_uploaded_file($_FILES['image']['tmp_name'], $_filename.$_FILES['image']['name']))
+                            echo 'Could not copy the picture to the user\'s dir. Please check permissions.';
+                    break;
+                case IMAGETYPE_PNG:
+                        if (!move_uploaded_file($_FILES['image']['tmp_name'], $_filename.'/'.$_FILES['image']['name']))
+                            echo 'Could not copy the picture to the user\'s dir. Please check permissions.';
+                    break;
+                default:
+                    echo 'The selected image format is not supported.';
+                    break;
+            }
+        } else {
+            echo 'The image size is too large. The maximum allowed size is 5MB.';
+        }
+    }
+    // refresh and exit
+    header('Location: '.$_SERVER["REDIRECT_SCRIPT_URI"]);
+    exit;
+}
+
 
 // action
 $d = dirname($_filename);

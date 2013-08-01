@@ -14,6 +14,9 @@ address { color: gray; }
 #codeID a { color: gray; }
 #codeTime { padding-right:5px;width: auto; width: 1024px; min-width: 1024px !important; }
 
+.thead {
+    background:#34495e;color:#fff;font-size:1.2em;height:40px;
+}
 .spacer {
     padding: 10px;
 }
@@ -45,11 +48,15 @@ address { color: gray; }
 .files {
     z-index: 1;
     position: relative;
-    margin-top: 10px;
     width: auto !important;
     width: 1024px;
     min-width: 1024px;
+
+    -moz-box-shadow: 0 2px 2px 0px #ddd;
+    -webkit-box-shadow: 0 2px 2px 0px #ddd;
+    box-shadow: 0 2px 2px 0px #ddd;
 }
+
 .center {
     float:center;
 }
@@ -300,7 +307,10 @@ input.account-input {
 }
 
 .cloudactions {
-    height: 40px;
+    padding-top: 10px;
+    margin-top: 15px;
+    background: #fff;
+    height: 35px;
 }
 
 .cloudactions td {

@@ -23,6 +23,9 @@ $_RAW_EXT = array(
     'html'=>'text',
     'js'=>'text',
     'jpg'=>'image',
+    'jpeg'=>'image',
+    'png'=>'image',
+    'gif'=>'image',
     'txt'=>'text');
 
 header("User: $_user");
