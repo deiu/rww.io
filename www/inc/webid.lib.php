@@ -57,7 +57,8 @@ function webid_getinfo($uri) {
 
     if (isset($q['results']) && isset($q['results']['bindings']))
         $r = $q['results']['bindings']; 
-
-    return array('name' => $r[0]['name']['value'], 
-                 'pic'  => $r[0]['pic']['value']);
+    if (is_array($r))
+        return array('name' => $r[0]['name']['value'], 'pic'  => $r[0]['pic']['value']);
+    else
+        return array('name' => '', 'pic' => '');
 }
