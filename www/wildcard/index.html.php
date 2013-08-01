@@ -82,7 +82,7 @@ if ($_options->editui) {
         <th colspan="3">Actions</th>
     </tr>
 </thead>
-<tbody>
+<tbody class="lines">
 <?php
 // check if we have a real file structure
 $listing = array();
@@ -168,7 +168,8 @@ foreach($listing as $item) {
             <div class="left cell inline-block sep-right"><img class="pointer newitem" src="/common/images/home.png" title="Go to top level" onclick="window.location.replace('/');" /></div>
             <div class="left cell inline-block actions"><img class="pointer newitem" src="/common/images/add_folder.png" title="Create a new directory" onclick="showCloudNew('dir');" /></div>
             <div class="left cell inline-block"><img class="pointer newitem" src="/common/images/add_file.png" title="Create a new file" onclick="showCloudNew('file');" /></div>
-            <div class="left cell inline-block"><input id="create-item" class="item" type="text" name="" style="display:none;" onkeypress="cloudSumit(event)" /></div>
+            <div class="left cell inline-block"><input id="create-item" class="item" type="text" name="" style="display:none;" onkeypress="cloudListen(event)" /></div>
+            <div class="left cell inline-block"><img id="submit-item" class="pointer newitem" src="/common/images/ok.png" title="Create" style="display:none;" onclick="createItem();" /></div>
             <div class="left cell inline-block"><img id="cancel-item" class="pointer newitem" src="/common/images/cancel.png" title="Cancel" style="display:none;" onclick="hideCloud();" /></div>
             </div>
         </td>
@@ -207,14 +208,18 @@ function hideWebID() {
     $('webid-gen').hide();
 }
 
-function cloudSumit(e) {
+function createItem() {
+    var res = document.getElementById("create-item");
+    console.log(res.name+' / val='+res.value);
+    if (res.name == 'file')
+        cloud.append(res.value);
+    else if (res.name == 'dir')
+        cloud.mkdir(res.value);
+}
+
+function cloudListen(e) {
     if (e.which == 13 || e.keyCode == 13) {
-        var res = document.getElementById("create-item");
-        console.log(res.name+' / val='+res.value);
-        if (res.name == 'file')
-            cloud.append(res.value);
-        else if (res.name == 'dir')
-            cloud.mkdir(res.value);
+        createItem();
     }
 }
 
@@ -228,12 +233,14 @@ function showCloudNew(type) {
     $('create-item').setAttribute('placeholder', text);    
     $('create-item').show();
     $('create-item').focus();
+    $('submit-item').show();
     $('cancel-item').show();
 }
 
 function hideCloud() {
     $('create-item').hide();
     $('create-item').clear();
+    $('submit-item').hide();
     $('cancel-item').hide();
 }
 
@@ -243,6 +250,7 @@ $(document).observe('keydown', function(e) {
         $('webid-gen').hide();
         $('wac-editor').hide();
         $('create-item').hide();
+        $('submit-item').hide();
         $('cancel-item').hide();
     }
 });

@@ -64,7 +64,8 @@ th {font-weight:bold;}
 thead th {background:#34495e;color:#fff;font-size:1.2em;height:35px;}
 th, caption {padding:10px 10px 10px 5px;}
 td {padding:13px 10px 13px 5px; vertical-align:middle;font-size:1.1em;}
-tr {background:#fff; border-top: 1px dotted #ddd;}
+tr {background:#fff;}
+tbody.lines tr {border-top: 1px dotted #ddd;}
 tr:hover {background:#f2f2f2;}
 tfoot tr:nth-child(odd) tr.odd {font-style:italic;background:#e0e0e0 !important;}
 tfoot {border-top: 1px solid #f2f2f2 !important;}
