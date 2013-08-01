@@ -38,7 +38,9 @@ $src = implode('/', $src);
 $src = "https://github.com/deiu/rww.io/tree/master/$src";
 ?>
 <div class="footer">
-<span class="left">Powered by <a href="https://github.com/deiu/rww.io" target="_blank">RWW.IO</a></span>
+<span class="left">
+    Powered by <a href="https://github.com/deiu/rww.io" target="_blank">RWW.IO</a> | <a href="http://<?=ROOT_DOMAIN?>/help">Help?</a>
+</span>
 <span id="codeID" class="align-right" style="display:none;">
  request completed in <?=substr($time, 0, 6)?>s
 <?=$sparql_n<1?'':sprintf('with %d quer%s in %ss', $sparql_n, $sparql_n>1?'ies':'y', substr($sparql_t, 0, 6))?> 
