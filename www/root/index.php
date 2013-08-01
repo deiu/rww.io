@@ -27,7 +27,7 @@ defined('HEADER') || include_once('header.php');
     
     <div class="padded-l-1">
         <div class="left protocol">https://</div>
-        <div class="left"><input id="account-name" type="text" class="account-input" name="account-name" /></div>
+        <div class="left"><input id="account-name" type="text" class="account-input" name="account-name" onkeypress="checkEnter(event)" /></div>
         <div class="left domain">.<?=$_SERVER['SERVER_NAME']?></div>
         <div class="left"><input id="account-submit" class="account-submit" type="submit" value="Check!" onclick="checkDomain()" /></div>
         <div class="left"><input id="account-go" class="account-go" type="submit" value="Take me there!" style="display:none;" /></div>
@@ -53,6 +53,12 @@ function checkDomain() {
             $('account-go').show();
         }
     });
+}
+
+function checkEnter(e) {
+    if (e.which == 13 || e.keyCode == 13) {
+        checkDomain();
+    }
 }
 </script>
 

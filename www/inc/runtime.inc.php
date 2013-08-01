@@ -5,7 +5,7 @@
  * $Id$
  */
 
-
+require_once('config.php');
 //phpinfo(INFO_VARIABLES);
 
 // base dependencies
