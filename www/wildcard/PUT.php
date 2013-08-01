@@ -15,7 +15,7 @@ if (empty($_user))
 if ($_wac->can('Write') == false) {
     // debug
     if (DEBUG) {
-        openlog('data.fm', LOG_PID | LOG_ODELAY,LOG_LOCAL4);
+        openlog('RWW.IO', LOG_PID | LOG_ODELAY,LOG_LOCAL4);
         syslog(LOG_INFO, $_wac->getReason());
         closelog();
     }

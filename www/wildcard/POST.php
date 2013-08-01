@@ -20,7 +20,7 @@ if (empty($_user))
 // Web Access Control
 if ($_wac->can('Write') == false) {
     if (DEBUG) {
-        openlog('data.fm', LOG_PID | LOG_ODELAY,LOG_LOCAL4);
+        openlog('RWW.IO', LOG_PID | LOG_ODELAY,LOG_LOCAL4);
         syslog(LOG_INFO, $_wac->getReason());
         closelog();
     }
