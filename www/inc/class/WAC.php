@@ -132,20 +132,20 @@ class WAC {
             if ($path != '/') {
                 $meta_file = (substr(basename($r), 0, 5) != '.meta')?'.'.basename($r):'';
                 $meta_path = $sys.'/.meta'.$meta_file;
-                $meta_uri = dirname($r).'/.meta.'.$meta_file;
-
+                $meta_uri = dirname($r).'/.meta'.$meta_file;
+                $this->_debug[] = "PATH > Meta path=".$meta_path." | Meta URI=".$meta_uri;
                 $sys = (dirname($path) == '/')?$sys:dirname($sys);
                 $path = dirname($path);
             } else {
                 $meta_path = $sys.'/.meta';
                 $meta_uri = $r.'.meta';
-
+                $this->_debug[] = "ROOT > Meta path=".$meta_path." | Meta URI=".$meta_uri;
                 if ($path == '/')
                     $break = true;
             }
 
             // debug
-            $this->_debug[] = "Meta path=".$meta_path." | Meta URI=".$meta_uri;
+            //$this->_debug[] = "Meta path=".$meta_path." | Meta URI=".$meta_uri;
             $this->_debug[] = "Base URI=".$r." | Ref URI=".$uri;
             
             //$verb = ($r == $uri) ? 'accessTo' : 'defaultForNew';
