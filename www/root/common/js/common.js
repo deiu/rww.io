@@ -55,7 +55,6 @@ basename = function(path) {
 
     var a = path.split('/');
     return a[a.length - 1];
-//    return path.replace(/\\/g,'/').replace( /.*\//, '' );
 }
 
 newJS = function(url, callback){
@@ -82,7 +81,6 @@ newJS = function(url, callback){
 
 /** Cookies **/
 function setCookie(name,value,days) {
-    console.log('name='+name+' | val='+value+' | days='+days);
     if (days) {
         var date = new Date();
         date.setTime(date.getTime()+(days*24*60*60*1000));
@@ -108,6 +106,21 @@ function readCookie(name) {
 function deleteCookie(name) {
     setCookie(name,"",-1);
 }
+
+function alert (message, cls) {
+    if (message) {
+        $('alertbody').update(message);
+        if (cls)
+            $('alertbody').addClassName(cls);
+        $('alert').show();
+    } else {
+        $('alert').hide();
+        $('alertbody').classNames().each(function(elt) {
+            $('alertbody').removeClassName(elt);
+        });
+    }
+}
+
 
 /** Web ACLs **/
 wac = {};
@@ -222,12 +235,28 @@ wac.get = function(request_path, path) {
     $('wac-path').innerHTML=path;
     $('wac-reqpath').innerHTML=requestPath;
 }
+// load permissions and display WAC editor
 wac.edit = function(request_path, path) {
-    wac.get(request_path, path);
-     
-    // display the editor
-    $('wac-editor').show();
+    var uri = window.location.protocol+'//'+window.location.host+request_path+path;
+    new HTTP(uri, {
+        method: 'get',
+        requestHeaders: {'Content-Type': 'text/turtle'}, 
+        onSuccess: function() {
+            // display the editor
+            wac.get(request_path, path);
+            $('wac-editor').show();
+        },
+        onFailure: function() {
+            var msg = 'Access denied';
+            console.log(msg);
+                        
+            alert(msg, 'error');
+            window.setTimeout("alert()", 2000);
+        }
+    });
 }
+
+// hide the editor
 wac.hide = function() {
     $('wac-editor').hide();
 }
@@ -484,20 +513,27 @@ cloud.append = function(path, data) {
 cloud.get = function(path) {
     var lastContentType = $F('editorType');
     new HTTP(this.request_url+path, { method: 'get', evalJS: false, requestHeaders: {'Accept': lastContentType}, onSuccess: function(r) {
-        $('editorpath').value = path;
-        $('editorpath').enable();
-        $('editorarea').value = r.responseText;
-        $('editorarea').enable();
-        var contentType = r.getResponseHeader('Content-Type');
-        var editorTypes = $$('#editorType > option');
-        for (var i = 0; i < editorTypes.length; i++) {
-            var oneContentType = editorTypes[i].value;
-            if (oneContentType == contentType || oneContentType == '') {
-                editorTypes[i].selected = true;
+            $('editorpath').value = path;
+            $('editorpath').enable();
+            $('editorarea').value = r.responseText;
+            $('editorarea').enable();
+            var contentType = r.getResponseHeader('Content-Type');
+            var editorTypes = $$('#editorType > option');
+            for (var i = 0; i < editorTypes.length; i++) {
+                var oneContentType = editorTypes[i].value;
+                if (oneContentType == contentType || oneContentType == '') {
+                    editorTypes[i].selected = true;
+                }
             }
+            $('editor').show();
+        }, onFailure: function() {
+            var msg = 'Access denied';
+            console.log(msg);
+                        
+            alert(msg, 'error');
+            window.setTimeout("alert()", 2000);
         }
-        $('editor').show();
-    }});
+    });
 }
 cloud.mkdir = function(path) {
     new HTTP(this.request_url+path, { method: 'mkcol', onSuccess: function() {
@@ -567,19 +603,6 @@ cloud.updateStatus = function() {
         $('statusLoading').hide();
     }
 }
-cloud.alert = function(message, cls) {
-    if (message) {
-        $('alertbody').update(message);
-        if (cls)
-            $('alertbody').addClassName(cls);
-        $('alert').show();
-    } else {
-        $('alert').hide();
-        $('alertbody').classNames().each(function(elt) {
-            $('alertbody').removeClassName(elt);
-        });
-    }
-}
 
 Ajax.Responders.register({
     onCreate: cloud.updateStatus,
@@ -605,8 +628,8 @@ Ajax.Responders.register({
         }
         // DEBUG
         console.log(msg);
-        cloud.alert(method+' '+msg, cls);
-        window.setTimeout("cloud.alert()", 3000);
+        alert(method+' '+msg, cls);
+        window.setTimeout("alert()", 3000);
     },
 });
 

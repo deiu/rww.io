@@ -56,8 +56,8 @@ class WAC {
         }
         
         $this->_meta_file_base = dirname($this->_meta_file);
-        $this->_options = $options;
-        
+
+        /*
         $this->_debug[] = "<--------WAC--------->";
         $this->_debug[] = "meta_file_name=".$this->_meta_name;
         $this->_debug[] = "meta_file_path=".$this->_meta_file;
@@ -66,7 +66,7 @@ class WAC {
         $this->_debug[] = "Request base=".REQUEST_BASE;
         $this->_debug[] = "resource_uri=".$this->_resource_uri;
         $this->_debug[] = "WebID=".$this->_req_user;
-    
+        */
         return true;
     }
 
@@ -130,8 +130,9 @@ class WAC {
             $r = REQUEST_BASE.$path;
 
             if ($path != '/') {
-                $meta_path = $sys.'/.meta.'.basename($r);
-                $meta_uri = dirname($r).'/.meta.'.basename($r);
+                $meta_file = (substr(basename($r), 0, 5) != '.meta')?'.'.basename($r):'';
+                $meta_path = $sys.'/.meta'.$meta_file;
+                $meta_uri = dirname($r).'/.meta.'.$meta_file;
 
                 $sys = (dirname($path) == '/')?$sys:dirname($sys);
                 $path = dirname($path);
@@ -195,10 +196,6 @@ class WAC {
                     return false;
                 }
             }
-
         }
-
-
     }
-
 }
