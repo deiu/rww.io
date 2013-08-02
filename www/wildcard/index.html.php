@@ -185,7 +185,7 @@ foreach($listing as $item) {
     echo '</td>';
     echo '<td class="options">';
     if ($_options->editui)
-        echo '<a href="#" onclick"cloud.rm(\''.$item_elt.'\');"><img class="actions" src="/common/images/22/delete.png" title="Delete" /></a>';
+        echo '<a href="#" onclick="cloud.rm(\''.$item_elt.'\');"><img class="actions" src="/common/images/22/delete.png" title="Delete" /></a>';
     echo '</td>';
     echo '</tr>';
 }
