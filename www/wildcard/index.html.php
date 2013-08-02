@@ -43,8 +43,9 @@ if ($_options->editui) {
         <option>text/javascript</option>
     </select>
     <textarea class="editor-content clear left" id="editorarea" disabled="disabled"></textarea><br/>
-    <button class="right" onclick="$(this).up().hide();">Cancel</button>
-    <button class="right" onclick="cloud.save();">Save</button>
+    <div class="right actions"><a href="#" class="button button-rounded button-flat-caution" onclick="$('editor').hide();"><i class="icon-remove"></i> Cancel</a></div>
+    <div class="right"><a href="#" class="button button-rounded button-flat-primary" onclick="cloud.save();"><i class="icon-save"></i> Save</a></div>
+
 </div>
 
 <div id="wac-editor" class="wac-editor" style="display: none;">
@@ -62,8 +63,8 @@ if ($_options->editui) {
     <br/>
     <textarea id="wac-users" name="users" cols="5" rows="5"></textarea>
     <br/>
-    <button class="right" onclick="wac.hide()">Cancel</button>
-    <button class="right" onclick="wac.save()">Save</button> 
+    <div class="right actions"><a href="#" class="button button-rounded button-flat-caution" onclick="wac.hide()"><i class="icon-remove"></i> Cancel</a></div>
+    <div class="right"><a href="#" class="button button-rounded button-flat-primary" onclick="wac.save()"><i class="icon-save"></i> Save</a></div>
 </div>
 <?php } ?>
 

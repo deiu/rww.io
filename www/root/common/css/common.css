@@ -306,11 +306,12 @@ input.account-input {
     padding-right: 10px;
 }
 
-.cloudactions {
+.cloudactions { 
     padding-top: 10px;
     margin-top: 15px;
     background: #fff;
     height: 35px;
+
 }
 
 .cloudactions td {
@@ -319,8 +320,6 @@ input.account-input {
 }
 
 .newitems {
-    position: fixed;
-
     vertical-align: top;
 }
 
