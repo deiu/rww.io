@@ -180,13 +180,13 @@ wac.get = function(request_path, path) {
         var dir = innerRef;
     }
     // DEBUG 
-    
+    /*
     console.log('resource='+innerRef);
     console.log('metafile='+metaFile);
     console.log('RDFresource='+innerRef);
     console.log('metaBase='+metaBase);
     console.log('metaURI='+metaURI);
-
+    */
     // For quick access to those namespaces:
     var RDF = $rdf.Namespace("http://www.w3.org/1999/02/22-rdf-syntax-ns#");
     var WAC = $rdf.Namespace("http://www.w3.org/ns/auth/acl#");
@@ -237,8 +237,30 @@ wac.get = function(request_path, path) {
 }
 // load permissions and display WAC editor
 wac.edit = function(request_path, path) {
-    var uri = window.location.protocol+'//'+window.location.host+request_path+path;
-    new HTTP(uri, {
+    var File = path;
+    if (path.substring(path.length - 1) == '/')
+        File = path.substring(0, path.length - 1);
+    var metaBase = window.location.protocol+'//'+window.location.host+window.location.pathname;
+    // if the resource in question is not the .meta file itself
+    if (File.substr(0, 5) != '.meta') {
+        if (File == '..') { // we need to use the parent dir name
+            var metaBase = window.location.protocol+'//'+window.location.host+dirname(window.location.pathname)+'/';
+            var metaFile = '.meta.'+basename(window.location.pathname);
+            var metaURI = metaBase+metaFile;
+        } else if (File == '') { // root
+            var metaBase = window.location.protocol+'//'+window.location.host+'/';
+            var metaFile = '.meta';
+            var metaURI = metaBase+metaFile;
+        } else {
+            var metaFile = '.meta.'+File;
+            var metaURI = metaBase+metaFile;
+        }
+    } else { // the resource IS the meta file
+        var metaURI = metaBase+File;
+    }
+    
+    console.log('metaURI='+metaURI);
+    new HTTP(metaURI, {
         method: 'get',
         requestHeaders: {'Content-Type': 'text/turtle'}, 
         onSuccess: function() {
