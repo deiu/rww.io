@@ -383,7 +383,7 @@ div.span-icon {
     vertical-align: middle;
 }
 #alert {
-    z-index: 1000;
+    z-index: 1100;
     position: absolute;
     top: 10px;
     left: 0;

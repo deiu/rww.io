@@ -19,16 +19,20 @@ class testACL {
             $this->_data = $data;
     }
 
+    function get_succeeded() {
+        return $this->_succeeded;
+    }
+    
+    function get_failed() {
+        return $this->_failed;
+    } 
+
     function get($url) {
         $ch = curl_init();
 
         // set URL and other appropriate options
         curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_HEADER, 0);
-        //curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: text/turtle'));
-        //curl_setopt($ch, CURLOPT_POST, 1);
-        //curl_setopt($ch, CURLOPT_POSTFIELDS, $this->_data);
-        
+        curl_setopt($ch, CURLOPT_HEADER, 0);      
         
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($ch, CURLOPT_SSLCERT, $this->_webid_crt); 
@@ -47,15 +51,7 @@ class testACL {
             echo '<br/>Curl error: ' .$error ;
 
         return $httpCode;
-    }
-
-    function get_succeeded() {
-        return $this->_succeeded;
-    }
-    
-    function get_failed() {
-        return $this->_failed;
-    }   
+    } 
 
     function post($url) {
         $ch = curl_init();
@@ -87,6 +83,61 @@ class testACL {
         return $httpCode;
     }
     
+    function delete($url) {
+        $ch = curl_init();
+
+        // set URL and other appropriate options
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_HEADER, 0);
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "DELETE");
+        
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_SSLCERT, $this->_webid_crt); 
+        curl_setopt($ch, CURLOPT_SSLKEY, $this->_webid_key);
+        curl_setopt($ch, CURLOPT_SSLCERTPASSWD, '');
+        
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 0);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_exec($ch);
+
+        $error = curl_error($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE); 
+        curl_close($ch);
+
+        if ($error)
+            echo '<br/>Curl error: ' .$error ;
+
+        return $httpCode;
+    }
+    
+    function mkcol($url) {
+        $ch = curl_init();
+
+        // set URL and other appropriate options
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_HEADER, 0);
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "MKCOL");
+        
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_SSLCERT, $this->_webid_crt); 
+        curl_setopt($ch, CURLOPT_SSLKEY, $this->_webid_key);
+        curl_setopt($ch, CURLOPT_SSLCERTPASSWD, '');
+        
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 0);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_exec($ch);
+
+        $error = curl_error($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE); 
+        curl_close($ch);
+
+        if ($error)
+            echo '<br/>Curl error: ' .$error ;
+
+        return $httpCode;
+    }
+    
+    
     function success($method, $uri) {
         echo 'Expected: <font color="green">Success: 200</font> / Outcome: ';
 
@@ -94,6 +145,10 @@ class testACL {
             $code = $this->get($uri);            
         } else if ($method == "Write") {
             $code = $this->post($uri);
+        } else if ($method == "Delete") {
+            $code = $this->delete($uri);
+        } else if ($method == "MKCOL") {
+            $code = $this->mkcol($uri);
         }
          
         if ($code == 200) {
@@ -112,6 +167,10 @@ class testACL {
             $code = $this->get($uri);            
         } else if ($method == "Write") {
             $code = $this->post($uri);
+        } else if ($method == "Delete") {
+            $code = $this->delete($uri);
+        } else if ($method == "MKCOL") {
+            $code = $this->mkcol($uri);
         }
          
         if ($code != 200) {
@@ -149,7 +208,21 @@ $methods = array('Read' => array (
                     'https://deiu.example.com/test/public-read/test.ttl' => 'fail',
                     'https://deiu.example.com/test/recursive-read/dir/test.ttl' => 'fail',
                     'https://deiu.example.com/test/recursive-write/dir/test.ttl' => 'pass',
-                    )
+                    ),
+                'MKCOL' => array(
+                    'https://deiu.example.com/testdir' => 'fail',
+                    'https://deiu.example.com/test/private/testdir' => 'fail',
+                    'https://deiu.example.com/test/owned/testdir' => 'pass',
+                    'https://deiu.example.com/test/recursive-write/testdir' => 'pass',
+                    ),
+                'Delete' => array(
+                    'https://deiu.example.com/test' => 'fail',
+                    'https://deiu.example.com/test/private' => 'fail',
+                    'https://deiu.example.com/test/owned/test.ttl' => 'pass',
+                    'https://deiu.example.com/test/owned/testdir' => 'pass',
+                    'https://deiu.example.com/test/recursive-write/dir/test.ttl' => 'pass',
+                    'https://deiu.example.com/test/recursive-write/testdir' => 'pass',
+                    ),
                 );
 
 foreach ($methods as $method => $uris) {
