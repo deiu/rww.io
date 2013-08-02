@@ -382,6 +382,15 @@ div.span-icon {
     width: 16px;
     vertical-align: middle;
 }
+#alert {
+    z-index: 1000;
+    position: absolute;
+    top: 10px;
+    left: 0;
+    width: 100%;
+    padding-top: 15px;
+    text-align: center;
+}
 #identity { float: right; }
 #identity a { text-decoration: none; }
 #login { float: left; }

@@ -55,7 +55,7 @@ if ($_options->editui) {
     <p>
         <input type="checkbox" id="wac-read" name="Read"> Read
         <input type="checkbox" id="wac-write" name="Write"> Write
-        <input type="checkbox" id="wac-recursive" name="Recursive"> Recursively
+        <input type="checkbox" id="wac-recursive" name="Recursive"> Default for new files?
     </p>
     Allow access for:
     <br/>
@@ -100,7 +100,7 @@ if ($_options->editui) {
     </div>
 </div>
 
-<table id="index" class="files center">
+<table id="index" class="files center box-shadow">
 <thead>
     <tr>        
         <th> Name</th>
@@ -177,15 +177,15 @@ foreach($listing as $item) {
     echo '</td>';
     echo '<td class="options">';
     if ($_options->editui && !$is_dir) {
-        echo '<a href="javascript:cloud.edit(\''.$item_elt.'\');"><img class="actions" src="/common/images/22/edit.png" title="Edit contents" /></a>';
+        echo '<a href="#" onclick="cloud.edit(\''.$item_elt.'\');"><img class="actions" src="/common/images/22/edit.png" title="Edit contents" /></a>';
     }
     echo '</td>';
     echo '<td class="options">';
-    echo '<a href="javascript:wac.edit(\''.$_request_path.'\', \''.$item_elt.'\');"><img class="actions" src="/common/images/22/acl.png" title="Access Control" /></a> ';
+    echo '<a href="#" onclick="wac.edit(\''.$_request_path.'\', \''.$item_elt.'\');"><img class="actions" src="/common/images/22/acl.png" title="Access Control" /></a> ';
     echo '</td>';
     echo '<td class="options">';
     if ($_options->editui)
-        echo '<a href="javascript:cloud.rm(\''.$item_elt.'\');"><img class="actions" src="/common/images/22/delete.png" title="Delete" /></a>';
+        echo '<a href="#" onclick"cloud.rm(\''.$item_elt.'\');"><img class="actions" src="/common/images/22/delete.png" title="Delete" /></a>';
     echo '</td>';
     echo '</tr>';
 }

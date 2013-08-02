@@ -40,7 +40,7 @@ if (substr($_user, 0, 4) == 'dns:') {
     </script>
 </head>
 <body>
-    <div id="alert" style="position: absolute; top: 0; left: 0; width: 100%; padding-top: 5px; text-align: center; z-index: 1000; display: none;">
+    <div id="alert" style="display: none;">
         <div id="alertbody" style="display: inline;"></div>
     </div>
     <div id="title" style="display: none;"><?=$TITLE?></div>
