@@ -14,7 +14,7 @@ if (!isset($_COOKIE['showMetaFiles'])) {
     setcookie('showMetaFiles', true, time()+3600);
 } 
 
-$_showMetaFiles = $_COOKIE['showMetaFiles'];
+$_showMetaFiles = (isset($_COOKIE['showMetaFiles']))?$_COOKIE['showMetaFiles']:false;
 $_checkedShowMeta = ($_showMetaFiles == true)?'checked':'';
 
 $_RAW_EXT = array(

@@ -115,10 +115,12 @@ wac.get = function(request_path, path) {
     // reset the checkboxes
     $('wac-read').checked = false;
     $('wac-write').checked = false;
+    $('wac-recursive').checked = false;
     $('wac-users').value = '';
     
     // remove trailing / from the file name we append after .meta
     var requestPath = request_path+path;
+    console.log(path);
      
     var File = path;
     if (path.substring(path.length - 1) == '/')
@@ -135,22 +137,24 @@ wac.get = function(request_path, path) {
             var metaURI = metaBase+metaFile;
             var innerRef = window.location.pathname; // the resource as inner ref
             var requestPath = request_path;
+            var dir = window.location.protocol+'//'+window.location.host+innerRef;
             // Remove preceeding / from path
             if (innerRef.substr(0, 1) == '/')
                 innerRef = innerRef.substring(1);
             innerRef = metaURI+'#'+innerRef;
-        } else if (File == '') {
+        } else if (File == '') { // root
             path = '/';
             var metaBase = window.location.protocol+'//'+window.location.host+'/';
             var metaFile = '.meta';
             var metaURI = metaBase+metaFile;
             var innerRef = metaBase; // the resource as inner ref
             var requestPath = request_path;
-            
+            var dir = window.location.protocol+'//'+window.location.host+path;
         } else {
             var metaFile = '.meta.'+File;
             var metaURI = metaBase+metaFile;
             var innerRef = window.location.pathname+path; // the resource as inner ref
+            var dir = window.location.protocol+'//'+window.location.host+innerRef;
             // Remove preceeding / from path
             if (innerRef.substr(0, 1) == '/')
                 innerRef = innerRef.substring(1);
@@ -158,12 +162,13 @@ wac.get = function(request_path, path) {
         }
     } else { // the resource IS the meta file
         var metaFile = File;
-        var metaURI = metaBase+File; 
+        var metaURI = metaBase+File;
         var innerRef = metaURI;
+        var dir = innerRef;
     }
     // DEBUG 
     
-    console.log('resource='+path);
+    console.log('resource='+innerRef);
     console.log('metafile='+metaFile);
     console.log('RDFresource='+innerRef);
     console.log('metaBase='+metaBase);
@@ -179,6 +184,7 @@ wac.get = function(request_path, path) {
     var fetch = $rdf.fetcher(graph);
 
     fetch.nowOrWhenFetched(metaURI,undefined,function(){
+        // permissions
         var perms = graph.each(resource, WAC('mode'));
 
         // reset the checkboxes
@@ -198,6 +204,15 @@ wac.get = function(request_path, path) {
             else if (mode == '<http://www.w3.org/ns/auth/acl#Write>')
                 $('wac-write').checked = true;            
         }
+        
+        // defaultForNew
+        var defaultForNew = graph.each(resource, WAC('defaultForNew'));
+        console.log('Rec-link='+defaultForNew.toString().replace(/\<(.*?)\>/g, "$1"));
+        console.log('Resource='+dir);
+        if (defaultForNew.toString().replace(/\<(.*?)\>/g, "$1") == dir)
+            $('wac-recursive').checked = true;
+            
+        // users
         var users = graph.each(resource, WAC('agent'));
         // remove the < > signs from URIs
         $('wac-users').value=users.toString().replace(/\<(.*?)\>/g, "$1");
@@ -247,6 +262,7 @@ wac.save = function(elt) {
     var users = $('wac-users').value.split(",");
     var read = $('wac-read').checked;
     var write = $('wac-write').checked;
+    var recursive = $('wac-recursive').checked;
     var exists = $('wac-exists').value;
     var owner = $('wac-owner').value;
 
@@ -282,10 +298,7 @@ wac.save = function(elt) {
                 $rdf.sym(rootMeta));
         ng.add($rdf.sym(rootMeta),
                 WAC('agent'),
-                $rdf.sym(owner));
-        ng.add($rdf.sym(rootMeta),
-                WAC('defaultForNew'),
-                $rdf.sym(window.location.protocol+'//'+window.location.host+'/'));
+                $rdf.sym(owner));        
         ng.add($rdf.sym(rootMeta),
                 WAC('mode'),
                 WAC('Read'));
@@ -302,6 +315,9 @@ wac.save = function(elt) {
         ng.add($rdf.sym(rootDir),
                 WAC('agentClass'),
                 $rdf.sym('http://xmlns.com/foaf/0.1/Agent'));
+        ng.add($rdf.sym(rootDir),
+                WAC('defaultForNew'),
+                $rdf.sym(window.location.protocol+'//'+window.location.host+'/'));
         ng.add($rdf.sym(rootDir),
                 WAC('mode'),
                 WAC('Read'));
@@ -374,7 +390,12 @@ wac.save = function(elt) {
             WAC('mode'),
             WAC('Write'));
     }
-    
+    // add recursion
+    if (recursive == true) {
+        graph.add(graph.sym(innerRef),
+                WAC('defaultForNew'),
+                graph.sym(metaBase+reqPath));
+    }
     // create default rules for the .meta file itself if we create it for the
     // first time
     if (exists == '0') {

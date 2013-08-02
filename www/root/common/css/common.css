@@ -51,7 +51,9 @@ address { color: gray; }
     width: auto !important;
     width: 1024px;
     min-width: 1024px;
+}
 
+.box-shadow {
     -moz-box-shadow: 0 2px 2px 0px #ddd;
     -webkit-box-shadow: 0 2px 2px 0px #ddd;
     box-shadow: 0 2px 2px 0px #ddd;
@@ -68,6 +70,7 @@ address { color: gray; }
     width: 1024px;
     min-width: 1024px !important;
     height: 50px;
+    margin-bottom: 15px;
     background: #1d2124;
     color: #fff;
     z-index: 100;
@@ -308,7 +311,6 @@ input.account-input {
 
 .cloudactions { 
     padding-top: 10px;
-    margin-top: 15px;
     background: #fff;
     height: 35px;
 

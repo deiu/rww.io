@@ -45,7 +45,6 @@ if ($_options->editui) {
     <textarea class="editor-content clear left" id="editorarea" disabled="disabled"></textarea><br/>
     <div class="right actions"><a href="#" class="button button-rounded button-flat-caution" onclick="$('editor').hide();"><i class="icon-remove"></i> Cancel</a></div>
     <div class="right"><a href="#" class="button button-rounded button-flat-primary" onclick="cloud.save();"><i class="icon-save"></i> Save</a></div>
-
 </div>
 
 <div id="wac-editor" class="wac-editor" style="display: none;">
@@ -56,6 +55,7 @@ if ($_options->editui) {
     <p>
         <input type="checkbox" id="wac-read" name="Read"> Read
         <input type="checkbox" id="wac-write" name="Write"> Write
+        <input type="checkbox" id="wac-recursive" name="Recursive"> Recursively
     </p>
     Allow access for:
     <br/>
@@ -191,14 +191,11 @@ foreach($listing as $item) {
 }
 ?>
 </tbody>
-<?php if ($_options->editui) { ?>
-<tfoot>
-</tfoot>
-<?php } ?>
 </table>
+
 </div>
 
-<div class="clear"></div>
+<div class="clear spacer"></div>
 </div>
 
 <script type="text/javascript">

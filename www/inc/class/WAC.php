@@ -8,10 +8,11 @@ class WAC {
     private $_req_user;
     private $_meta_name;
     private $_meta_file;
+    private $_meta_file_base;
     private $_base_path;
     private $_graph;
     private $_options;
-
+    private $_debug = array();
     private $_reason;
 
     /**
@@ -51,19 +52,17 @@ class WAC {
             $meta_uri = dirname($this->_resource_uri).'/'.$this->_meta_name;
         }
         
+        $this->_meta_file_base = dirname($this->_meta_file);
         $this->_options = $options;
         
-        if (DEBUG) {
-            openlog('RWW.IO', LOG_PID | LOG_ODELAY,LOG_LOCAL4);
-            syslog(LOG_INFO, "<--------WAC--------->");
-            syslog(LOG_INFO, "meta_name=".$this->_meta_name);
-            syslog(LOG_INFO, "meta_file=".$this->_meta_file);
-            syslog(LOG_INFO, "meta_uri=".$meta_uri);
-            syslog(LOG_INFO, "aclbase=".$aclbase);
-            syslog(LOG_INFO, "req_base=".REQUEST_BASE);
-            syslog(LOG_INFO, "uri=".$this->_resource_uri);
-            closelog();
-        }
+        $this->_debug[] = "<--------WAC--------->";
+        $this->_debug[] = "meta_file_name=".$this->_meta_name;
+        $this->_debug[] = "meta_file_path=".$this->_meta_file;
+        $this->_debug[] = "meta_uri=".$meta_uri;
+//        $this->_debug[] = "aclbase=".$aclbase;
+//        $this->_debug[] = "Request base=".REQUEST_BASE;
+        $this->_debug[] = "resource_uri=".$this->_resource_uri;
+        $this->_debug[] = "WebID=".$this->_req_user;
     
         $this->_graph = new Graph('', $this->_meta_file, '', REQUEST_BASE.'/'.$this->_meta_name);
         // @@@FIX
@@ -76,6 +75,10 @@ class WAC {
     function getReason() {
         return $this->_reason;
     }
+    
+    function getDebug() {
+        return $this->_debug;
+    }
 
     /**
      * Check if the user has access to a specific URI
@@ -86,11 +89,8 @@ class WAC {
      * @return boolean (true if user has access)
      */
     function can($method, $uri=null) {
-        // there is no .meta file present
-        if ($this->_options->open && !$this->_graph->size()) {
-            $this->_reason .= 'No .meta file found in '.REQUEST_BASE.'/'.$this->_meta_name;
-            return true;
-        }
+
+        $this->_debug[] = "Method=".$method;
 
         // set the resource URI
         $uri = is_null($uri) ? $this->_resource_uri : $uri;
@@ -100,11 +100,8 @@ class WAC {
         
         if ($g->size() > 0) {
             // for the domain owner
-            if (DEBUG) {
-                openlog('RWW.IO', LOG_PID | LOG_ODELAY,LOG_LOCAL4);
-                syslog(LOG_INFO, "G size=".$g->size());
-                closelog();
-            }
+            $this->_debug[] = "Graph size=".$g->size();
+
             $q = "PREFIX acl: <http://www.w3.org/ns/auth/acl#>
                   SELECT ?z WHERE { 
                     ?z acl:agent <".$this->_req_user."> .
@@ -112,11 +109,7 @@ class WAC {
             $r = $g->SELECT($q);
             if (isset($r['results']['bindings']) && count($r['results']['bindings']) > 0) {
                 $this->_reason .= "User ".$this->_req_user." was authenticated as owner!";
-                if (DEBUG) {
-                    openlog('RWW.IO', LOG_PID | LOG_ODELAY,LOG_LOCAL4);
-                    syslog(LOG_INFO, $this->getReason());
-                    closelog();
-                }
+
                 return true;
             }
         }
@@ -126,19 +119,17 @@ class WAC {
               SELECT * WHERE { 
                 ?z acl:agent <".$this->_req_user.">; 
                 acl:mode acl:$method; 
-                acl:accessTo <$uri> . 
+                acl:accessTo <$uri> .
                 }";
         $r = $this->_graph->SELECT($q);
         if (isset($r['results']['bindings']) && count($r['results']['bindings']) > 0) {
-            $this->_reason .= 'User '.$this->_req_user.' is allowed '.$method.' access to '.$uri."\n";
-            if (DEBUG) {
-                openlog('RWW.IO', LOG_PID | LOG_ODELAY,LOG_LOCAL4);
-                syslog(LOG_INFO, $this->getReason());
-                closelog();
-            }
+            $this->_reason = 'User '.$this->_req_user.' is ALLOWED '.$method.' access to '.$uri."\n";
             
             return true;
+        } else {
+            $this->_reason = 'User '.$this->_req_user.' is NOT allowed '.$method.' access to '.$uri."\n";
         }
+        
         // public authorization
         $q = "PREFIX acl: <http://www.w3.org/ns/auth/acl#>
               SELECT * WHERE { 
@@ -148,21 +139,86 @@ class WAC {
                 }";
         $r = $this->_graph->SELECT($q);
         if (isset($r['results']['bindings']) && count($r['results']['bindings']) > 0) {
-            $this->_reason .= 'Everyone is allowed '.$method.' access to '.$uri."\n";
-            if (DEBUG) {
-                openlog('RWW.IO', LOG_PID | LOG_ODELAY,LOG_LOCAL4);
-                syslog(LOG_INFO, $this->getReason());
-                closelog();
-            }
+            $this->_reason = 'Everyone is allowed '.$method.' access to '.$uri."\n";
+
             return true;
         }
-        $this->_reason .= 'User '.$this->_req_user.' is NOT allowed '.$method.' access to '.$uri."\n";
-        if (DEBUG) {
-            openlog('RWW.IO', LOG_PID | LOG_ODELAY,LOG_LOCAL4);
-            syslog(LOG_INFO, $this->getReason());
-            closelog();
-        }        
-        return false;
+        
+        // no .meta case, recursively find a .meta
+        if (!$this->_graph->size()) {
+            $this->_debug[] = "No .meta foud, going recursively!";
+                        
+            $u = dirname($uri);
+            $p = $this->_meta_file_base;
+            $break = false;
+            // walk path
+            while (true) {
+                if ($break == true)
+                    break;
+
+                if ($u == REQUEST_BASE) {
+                    $r = $u;
+                    $meta_path = $p.'/.meta.'.basename($p);
+                    $meta_base_path = $p;
+                    $meta_uri = $u.'/.meta';
+                    $break = true;
+                } else if (dirname($u) == REQUEST_BASE) {
+                    $r = $u;
+                    $meta_base_path = dirname($p);
+                    $meta_path = $p.'/.meta.'.basename($p);
+                    $meta_uri = $u.'/.meta.'.basename($u);
+                    
+                    $p = dirname($p);
+                    $u = dirname($u);
+                } else {
+                    $r = $u;
+                    $meta_base_path = dirname($p);
+                    $meta_path = dirname($p).'/.meta.'.basename($p);
+                    $meta_uri = dirname($u).'/.meta.'.basename($u);
+                    $break = false;
+
+                    $u = dirname($u);
+                    $p = dirname($p);
+                }
+
+                // debug
+                $this->_debug[] = "In ".$meta_base_path." | checking ".$meta_uri;
+                
+                $verb = ($u == $uri) ? 'accessTo' : 'defaultForNew';
+
+                $g = new Graph('', $meta_path, '',$meta_uri);
+                if ($g->size() > 0) {
+                    // specific authorization
+                    $q = "PREFIX acl: <http://www.w3.org/ns/auth/acl#>
+                          SELECT * WHERE { 
+                            ?z acl:agent <".$this->_req_user.">; 
+                            acl:mode acl:$method; 
+                            acl:$verb <$r> . 
+                            }";
+                    $r = $g->SELECT($q);
+                    if (isset($r['results']['bindings']) && count($r['results']['bindings']) > 0) {
+                        $this->_reason .= 'User '.$this->_req_user.' is allowed '.$method.' access to '.$r."\n";
+                        return true;
+                    }
+                    // public authorization
+                    $q = "PREFIX acl: <http://www.w3.org/ns/auth/acl#>
+                          SELECT * WHERE { 
+                            ?z acl:agentClass <http://xmlns.com/foaf/0.1/Agent>; 
+                            acl:mode acl:$method; 
+                            acl:$verb <$r> . 
+                            }";
+                    $r = $g->SELECT($q);
+                    if (isset($r['results']['bindings']) && count($r['results']['bindings']) > 0) {
+                        $this->_reason .= 'Everyone is allowed '.$method.' access to '.$r."\n";
+                        return true;
+                    }
+                }
+            }
+
+            $this->_reason = 'No one is allowed '.$method.' access to '.$uri."\n";
+     
+            return false;
+        }
     }
 
 }

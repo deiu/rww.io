@@ -18,12 +18,16 @@ if (empty($_user))
     httpStatusExit(401, 'Unauthorized');
 
 // Web Access Control
-if ($_wac->can('Write') == false) {
-    if (DEBUG) {
-        openlog('RWW.IO', LOG_PID | LOG_ODELAY,LOG_LOCAL4);
-        syslog(LOG_INFO, $_wac->getReason());
-        closelog();
-    }
+$can = false;
+$can = $_wac->can('Write');
+if (DEBUG) {
+    openlog('RWW.IO', LOG_PID | LOG_ODELAY,LOG_LOCAL4);
+    foreach($_wac->getDebug() as $line)
+        syslog(LOG_INFO, $line);
+    syslog(LOG_INFO, 'Verdict: '.$can.' / '.$_wac->getReason());
+    closelog();
+}
+if ($can == false) {
     httpStatusExit(403, 'Forbidden');
 }
 

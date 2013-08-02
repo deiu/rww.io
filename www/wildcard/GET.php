@@ -64,20 +64,24 @@ if (!file_exists($_filename) && in_array($_filename_ext, array('turtle','n3','js
     }
 }
 
-if (DEBUG) {
-    openlog('RWW.IO', LOG_PID | LOG_ODELAY,LOG_LOCAL4);
-    syslog(LOG_INFO, "<---------GET--------->");
-    syslog(LOG_INFO, 'User: '.$_user.' -> '.$_filename);
-    closelog();
-}
 // permissions
 if (empty($_user)) {
     httpStatusExit(401, 'Unauthorized', '401.php');
 } 
 
-if ($_wac->can('Read') == false)  {
-    httpStatusExit(403, 'Forbidden', '403-404.php');
+// WebACL
+$can = false;
+$can = $_wac->can('Read');
+if (DEBUG) {
+    openlog('RWW.IO', LOG_PID | LOG_ODELAY,LOG_LOCAL4);
+    foreach($_wac->getDebug() as $line)
+        syslog(LOG_INFO, $line);
+    syslog(LOG_INFO, 'Verdict: '.$can.' / '.$_wac->getReason());
+    closelog();
 }
+if ($can == false)  {
+    httpStatusExit(403, 'Forbidden', '403-404.php');
+} 
 
 // directory indexing
 if (is_dir($_filename) || substr($_filename,-1) == '/') {

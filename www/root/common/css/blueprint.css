@@ -58,7 +58,7 @@ ol {list-style-type:decimal;}
 dl {margin:0 0 1.5em 0;}
 dl dt {font-weight:bold;}
 dd {margin-left:1.5em;}
-table {margin-bottom:1em;width:100%;border-collapse:collapse;border-spacing:1;}
+table {width:100%;border-collapse:collapse;border-spacing:1;}
 th {font-weight:bold;}
 thead th {background:#34495e;color:#fff;font-size:1.2em;height:35px;}
 th, caption {padding:10px 10px 10px 5px;}
