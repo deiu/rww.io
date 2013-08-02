@@ -161,7 +161,7 @@ wac.get = function(request_path, path) {
             var metaURI = metaBase+metaFile;
             var innerRef = metaBase; // the resource as inner ref
             var requestPath = request_path;
-            var dir = window.location.protocol+'//'+window.location.host+request_path+path;
+            var dir = window.location.protocol+'//'+window.location.host+request_path;
         } else {
             var metaFile = '.meta.'+File;
             var metaURI = metaBase+metaFile;
