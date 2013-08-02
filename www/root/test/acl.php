@@ -9,9 +9,10 @@ class testACL {
     private $_error;
     private $_succeeded=0;
     private $_failed=0;
+    private $_webid_crt = "acl_user.pem";
+    private $_webid_key = "acl_user_key.pem";
 
-    function __construct($data=null) {
-       
+    function __construct($data=null) {     
         if (!$data)
             $this->_data = "<a> <b> <c> .";
         else
@@ -30,8 +31,8 @@ class testACL {
         
         
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($ch, CURLOPT_SSLCERT, "acl_user.pem"); 
-        curl_setopt($ch, CURLOPT_SSLKEY, "acl_user_key.pem");
+        curl_setopt($ch, CURLOPT_SSLCERT, $this->_webid_crt); 
+        curl_setopt($ch, CURLOPT_SSLKEY, $this->_webid_key);
         curl_setopt($ch, CURLOPT_SSLCERTPASSWD, '');
         
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 0);
@@ -68,8 +69,8 @@ class testACL {
         
         
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($ch, CURLOPT_SSLCERT, "acl_user.pem"); 
-        curl_setopt($ch, CURLOPT_SSLKEY, "acl_user_key.pem");
+        curl_setopt($ch, CURLOPT_SSLCERT, $this->_webid_crt); 
+        curl_setopt($ch, CURLOPT_SSLKEY, $this->_webid_key);
         curl_setopt($ch, CURLOPT_SSLCERTPASSWD, '');
         
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 0);
@@ -131,6 +132,7 @@ $test = new testACL();
 // For each method: uri => expected outcome
 $methods = array('Read' => array (
                     'https://deiu.example.com/' => 'pass',
+                    'https://deiu.example.com/.meta' => 'fail',
                     'https://deiu.example.com/test/owned/' => 'pass',
                     'https://deiu.example.com/test/private/' => 'fail',
                     'https://deiu.example.com/test/public/' => 'pass',
@@ -139,6 +141,7 @@ $methods = array('Read' => array (
                     'https://deiu.example.com/test/recursive-write/dir/file' => 'fail',
                     ),
                 'Write' => array(
+                    'https://deiu.example.com/.meta' => 'fail',
                     'https://deiu.example.com/test.ttl' => 'fail',
                     'https://deiu.example.com/test/owned/test.ttl' => 'pass',
                     'https://deiu.example.com/test/public/test.ttl' => 'fail', // defaultForNew only applies for read 
