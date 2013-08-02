@@ -1,4 +1,4 @@
 <?php
 
 define('ROOT_DOMAIN', 'rww.io');
-define('DEBUG', true);
+define('DEBUG', false);
