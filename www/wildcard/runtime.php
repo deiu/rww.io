@@ -4,6 +4,8 @@
  *
  * $Id$
  */
+ini_set("memory_limit","16M");
+
 
 define('METHODS_S', 'GET, PUT, POST, OPTIONS, HEAD, MKCOL, DELETE, PATCH');
 

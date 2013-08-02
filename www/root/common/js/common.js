@@ -119,8 +119,7 @@ wac.get = function(request_path, path) {
     $('wac-users').value = '';
     
     // remove trailing / from the file name we append after .meta
-    var requestPath = request_path+path;
-    console.log(path);
+    console.log('Path='+path);
      
     var File = path;
     if (path.substring(path.length - 1) == '/')
@@ -149,12 +148,13 @@ wac.get = function(request_path, path) {
             var metaURI = metaBase+metaFile;
             var innerRef = metaBase; // the resource as inner ref
             var requestPath = request_path;
-            var dir = window.location.protocol+'//'+window.location.host+path;
+            var dir = window.location.protocol+'//'+window.location.host+request_path+path;
         } else {
             var metaFile = '.meta.'+File;
             var metaURI = metaBase+metaFile;
-            var innerRef = window.location.pathname+path; // the resource as inner ref
-            var dir = window.location.protocol+'//'+window.location.host+innerRef;
+            var innerRef = path; // the resource as inner ref
+            var dir = window.location.protocol+'//'+window.location.host+request_path+innerRef;
+            var requestPath = request_path;
             // Remove preceeding / from path
             if (innerRef.substr(0, 1) == '/')
                 innerRef = innerRef.substring(1);
@@ -327,26 +327,27 @@ wac.save = function(elt) {
 
 
 /**** File specific meta ****/
-    var metaBase = window.location.protocol+'//'+window.location.host+dirname(reqPath)+'/';
+    var metaBase = window.location.protocol+'//'+window.location.host+reqPath;
 
     // Remove preceeding / from path
     if (reqPath.substr(0, 1) == '/')
         reqPath = reqPath.substring(1);
 
-    // remove trailing slash from meta file        
+    // remove trailing slash from meta file
+    var File = path;
     if (path.substring(path.length - 1) == '/')
-        path = path.substring(0, path.length - 1);
+        File = path.substring(0, path.length - 1);
         
     // Build the full .meta path URI
-    if (path == '') {
+    if (path == '/') {
         var metaURI = metaBase+'.meta';
         var innerRef = metaBase;
     } else if (path.substr(0, 5) != '.meta') {
-        var metaURI = metaBase+'.meta.'+path;
-        var innerRef = '#'+reqPath;
+        var metaURI = metaBase+'.meta.'+File;
+        var innerRef = '#'+path;
     } else {
         var metaURI = metaBase+path;
-        path = reqPath;
+        path = path;
         var innerRef = metaURI;
     }
     // DEBUG
@@ -362,7 +363,7 @@ wac.save = function(elt) {
     // path
     graph.add(graph.sym(innerRef),
                 WAC('accessTo'),
-                graph.sym(metaBase+reqPath));
+                graph.sym(metaBase+path));
                 
     // add allowed users
     if ((users.length > 0) && (users[0].length > 0)) {
@@ -394,7 +395,7 @@ wac.save = function(elt) {
     if (recursive == true) {
         graph.add(graph.sym(innerRef),
                 WAC('defaultForNew'),
-                graph.sym(metaBase+reqPath));
+                graph.sym(metaBase+path));
     }
     // create default rules for the .meta file itself if we create it for the
     // first time

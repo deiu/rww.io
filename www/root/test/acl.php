@@ -7,6 +7,8 @@ class testACL {
     private $_data;
     private $_result;
     private $_error;
+    private $_succeeded=0;
+    private $_failed=0;
 
     function __construct($data=null) {
        
@@ -46,13 +48,20 @@ class testACL {
         return $httpCode;
     }
 
+    function get_succeeded() {
+        return $this->_succeeded;
+    }
+    
+    function get_failed() {
+        return $this->_failed;
+    }   
+
     function post($url) {
         $ch = curl_init();
 
         // set URL and other appropriate options
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_HEADER, 0);
-        curl_setopt($ch, CURLOPT_GET, 1);
         curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: text/turtle'));
         curl_setopt($ch, CURLOPT_POST, 1);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $this->_data);
@@ -76,119 +85,89 @@ class testACL {
 
         return $httpCode;
     }
+    
+    function success($method, $uri) {
+        echo 'Expected: <font color="green">Success: 200</font> / Outcome: ';
+
+        if ($method == "Read") {
+            $code = $this->get($uri);            
+        } else if ($method == "Write") {
+            $code = $this->post($uri);
+        }
+         
+        if ($code == 200) {
+            echo '<font color="green">Success: '.$code.'</font>';
+            $this->_succeeded++;
+        } else {
+            echo '<font color="red">Failed: '.$code.'</font>';
+            $this->_failed++;
+        }
+    }
+    
+    function fail($method, $uri) {
+        echo 'Expected: <font color="green">Failed: 403</font> / Outcome: ';
+
+        if ($method == "Read") {
+            $code = $this->get($uri);            
+        } else if ($method == "Write") {
+            $code = $this->post($uri);
+        }
+         
+        if ($code != 200) {
+            echo '<font color="green">Failed: '.$code.'</font>';
+            $this->_succeeded++;
+        } else {
+            echo '<font color="red">Success: '.$code.'</font>';
+            $this->_failed++;
+        }
+    }
 }
 
-$success = 0;
-$failed = 0;
 
-// URIs
-$get_pub_uri_root = 'https://deiu.example.com/';
-$get_pub_uri = 'https://deiu.example.com/test/public/';
-$get_prv_uri = 'https://deiu.example.com/test/private/';
-$get_own_uri = 'https://deiu.example.com/test/acl-owned/';
 
-$post_pub_uri = 'https://deiu.example.com/test/public/test.ttl';
-$post_prv_uri = 'https://deiu.example.com/test/private/test.ttl';
-$post_own_uri = 'https://deiu.example.com/test/acl-owned/test.ttl';
 
 $test = new testACL();
 
-/*
+// For each method: uri => expected outcome
+$methods = array('Read' => array (
+                    'https://deiu.example.com/' => 'pass',
+                    'https://deiu.example.com/test/owned/' => 'pass',
+                    'https://deiu.example.com/test/private/' => 'fail',
+                    'https://deiu.example.com/test/public/' => 'pass',
+                    'https://deiu.example.com/test/public-read/' => 'pass',
+                    'https://deiu.example.com/test/recursive-read/dir/file' => 'pass',
+                    'https://deiu.example.com/test/recursive-write/dir/file' => 'fail',
+                    ),
+                'Write' => array(
+                    'https://deiu.example.com/test.ttl' => 'fail',
+                    'https://deiu.example.com/test/owned/test.ttl' => 'pass',
+                    'https://deiu.example.com/test/public/test.ttl' => 'fail', // defaultForNew only applies for read 
+                    'https://deiu.example.com/test/private/test.ttl' => 'fail',
+                    'https://deiu.example.com/test/public-read/test.ttl' => 'fail',
+                    'https://deiu.example.com/test/recursive-read/dir/test.ttl' => 'fail',
+                    'https://deiu.example.com/test/recursive-write/dir/test.ttl' => 'pass',
+                    )
+                );
 
-// ----- public GET (root) ----- 
-echo "<h3>Testing GET for PUBLIC ROOT at: ".$get_pub_uri_root."</h3>";
-echo '<p>Expected: <font color="green">Success: 200</font> / Outcome: ';
-$code = $test->get($get_pub_uri_root);
-if ($code == 200) {
-    echo '<font color="green">Success: '.$code.'</font>';
-    $success++;
-} else {
-    echo '<font color="red">Failed: '.$code.'</font>';
-    $failed++;
+foreach ($methods as $method => $uris) {
+    $i=0;
+    foreach ($uris as $uri => $expected) {
+        $i++;
+        echo "<h3>Test ".$i." for ".$method."</h3>";
+        echo "<b>Testing ".$method." for: ".$uri."</b><br/>";
+        if ($expected == 'pass')
+            $test->success($method, $uri);
+        else if ($expected == 'fail')
+            $test->fail($method, $uri);
+    }
 }
-echo "</p>";
 
-// ----- public GET ----- 
-echo "<h3>Testing GET for PUBLIC at: ".$get_pub_uri."</h3>";
-echo '<p>Expected: <font color="green">Success: 200</font> / Outcome: ';
-$code = $test->get($get_pub_uri);
-if ($code == 200) {
-    echo '<font color="green">Success: '.$code.'</font>';
-    $success++;
-} else {
-    echo '<font color="red">Failed: '.$code.'</font>';
-    $failed++;
-}
-echo "</p>";
 
-// ----- protected GET ----- 
-echo "<h3>Testing GET for PRIVATE at: ".$get_prv_uri."</h3>";
-echo '<p>Expected: <font color="green">Failed: 403</font> / Outcome: ';
-$code = $test->get($get_prv_uri);
-if ($code != 200) {
-    echo '<font color="green">Failed: 403</font>';
-    $success++;
-} else {
-    echo '<font color="red">Success - '.$code.'</font>';
-    $failed++;
-}
-echo "</p>";
-
-// ----- owned GET ----- 
-echo "<h3>Testing GET for OWNED at: ".$get_own_uri."</h3>";
-echo '<p>Expected: <font color="green">Success: 200</font> / Outcome: ';
-$code = $test->get($get_own_uri);
-if ($code == 200) {
-    echo '<font color="green">Success: 200</font>';
-    $success++;
-} else {
-    echo '<font color="red">Failed - '.$code.'</font>';
-    $failed++;
-}
-echo "</p>";
-
-// ----- public POST ----- 
-echo "<h3>Testing POST for PUBLIC at: ".$post_pub_uri."</h3>";
-echo '<p>Expected: <font color="green">Success: 200</font> / Outcome: ';
-$code = $test->post($post_pub_uri);
-if ($code == 200) {
-    echo '<font color="green">Success: '.$code.'</font>';
-    $success++;
-} else {
-    echo '<font color="red">Failed: '.$code.'</font>';
-    $failed++;
-}
-echo "</p>";
-
-// ----- protected POST ----- 
-echo "<h3>Testing POST for PRIVATE at: ".$post_prv_uri."</h3>";
-echo '<p>Expected: <font color="green">Failed: 403</font> / Outcome: ';
-$code = $test->post($post_prv_uri);
-if ($code != 200) {
-    echo '<font color="green">Failed: 403</font>';
-    $success++;
-} else {
-    echo '<font color="red">Success: '.$code.'</font>';
-    $failed++;
-}
-echo "</p>";
-
-*/
-// ----- owned POST ----- 
-echo "<h3>Testing POST for OWNED at: ".$post_own_uri."</h3>";
-echo '<p>Expected: <font color="green">Success: 200</font> / Outcome: ';
-$code = $test->post($post_own_uri);
-if ($code == 200) {
-    echo '<font color="green">Success: 200</font>';
-    $success++;
-} else {
-    echo '<font color="red">Failed: '.$code.'</font>';
-    $failed++;
-}
-echo "</p>";
-
-$total = $success + $failed;
-echo '<p>Total tests: <b>'.$total.'</b> | Failed tests: <font color="red"><b>'.$failed.'</b></font></p>';
+$total = $test->get_succeeded() + $test->get_failed();
+echo '<p>Total tests: <b>'.$total.
+    '</b> | Successful tests: <font color="green"><b>'.$test->get_succeeded().
+    '</b></font> | Failed tests: <font color="red"><b>'.$test->get_failed().
+    '</b></font></p>';
 
 
 
