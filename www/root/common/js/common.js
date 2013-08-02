@@ -269,6 +269,13 @@ wac.put = function(uri, data, refresh) {
         onSuccess: function() {
             if (refresh == true)
                 window.location.reload(true);
+        },
+        onFailure: function() {
+            var msg = 'Access denied';
+            console.log(msg);
+                        
+            alert(msg, 'error');
+            window.setTimeout("alert()", 2000);
         }
     });
 }
@@ -281,6 +288,13 @@ wac.post = function(uri, data, refresh) {
         onSuccess: function() {
             if (refresh == true)
                 window.location.reload(true);
+        },
+        onFailure: function() {
+            var msg = 'Access denied';
+            console.log(msg);
+                        
+            alert(msg, 'error');
+            window.setTimeout("alert()", 2000);
         }
     });
 }
@@ -536,37 +550,69 @@ cloud.get = function(path) {
     });
 }
 cloud.mkdir = function(path) {
-    new HTTP(this.request_url+path, { method: 'mkcol', onSuccess: function() {
-        window.location.reload();
-    }});
+    new HTTP(this.request_url+path, { 
+        method: 'mkcol',
+        onSuccess: function() {
+            window.location.reload();
+        },
+        onFailure: function() {
+            var msg = 'Access denied';
+            console.log(msg);
+                        
+            alert(msg, 'error');
+            window.setTimeout("alert()", 2000);
+        }
+    });
 }
 cloud.put = function(path, data, type) {
     if (!type) type = 'text/turtle';
-    new HTTP(this.request_url+path, { method: 'put', body: data, requestHeaders: {'Content-Type': type}, onSuccess: function() {
-        window.location.reload();
-    }});
+    new HTTP(this.request_url+path, {
+        method: 'put',
+        body: data,
+        requestHeaders: {'Content-Type': type},
+        onSuccess: function() {
+            window.location.reload();
+        },
+        onFailure: function() {
+            var msg = 'Access denied';
+            console.log(msg);
+                        
+            alert(msg, 'error');
+            window.setTimeout("alert()", 2000);
+        }
+    });
 }
 cloud.rm = function(path) {
     // also removes the corresponding .meta file if it exists
     var url = this.request_url;
     console.log('url='+url+' / path='+path);
-    new HTTP(url+path, { method: 'delete', onSuccess: function() {
-        if (path.substr(0, 5) != '.meta') {
-            // remove trailing slash
-            if (path.substring(path.length - 1) == '/')
-                path = path.substring(0, path.length - 1);
-            // remove the .meta file
-            new HTTP(url+'.meta.'+path, { method: 'delete', onSuccess: function() {                
-                    window.location.reload();
-                }, onFailure: function() {
-                    // refresh anyway
-                    window.location.reload(); 
-                }
-            });
-        } else {
-            window.location.reload();
+    new HTTP(url+path, {
+        method: 'delete',
+        onSuccess: function() {
+            if (path.substr(0, 5) != '.meta') {
+                // remove trailing slash
+                if (path.substring(path.length - 1) == '/')
+                    path = path.substring(0, path.length - 1);
+                // remove the .meta file
+                new HTTP(url+'.meta.'+path, { method: 'delete', onSuccess: function() {                
+                        window.location.reload();
+                    }, onFailure: function() {
+                        // refresh anyway
+                        window.location.reload(); 
+                    }
+                });
+            } else {
+                window.location.reload();
+            }
+        },
+        onFailure: function() {
+            var msg = 'Access denied';
+            console.log(msg);
+
+            alert(msg, 'error');
+            window.setTimeout("alert()", 2000);
         }
-    }});
+    });
 }
 cloud.edit = function(path) {
     $('editorpath').value = '';
