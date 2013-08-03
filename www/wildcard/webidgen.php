@@ -3,7 +3,7 @@
 // Prepare the request
 $name = (isset($_POST['name']))?$_POST['name']:'Anonymous';
 if (isset($_POST['path'])) {
-    $path = $_POST['path'];
+    $path = (substr($_POST['path'], 0, 1) == '/')?substr($_POST['path'], 1):$_POST['path'];
     // Exit if we don't have a #
     if (strpos($path, '#') === false) // missing # 
         die("You must at least provide a # fragment. For example: #me or #public.");
@@ -13,15 +13,26 @@ if (isset($_POST['path'])) {
     $profile = $path_frag[0];
     $hash = $path_frag[1];
 
-    if (file_exists($_filename.'/'.$profile) === true)
+    // rebuild path for the profile document
+    $webid_file = $_ENV['CLOUD_DATA'].'/'.$_SERVER['SERVER_NAME'].'/'.$profile;
+
+    // do not overwrite existing profile document
+    if (file_exists($webid_file) === true) {
         die('You must pick a different identifier. <strong>'.
            $path.'</strong> already exists in the current directory!');
+    } else {           
+       // check if the root dir exists and create it (recursively) if it doesn't
+        if (!mkdir(dirname($webid_file), 0755, true))
+            die('Cannot create directory, please check permissions.');
+    }
 } else {
     die('You need to provide a preferred identifier.');
 }
+
+
 $email = $_POST['email'];
 $spkac = str_replace(str_split("\n\r"), '', $_POST['SPKAC']);
-$webid = $_base.$path;
+$webid = $BASE.'/'.$path;
 
 $cert_cmd = 'python ../../py/pki.py '.
                 " -s '$spkac'" .
@@ -42,34 +53,37 @@ $modulus = $output[1];
 /* --- Profile --- */
 
 // Write the new profile to disk
-$document = new Graph('', $_filename.$profile, '', $_base.$profile);
-if (!$document) { return false; }
+$document = new Graph('', $webid_file, '', $BASE.'/'.$profile);
+if (!$document) {
+    echo "Cannot create a new graph!";
+    exit;
+}
 
 // add a PrimaryTopic
-$document->append_objects($_base.'/'.$profile,
+$document->append_objects($BASE.'/'.$profile,
         'http://www.w3.org/1999/02/22-rdf-syntax-ns#type',
          array(array('type'=>'uri', 'value'=>'http://xmlns.com/foaf/0.1/PersonalProfileDocument')));
-$document->append_objects($_base.'/'.$profile,
+$document->append_objects($BASE.'/'.$profile,
         'http://xmlns.com/foaf/0.1/primaryTopic',
          array(array('type'=>'uri', 'value'=>$_base.'/'.$path)));
  
 // add a foaf:Person
-$document->append_objects($_base.'/'.$path,
+$document->append_objects($webid,
         'http://www.w3.org/1999/02/22-rdf-syntax-ns#type',
         array(array('type'=>'uri', 'value'=>'http://xmlns.com/foaf/0.1/Person')));
 // add name
-$document->append_objects($_base.'/'.$path,
+$document->append_objects($webid,
         'http://xmlns.com/foaf/0.1/name',
         array(array('type'=>'literal', 'value'=>$name)));
 // add mbox if we have one
 if (strlen($email) > 0) {
-    $document->append_objects($_base.'/'.$path,
+    $document->append_objects($webid,
             'http://xmlns.com/foaf/0.1/mbox',
             array(array('type'=>'uri', 'value'=>'mailto:'.$email)));
 }
 
 // add modulus and exponent as bnode
-$document->append_objects($_base.'/'.$path,
+$document->append_objects($webid,
         'http://www.w3.org/ns/auth/cert#key',
         array(array('type'=>'bnode', 'value'=>'_:bnode1')));
 $document->append_objects('_:bnode1',

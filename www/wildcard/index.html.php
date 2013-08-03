@@ -19,7 +19,7 @@ if ($_options->editui) {
 <table id="webid-gen" style="display:none;">
     <form method="POST" action="">
         <tr><td><input type="text" name="name" size="40" class="required" placeholder="full name..."></td></tr>
-        <tr><td><input type="text" name="path" size="40" value="card#me" class="required"></td></tr>
+        <tr><td><input type="text" name="path" size="40" value="/profile/card#me" class="required"></td></tr>
         <tr><td><input type="email" name="email" size="40" placeholder="recovery email..."></td></tr>
         <tr class="keygen" hidden><td>Key size<br /><keygen name="SPKAC" challenge="randomchars" keytype="rsa"></td></tr>
         <tr><td><button type="submit" onclick="hideWebID()">Create WebID</button>
