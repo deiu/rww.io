@@ -43,7 +43,7 @@ if (isset($_FILES["image"])) {
     // Check if the user uploaded a new picture
     if ((isset($_FILES['image'])) && ($_FILES['image']['error'] == 0)) {
         // Allow only pictures with a size smaller than 5MB
-        if ($_FILES['image']['size'] <= 5000000) {
+        if ($_FILES['image']['size'] <= IMAGE_SIZE) {
             // Using getimagesize() to avoid fake mime types 
             $image_info = exif_imagetype($_FILES['image']['tmp_name']);
             switch ($image_info) {
