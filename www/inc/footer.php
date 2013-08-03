@@ -39,9 +39,15 @@ $src = "https://github.com/deiu/rww.io/tree/master/$src";
 ?>
 <div class="footer">
 <span class="left">
-    Powered by <a href="https://github.com/deiu/rww.io" target="_blank">RWW.IO</a> | <a href="http://<?=ROOT_DOMAIN?>/help">Help?</a> | 
+    Powered by <a href="https://github.com/deiu/rww.io" target="_blank">RWW.IO</a> | <a href="http://<?=ROOT_DOMAIN?>/help">Help?</a> | Show your support
 </span> 
-<span class="left"><a href="http://flattr.com/thing/1748916/ReadWriteWeb-cloud-for-Linked-Data-" target="_blank"><img src="http://api.flattr.com/button/flattr-badge-large.png" alt="Flattr this" title="Flattr this" border="0" /></a></span>
+<span class="left">
+    <a href="http://flattr.com/thing/1748916/" target="_blank"><img src="/common/images/flattr.png" alt="Flattr this project" title="Flattr this project" border="0" /></a>
+</span>
+<span class="left">
+    <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=YCG7HFRPTVD4A" target="_blank"><img src="/common/images/paypal.png" alt="Paypal donation" title="Paypal donation" border="0" /></a>
+</span>
+
 <span id="codeID" class="align-right" style="display:none;">
  request completed in <?=substr($time, 0, 6)?>s
 <?=$sparql_n<1?'':sprintf('with %d quer%s in %ss', $sparql_n, $sparql_n>1?'ies':'y', substr($sparql_t, 0, 6))?> 
