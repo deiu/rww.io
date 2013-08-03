@@ -59,7 +59,7 @@ if ($_options->editui) {
     </p>
     Allow access for:
     <br/>
-    <small>(comma separated mailto: or http:// addresses OR leave blank for everyone)</small>
+    <small>(comma separated WebID addresses OR leave blank for everyone)</small>
     <br/>
     <textarea id="wac-users" name="users" cols="5" rows="5"></textarea>
     <br/>
@@ -90,6 +90,7 @@ if ($_options->editui) {
         <div class="left cell inline-block"><img id="cancel-image" class="pointer newitem" src="/common/images/cancel.png" title="Cancel" style="display:none;" onclick="hideImage();" /></div>
         </div>
     </div>
+    
     <div class="meta align-right">
         <?php if ($_showMetaFiles == true) { ?>
         <a class="pointer" onclick="setCookie('showMetaFiles', '0', '1');">Hide</a>
