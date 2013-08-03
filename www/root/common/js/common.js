@@ -542,9 +542,21 @@ wac.save = function(elt) {
 cloud = {};
 cloud.append = function(path, data) {
     data = data || ''
-    new HTTP(this.request_url+path, { method: 'post', body: data, contentType: 'text/turtle', onSuccess: function() {
-        window.location.reload();
-    }});
+    new HTTP(this.request_url+path, { 
+        method: 'post',
+        body: data,
+        contentType: 'text/turtle',
+        onSuccess: function() {
+            window.location.reload();
+        },
+        onFailure: function() {
+            var msg = 'Access denied';
+            console.log(msg);
+                        
+            alert(msg, 'error');
+            window.setTimeout("alert()", 2000);
+        }
+    });
 }
 cloud.get = function(path) {
     var lastContentType = $F('editorType');
