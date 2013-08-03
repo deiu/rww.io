@@ -63,10 +63,6 @@ function webid_getinfo($uri) {
     if (isset($q['results']) && isset($q['results']['bindings']))
         $r = $q['results']['bindings']; 
 
-    openlog('RWW.IO', LOG_PID | LOG_ODELAY,LOG_LOCAL4);
-    syslog(LOG_INFO, print_r($r[0], true));
-    closelog();
-
     if (is_array($r[0])) {
         $name = $r[0]['name']['value'];
         $pic = $r[0]['pic']['value'];
