@@ -53,12 +53,30 @@ function webid_verify() {
 
 function webid_getinfo($uri) {
     $g = new Graph('uri', $uri, '', $uri);
-    $q = $g->SELECT(sprintf("PREFIX : <http://xmlns.com/foaf/0.1/> SELECT ?name ?pic FROM <%s> WHERE { ?s :name ?name . ?s :img ?pic; .}", $uri));
+    $q = $g->SELECT(sprintf("PREFIX : <http://xmlns.com/foaf/0.1/>
+                     SELECT ?name ?pic ?depic FROM <%s> WHERE { 
+                        ?s :name ?name . 
+                        OPTIONAL { ?s :img ?pic } .
+                        OPTIONAL { ?s :depiction ?depic } .
+                    }", $uri));
 
     if (isset($q['results']) && isset($q['results']['bindings']))
         $r = $q['results']['bindings']; 
-    if (is_array($r))
-        return array('name' => $r[0]['name']['value'], 'pic'  => $r[0]['pic']['value']);
-    else
-        return array('name' => '', 'pic' => '');
+
+    openlog('RWW.IO', LOG_PID | LOG_ODELAY,LOG_LOCAL4);
+    syslog(LOG_INFO, print_r($r[0], true));
+    closelog();
+
+    if (is_array($r[0])) {
+        $name = $r[0]['name']['value'];
+        $pic = $r[0]['pic']['value'];
+        $depic = $r[0]['depic']['value'];
+        if ((strlen($pic) == 0) && (strlen($depic) > 0))
+            $pic = $depic;
+    } else {
+        $name = 'Unknown';
+        $pic = '/common/images/nouser.png';
+    }
+
+    return array('name' => $name, 'pic' => $pic);
 }
