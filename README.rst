@@ -11,7 +11,8 @@ RWW.IO is live at http://rww.io/
 Installation 
 ------------
 
-:: 
+::
+
     git clone https://github.com/deiu/rww.io.git
 
 
@@ -20,6 +21,7 @@ Installation
 
 - Requires librdf for php
 ::
+
     sudo apt-get install php5-librdf librdf0 librdf0-dev raptor2-utils libraptor2-dev libraptor2-0
 
 - You need to create a the default storage locations for your users. If you installed RWW under /var/www/rww.io/, then you have to manually create the /data/ dir under that path (/var/www/rww.io/data/). Make sure the /data/ dir is writable by the web server user!
