@@ -91,6 +91,7 @@ Support and donations
 
 You can help with the costs of running the website at http://rww.io/ by donating through the following links:
 
+- Bitcoin: https://coinbase.com/checkouts/ed957952a941abf15d50696973fa4b92
 - Paypal: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=YCG7HFRPTVD4A
 - Flattr: https://flattr.com/thing/1748916/
 
