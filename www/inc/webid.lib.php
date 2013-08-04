@@ -55,7 +55,8 @@ function webid_getinfo($uri) {
     $g = new Graph('uri', $uri, '', $uri);
     $q = $g->SELECT(sprintf("PREFIX : <http://xmlns.com/foaf/0.1/>
                      SELECT ?name ?pic ?depic FROM <%s> WHERE { 
-                        ?s :name ?name . 
+                        ?s a :Person .
+                        OPTIONAL { ?s :name ?name } . 
                         OPTIONAL { ?s :img ?pic } .
                         OPTIONAL { ?s :depiction ?depic } .
                     }", $uri));
@@ -67,10 +68,14 @@ function webid_getinfo($uri) {
         $name = $r[0]['name']['value'];
         $pic = $r[0]['pic']['value'];
         $depic = $r[0]['depic']['value'];
+
+        if (strlen($name) == 0)
+            $name = 'Anonymous';
+        
         if ((strlen($pic) == 0) && (strlen($depic) > 0))
             $pic = $depic;
     } else {
-        $name = 'Unknown';
+        $name = '';
         $pic = '/common/images/nouser.png';
     }
 
