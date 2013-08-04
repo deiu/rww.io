@@ -91,7 +91,7 @@ $quota = display_quota($_root);
         <div class="left cell inline-block"><input id="create-item" class="item" type="text" name="" style="display:none;" onkeypress="cloudListen(event)" /></div>
         <div class="left cell inline-block"><img id="submit-item" class="pointer newitem" src="/common/images/ok.png" title="Create" style="display:none;" onclick="createItem();" /></div>
         <div class="left cell inline-block"><img id="cancel-item" class="pointer newitem" src="/common/images/cancel.png" title="Cancel" style="display:none;" onclick="hideCloud();" /></div>
-        <div class="left cell inline-block"><form name="imageform" method="post" enctype="multipart/form-data"><input type="file" id="addimage" name="image" style="display:none;" /></form></div>
+        <div class="left cell inline-block"><form id="imageform" name="imageform" method="post" enctype="multipart/form-data"><input type="file" id="addimage" name="image" style="display:none;" /></form></div>
         <div class="left cell inline-block"><img id="submit-image" class="pointer newitem" src="/common/images/upload.png" title="Upload" style="display:none;" onclick="submitImage();" /></div>
         <div class="left cell inline-block"><img id="cancel-image" class="pointer newitem" src="/common/images/cancel.png" title="Cancel" style="display:none;" onclick="hideImage();" /></div>
         </div>
@@ -169,7 +169,12 @@ foreach($listing as $item) {
     if ($item_ext == 'sqlite')
         echo ' (sqlite)';
     echo '</td>';
-    echo '<td>'.(!$is_dir?filesize("$_filename/$item"):'-').'</td>';
+    echo '<td>';
+        if (!$is_dir)
+            echo human_filesize(filesize("$_filename/$item"));
+        else
+            echo '-';
+    echo '</td>';
     echo '<td>';
     if ($is_dir) {
         echo ($item_elt != '/')?'Directory':'Root';
@@ -229,6 +234,7 @@ function hideWebID() {
 }
 
 function showImage() {
+    hideCloud();
     $('addimage').show();
     $('submit-image').show();
     $('cancel-image').show();
@@ -271,6 +277,7 @@ function showCloudNew(type) {
     else
         var text = 'directory name...';
 
+    hideImage();
     $('create-item').setAttribute('name', type);
     $('create-item').setAttribute('placeholder', text);    
     $('create-item').show();

@@ -6,7 +6,6 @@
  */
 
 require_once('config.php');
-//phpinfo(INFO_VARIABLES);
 
 // base dependencies
 require_once('util.lib.php');
@@ -49,7 +48,7 @@ else {
     function librdf_php_last_log_message(){}
 }
 
-date_default_timezone_set('America/New_York');
+date_default_timezone_set('GMT');
 extract($_GET, EXTR_PREFIX_ALL, 'i');
 extract($_POST, EXTR_PREFIX_ALL, 'i');
 
