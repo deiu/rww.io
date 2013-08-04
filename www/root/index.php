@@ -17,7 +17,7 @@ defined('HEADER') || include_once('header.php');
 
 <div class="getaccount center width-1024">
     <div class="padded-l-1">
-        <h3>To get your own dedicated storage space, just follow these steps:</h3>
+        <h3>To get your own dedicated storage space (limited to 10 MB for now), just follow these steps:</h3>
         <ol>
             <li>Check if your domain name is available.</li>
             <li>Once on your domain, either login with your WebID or create a new one. Tip: you can even host it on your own domain.</li>
