@@ -176,6 +176,7 @@ a.link, a.link:visited{
     color: gray;
     text-shadow: 1px 1px 1px #ddd;
 }
+.footer img { padding-left: 5px; }
 
 .button-new {
     background: #258cd1;
