@@ -106,8 +106,7 @@ $quota = display_quota($_root);
         <span> .meta files?</span>
     </div>
     <?php if ($user_link) { ?>
-        <div class="quota"><?=$quota?></div>    
-        <div class="right top-5">Quota</div>
+        <div class="right top-5"><?=$quota?></div>
     <?php } ?>
 
 </div>

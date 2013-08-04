@@ -322,12 +322,9 @@ input.account-input {
 .quota {
     width: 100px;
     height: 15px;
-    margin-top: 3px;
-    margin-left: 0.5em;
     margin-right: 1em;
     border: 1px solid #ccc;
     position: relative;
-    float: right;
 }
 
 .green {

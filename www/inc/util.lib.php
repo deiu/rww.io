@@ -50,10 +50,11 @@ function display_quota($dir) {
     $width = ($used *100) / $total;
     $width = number_format($width, 2);
 
-    $ret = '<div class="meter '.$bg.'" style="width:'.$width.'%;" title="Used '.
-            number_format($used, 3).' MB / '.
+    $ret = '<div class="quota" title="Quota: used '.
+            number_format($used, 2).' MB / '.
             number_format($total).' MB">'.
-            '</div>';
+    $ret .= '   <div class="meter '.$bg.'" style="width:'.$width.'%;"></div>';
+    $ret .= '</div>';
     
     return $ret;
 }
