@@ -12,15 +12,12 @@ if (empty($_user))
     httpStatusExit(401, 'Unauthorized');
 
 // Web Access Control
-if ($_wac->can('Write') == false) {
-    // debug
-    if (DEBUG) {
-        openlog('RWW.IO', LOG_PID | LOG_ODELAY,LOG_LOCAL4);
-        syslog(LOG_INFO, $_wac->getReason());
-        closelog();
-    }
+if ($_wac->can('Write') == false)
     httpStatusExit(403, 'Forbidden');
-}
+
+// check quota
+if (check_quota($_root, $_SERVER["CONTENT_LENGTH"]) == false)
+    httpStatusExit(507, 'Insufficient Storage');
 
 
 // action

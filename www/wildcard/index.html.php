@@ -12,6 +12,9 @@ $TITLE = 'Index of '.$_request_path;
 defined('HEADER') || include_once('header.php');
 if (!isset($_options->editui)) $_options->editui = true;
 if ($_options->editui) {
+
+$quota = display_quota($_root);
+
 ?>
 
 <div id="container">
@@ -38,6 +41,7 @@ if ($_options->editui) {
         <option>application/json</option>
         <option>application/json-ld</option>
         <option disabled="disabled">----</option>
+        <option>text/txt</option>
         <option>text/css</option>
         <option>text/html</option>
         <option>text/javascript</option>
@@ -48,19 +52,21 @@ if ($_options->editui) {
 </div>
 
 <div id="wac-editor" class="wac-editor" style="display: none;">
-    <h3>Resource name: <b><span id="wac-path" name="wac-path"></span></b>
-    <br/><small>Path: <b><span id="wac-reqpath" name="wac-reqpath"></span></b></small></h3>
+    <span id="wac-reqpath" name="wac-reqpath" style="display: none;"></span>
+    <h3>Resource name: <b><span id="wac-path" name="wac-path"></span></b></h3>
     <input type="hidden" id="wac-exists" value="0" />
     <input type="hidden" id="wac-owner" value="<?=$_user?>" />
-    <p>
-        <input type="checkbox" id="wac-read" name="Read"> Read
-        <input type="checkbox" id="wac-write" name="Write"> Write
-        <input type="checkbox" id="wac-recursive" name="Recursive"> Default for new files?
-    </p>
-    Allow access for:
-    <br/>
-    <small>(comma separated WebID addresses OR leave blank for everyone)</small>
-    <br/>
+    <div>
+        <div class="left"><input type="checkbox" id="wac-read" name="Read"> Read </div>
+        <div class="left"><input type="checkbox" id="wac-write" name="Write"> Write </div>
+        <div id="recursive" class="left" style="display: none;"><input type="checkbox" id="wac-recursive" name="Recursive"> Default for new files?</div>
+    </div>
+    <br />
+    <br />
+    <div>
+        Allow access for:<br />
+        <small>(comma separated WebID addresses OR leave blank for everyone)</small>
+    </div>    
     <textarea id="wac-users" name="users" cols="5" rows="5"></textarea>
     <br/>
     <div class="right actions"><a href="#" class="button button-rounded button-flat-caution" onclick="wac.hide()"><i class="icon-remove"></i> Cancel</a></div>
@@ -90,8 +96,8 @@ if ($_options->editui) {
         <div class="left cell inline-block"><img id="cancel-image" class="pointer newitem" src="/common/images/cancel.png" title="Cancel" style="display:none;" onclick="hideImage();" /></div>
         </div>
     </div>
-    
-    <div class="meta align-right">
+
+    <div class="meta right top-5">
         <?php if ($_showMetaFiles == true) { ?>
         <a class="pointer" onclick="setCookie('showMetaFiles', '0', '1');">Hide</a>
         <?php } else { ?>
@@ -99,6 +105,10 @@ if ($_options->editui) {
         <?php } ?>
         <span> .meta files?</span>
     </div>
+    <div class="quota"><?=$quota?></div>    
+    <div class="right top-5">Quota</div>
+
+
 </div>
 
 <table id="index" class="files center box-shadow">

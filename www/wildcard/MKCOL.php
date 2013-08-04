@@ -11,15 +11,12 @@ require_once('runtime.php');
 if (empty($_user))
     httpStatusExit(401, 'Unauthorized');
 
-if ($_wac->can('Write') == false) {
-    // debug
-    if (DEBUG) {
-        openlog('RWW.IO', LOG_PID | LOG_ODELAY,LOG_LOCAL4);
-        syslog(LOG_INFO, $_wac->getReason());
-        closelog();
-    }
+if ($_wac->can('Write') == false)
     httpStatusExit(403, 'Forbidden');
-}
+
+// check quota (avoids making lots of dirs if out of space)
+if (check_quota($_root, 10) == false)
+    httpStatusExit(507, 'Insufficient Storage');
 
 // action
 @mkdir($_filename, 0777, true);

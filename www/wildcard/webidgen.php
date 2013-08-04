@@ -14,7 +14,7 @@ if (isset($_POST['path'])) {
     $hash = $path_frag[1];
 
     // rebuild path for the profile document
-    $webid_file = $_ENV['CLOUD_DATA'].'/'.$_SERVER['SERVER_NAME'].'/'.$profile;
+    $webid_file = $_root.'/'.$profile;
 
     // do not overwrite existing profile document
     if (file_exists($webid_file) === true) {

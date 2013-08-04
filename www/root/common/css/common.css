@@ -9,6 +9,10 @@ hr { background-color: #f2f2f2; width: auto; width: 1024px; min-width: 1024px !i
 .r5 {border-radius: 5px; -moz-border-radius: 5px; -webkit-border-radius:5px; }
 .r7 {border-radius: 7px; -moz-border-radius: 7px; -webkit-border-radius:7px; }
 
+.top-5 {
+    padding-top: 5px;
+}
+
 address { color: gray; }
 #codeID { float: right; color:gray; }
 #codeID a { color: gray; }
@@ -305,7 +309,35 @@ input.account-input {
     height:1px;
 }
 
-.meta td, span {
+.meter {
+    position: relative;
+    width: auto;
+    height:15px;
+}
+
+.quota {
+    width: 100px;
+    height: 15px;
+    margin-top: 3px;
+    margin-left: 0.5em;
+    margin-right: 1em;
+    border: 1px solid #ccc;
+    position: relative;
+    float: right;
+}
+
+.green {
+    background-color: #76EE00;
+}
+.yellow {
+    background-color: #FFD700;
+}
+
+.red {
+    background-color: #FF3030;
+}
+
+.meta span {
     padding-right: 10px;
 }
 

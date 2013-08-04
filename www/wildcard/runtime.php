@@ -39,6 +39,7 @@ if (!isset($_SERVER['SCRIPT_URI']))
     $_SERVER['SCRIPT_URI'] = REQUEST_BASE.$_SERVER['SCRIPT_URL'];
 $_base = $_SERVER['SCRIPT_URI'];
 $_domain = $_SERVER['SERVER_NAME'];
+$_root = $_ENV['CLOUD_DATA'].'/'.$_SERVER['SERVER_NAME'];
 
 // Graph
 $_filebase = $_ENV['CLOUD_DATA'].'/'.$_SERVER['SERVER_NAME'];

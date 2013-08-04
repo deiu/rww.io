@@ -18,18 +18,8 @@ if (empty($_user))
     httpStatusExit(401, 'Unauthorized');
 
 // Web Access Control
-$can = false;
-$can = $_wac->can('Write');
-if (DEBUG) {
-    openlog('RWW.IO', LOG_PID | LOG_ODELAY,LOG_LOCAL4);
-    foreach($_wac->getDebug() as $line)
-        syslog(LOG_INFO, $line);
-    syslog(LOG_INFO, 'Verdict: '.$can.' / '.$_wac->getReason());
-    closelog();
-}
-if ($can == false) {
+if ($_wac->can('Write') == false)
     httpStatusExit(403, 'Forbidden');
-}
 
 // intercept requests for WebID generator
 if (isset($_POST['SPKAC'])) {
@@ -37,6 +27,10 @@ if (isset($_POST['SPKAC'])) {
     // exit required so it can successfully send the certificate
     exit;
 }
+
+// check quota
+if (check_quota($_root, $_SERVER["CONTENT_LENGTH"]) == false)
+    httpStatusExit(507, 'Insufficient Storage');
 
 // intercept requests for images
 if (isset($_FILES["image"])) {

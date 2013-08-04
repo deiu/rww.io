@@ -161,7 +161,7 @@ class WAC {
             
             if (is_file($meta_path)) { 
                 $g = new Graph('', $meta_path, '',$meta_uri);
-                if ($g->size() > 0) {                    
+                if ($g->size() > 0) {                  
                     // specific authorization
                     $q = "PREFIX acl: <http://www.w3.org/ns/auth/acl#>
                           SELECT * WHERE { 

@@ -5,6 +5,53 @@
  * $Id$
  */
 
+// get quota for a dir
+function get_quota($dir) {
+    $get_size = '/usr/bin/du -sk '.$dir."|awk '{ print $1; }'";
+    $used = trim(shell_exec($get_size));
+    $total = DISK_QUOTA * 1000000; // mega to bytes
+    $used = $used * 1000; // kilo to bytes
+    
+    return array('used'=>$used, 'total'=>$total);
+}
+
+// check if the size fits inside the quota
+function check_quota($dir, $size) {
+    $q = get_quota($dir);
+    $a = $q['total'] - $q['used'];
+
+    return ($size <= $a)?true:false;       
+}
+
+// display the quota bar
+function display_quota($dir) {
+    $q = get_quota($dir);
+    $used = $q['used'] / 1000000; // bytes to mega
+    $total = $q['total'] / 1000000; // bytes to mega;
+
+    $medium = $total * (70/100);
+    // at 90% we start to get worried
+    $high = $total * (90/100);
+
+    if ($used <= $medium) 
+        $bg = 'green';
+    else if ($used > $medium && $used <= $high)
+        $bg = 'yellow';
+    else if ($used > $high)
+        $bg = 'red';
+
+    $width = ($used *100) / $total;
+    $width = number_format($width, 2);
+
+    $ret = '<div class="meter '.$bg.'" style="width:'.$width.'%;" title="Used '.
+            number_format($used, 3).' MB / '.
+            number_format($total).' MB">'.
+            '</div>';
+    
+    return $ret;
+}
+
+
 function isMethod($method) { return ($_SERVER['REQUEST_METHOD'] == $method); }
 function isPost() { return isMethod('POST'); }
 function isPostData() {
