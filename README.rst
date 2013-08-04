@@ -72,7 +72,7 @@ Installation
     sudo apt-get install php5-librdf librdf0 librdf0-dev raptor2-utils libraptor2-dev libraptor2-0
     
 
-- You need to create a the default storage locations for your users. If you installed RWW under /var/www/rww.io/, then you have to manually create the /data/ dir under that path (/var/www/rww.io/data/). Make sure the /data/ dir is writable by the web server user!
+- You need to create a default storage location for your users' personal data stores. If you installed RWW.IO under /var/www/rww.io/, then you have to manually create the /data/ directory under that path (/var/www/rww.io/data/). Don't forget to make the /data/ directory writable by the web server user!
 
 
 Documentation
