@@ -22,7 +22,7 @@ defined('HEADER') || include_once('header.php');
             <li>Check if your domain name is available.</li>
             <li>Once on your domain, either login with your WebID or create a new one. Tip: you can even host it on your own domain.</li>
             <li>Do not forget to click on this icon: <img class="actions" src="/common/images/22/acl.png" title="Access Control"> to start protecting your data!</li>
-            <li>Since it is an add-free service, paid entirely from my personal founds and created in my free time, please consider <a href="https://flattr.com/t/1748916" target="_blank" title="Flattr">supporting</a> this project if you like and use it. Thank you!</li>
+            <li>Since it is an add-free service, paid entirely from my personal funds and created in my free time, please consider <a href="https://flattr.com/t/1748916" target="_blank" title="Flattr">supporting</a> this project if you like and use it. Thank you!</li>
         </ol>
     </div>
 
