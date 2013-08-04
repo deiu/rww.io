@@ -237,9 +237,13 @@ wac.get = function(request_path, path) {
 }
 // load permissions and display WAC editor
 wac.edit = function(request_path, path) {
+    var isDir = false;
     var File = path;
-    if (path.substring(path.length - 1) == '/')
+    if (path.substring(path.length - 1) == '/') {
+        // we have a dir -> remove the recursive option from the editor
+        isDir = true;
         File = path.substring(0, path.length - 1);
+    }
     var metaBase = window.location.protocol+'//'+window.location.host+window.location.pathname;
     // if the resource in question is not the .meta file itself
     if (File.substr(0, 5) != '.meta') {
@@ -267,13 +271,27 @@ wac.edit = function(request_path, path) {
             // display the editor
             wac.get(request_path, path);
             $('wac-editor').show();
+            if (isDir)
+                $('recursive').show();
+            else
+                $('recursive').hide();
         },
-        onFailure: function() {
-            var msg = 'Access denied';
-            console.log(msg);
+        onFailure: function(r) {
+            var status = r.status.toString();
+            if (status != '404') { 
+                var msg = 'Access denied';
+                console.log(msg);
                         
-            alert(msg, 'error');
-            window.setTimeout("alert()", 2000);
+                alert(msg, 'error');
+                window.setTimeout("alert()", 2000);
+            } else {
+                wac.get(request_path, path);
+                $('wac-editor').show();
+                if (isDir)
+                    $('recursive').show();
+                else
+                    $('recursive').hide();
+            }
         }
     });
 }
