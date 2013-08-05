@@ -107,7 +107,7 @@ function deleteCookie(name) {
     setCookie(name,"",-1);
 }
 
-function alert (message, cls) {
+function notify (message, cls) {
     if (message) {
         $('alertbody').update(message);
         if (cls)
@@ -282,8 +282,8 @@ wac.edit = function(request_path, path) {
                 var msg = 'Access denied';
                 console.log(msg);
                         
-                alert(msg, 'error');
-                window.setTimeout("alert()", 2000);
+                notify(msg, 'error');
+                window.setTimeout("notify()", 2000);
             } else {
                 wac.get(request_path, path);
                 $('wac-editor').show();
@@ -314,8 +314,8 @@ wac.put = function(uri, data, refresh) {
             var msg = 'Access denied';
             console.log(msg);
                         
-            alert(msg, 'error');
-            window.setTimeout("alert()", 2000);
+            notify(msg, 'error');
+            window.setTimeout("notify()", 2000);
         }
     });
 }
@@ -333,8 +333,8 @@ wac.post = function(uri, data, refresh) {
             var msg = 'Access denied';
             console.log(msg);
                         
-            alert(msg, 'error');
-            window.setTimeout("alert()", 2000);
+            notify(msg, 'error');
+            window.setTimeout("notify()", 2000);
         }
     });
 }
@@ -596,8 +596,8 @@ cloud.get = function(path) {
             var msg = 'Access denied';
             console.log(msg);
                         
-            alert(msg, 'error');
-            window.setTimeout("alert()", 2000);
+            notify(msg, 'error');
+            window.setTimeout("notify()", 2000);
         }
     });
 }
@@ -629,8 +629,8 @@ cloud.put = function(path, data, type) {
             var msg = 'Access denied';
             console.log(msg);
                         
-            alert(msg, 'error');
-            window.setTimeout("alert()", 2000);
+            notify(msg, 'error');
+            window.setTimeout("notify()", 2000);
         }
     });
 }
@@ -661,8 +661,8 @@ cloud.rm = function(path) {
             var msg = 'Access denied';
             console.log(msg);
 
-            alert(msg, 'error');
-            window.setTimeout("alert()", 2000);
+            notify(msg, 'error');
+            window.setTimeout("notify()", 2000);
         }
     });
 }
@@ -726,8 +726,8 @@ Ajax.Responders.register({
         }
         // DEBUG
         console.log(msg);
-        alert(method+' '+msg, cls);
-        window.setTimeout("alert()", 3000);
+        notify(method+' '+msg, cls);
+        window.setTimeout("notify()", 3000);
     },
 });
 
