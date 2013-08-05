@@ -8,14 +8,11 @@
 
 // check if a dir is empty
 function is_dir_empty($dir) {
-  if (!is_readable($dir)) return null; 
-  $handle = opendir($dir);
-  while (false !== ($entry = readdir($handle))) {
-    if ($entry != "." && $entry != "..") {
-      return false;
-    }
-  }
-  return true;
+    $files = scandir($dir);
+    if (sizeof($files) > 2)
+        return false;
+    else
+        return true;
 }
 
 // display the file sizes in a human readable format
