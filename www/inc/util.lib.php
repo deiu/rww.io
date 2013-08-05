@@ -5,6 +5,17 @@
  * $Id$
  */
 
+
+// check if a dir is empty
+function is_dir_empty($dir) {
+    $files = scandir($dir);
+    if (sizeof($files) > 2)
+        return false;
+    else
+        return true;
+}
+
+// display the file sizes in a human readable format
 function human_filesize($bytes, $decimals=2) {
     $sz = 'BKMGTP';
     $factor = floor((strlen($bytes) - 1) / 3);
