@@ -5,6 +5,20 @@
  * $Id$
  */
 
+
+// check if a dir is empty
+function is_dir_empty($dir) {
+  if (!is_readable($dir)) return NULL; 
+  $handle = opendir($dir);
+  while (false !== ($entry = readdir($handle))) {
+    if ($entry != "." && $entry != "..") {
+      return FALSE;
+    }
+  }
+  return TRUE;
+}
+
+// display the file sizes in a human readable format
 function human_filesize($bytes, $decimals=2) {
     $sz = 'BKMGTP';
     $factor = floor((strlen($bytes) - 1) / 3);
