@@ -89,12 +89,6 @@ if (is_dir($_filename) || substr($_filename,-1) == '/') {
         header("Location: $_base/");
         exit;
     } elseif (!isset($_output) || empty($_output) || $_output == 'html') {
-        foreach (array('index.html') as $index) {
-            if (file_exists("$_filename/$index")) {
-                include_once("$_filename/$index");
-                exit;
-            }
-        }
         include_once('index.html.php');
         exit;
     } else {

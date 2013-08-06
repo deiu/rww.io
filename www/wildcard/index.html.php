@@ -180,7 +180,7 @@ foreach($listing as $item) {
     } elseif (substr($item_elt, 0, 5) == '.meta') {
         echo 'text/turtle';
     } elseif (isset($_RAW_EXT[$item_ext])) {
-        if ($item_ext != 'text')
+        if ($_RAW_EXT[$item_ext] != 'text')
             $is_dir = true; // fake a dir to disable the edit button
         echo $_RAW_EXT[$item_ext].'/', $item_ext=='js'?'javascript':$item_ext;
     } elseif (!strlen($item_ext)) {
