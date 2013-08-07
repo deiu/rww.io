@@ -105,13 +105,12 @@ if ($_method == 'OPTIONS') {
 require_once('input.php');
 require_once('output.php');
 if (isset($_RAW_EXT[$_filename_ext])) {
-    $_input = 'raw';
-    $_output = 'raw';
-
     if (substr(basename($_filename), 0, 5) == '.meta') {
         $_output = 'turtle';
         $_output_type = 'text/turtle';
     } else {
+        $_input = 'raw';
+        $_output = 'raw';
         $_output_type = $_RAW_EXT[$_filename_ext].'/'.($_filename_ext=='js'?'javascript':$_filename_ext);
     }
 }
