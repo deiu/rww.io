@@ -32,7 +32,7 @@ if (isset($_POST['path'])) {
 
 $email = $_POST['email'];
 $spkac = str_replace(str_split("\n\r"), '', $_POST['SPKAC']);
-$webid = $BASE.'/'.$path;
+$webid = 'https://'.$_SERVER['SERVER_NAME'].'/'.$path;
 
 $cert_cmd = 'python ../../py/pki.py '.
                 " -s '$spkac'" .
