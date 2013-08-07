@@ -74,6 +74,8 @@ function webid_getinfo($uri) {
         
         if ((strlen($pic) == 0) && (strlen($depic) > 0))
             $pic = $depic;
+        else
+            $pic = '/common/images/nouser.png';
     } else {
         $name = '';
         $pic = '/common/images/nouser.png';
