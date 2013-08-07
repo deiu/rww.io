@@ -63,7 +63,7 @@ function display_quota($dir) {
 
     $ret = '<div class="quota" title="Quota: used '.
             number_format($used, 2).' MB / '.
-            number_format($total).' MB">'.
+            number_format($total).' MB">';
     $ret .= '   <div class="meter '.$bg.'" style="width:'.$width.'%;"></div>';
     $ret .= '</div>';
     
