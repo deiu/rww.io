@@ -494,10 +494,10 @@ wac.save = function(elt) {
         // Add the #Default rule for this domain
         graph.add(graph.sym(metaURI),
                 WAC('accessTo'),
-                graph.sym(metaURI));               
+                graph.sym(metaURI));
         graph.add(graph.sym(metaURI),
                 WAC('accessTo'),
-                graph.sym(innerRef));
+                graph.sym(metaBase+path));
         graph.add(graph.sym(metaURI),
                 WAC('agent'),
                 graph.sym(owner));
