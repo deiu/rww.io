@@ -72,10 +72,8 @@ function webid_getinfo($uri) {
         if (strlen($name) == 0)
             $name = 'Anonymous';
         
-        if ((strlen($pic) == 0) && (strlen($depic) > 0))
-            $pic = $depic;
-        else
-            $pic = '/common/images/nouser.png';
+        if (strlen($pic) == 0)
+            $pic = (strlen($depic) > 0)?$depic:'/common/images/nouser.png';          
     } else {
         $name = '';
         $pic = '/common/images/nouser.png';
