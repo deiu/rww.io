@@ -29,7 +29,7 @@ if (isset($_POST['path'])) {
     die('You need to provide a preferred identifier.');
 }
 
-
+$BASE = 'http://'.$_SERVER['SERVER_NAME']; // force http
 $email = $_POST['email'];
 $spkac = str_replace(str_split("\n\r"), '', $_POST['SPKAC']);
 $webid = $BASE.'/'.$path;
