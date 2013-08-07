@@ -65,7 +65,7 @@ $document->append_objects($BASE.'/'.$profile,
          array(array('type'=>'uri', 'value'=>'http://xmlns.com/foaf/0.1/PersonalProfileDocument')));
 $document->append_objects($BASE.'/'.$profile,
         'http://xmlns.com/foaf/0.1/primaryTopic',
-         array(array('type'=>'uri', 'value'=>$_base.'/'.$path)));
+         array(array('type'=>'uri', 'value'=>$_base.$path)));
  
 // add a foaf:Person
 $document->append_objects($webid,
