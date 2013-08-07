@@ -19,7 +19,7 @@ if (basename($_filename) == 'favicon.ico') {
     exit;
 } 
 
-if (basename($_filename) == 'logout') {
+if ((basename($_filename) == 'logout') || (isset($_GET['logout']))) {
     foreach ($_SESSION as $k=>$v) {
         sess($k, null);
     }

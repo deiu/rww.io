@@ -180,13 +180,13 @@ wac.get = function(request_path, path) {
         var dir = innerRef;
     }
     // DEBUG 
-    /*
+
     console.log('resource='+innerRef);
     console.log('metafile='+metaFile);
     console.log('RDFresource='+innerRef);
     console.log('metaBase='+metaBase);
     console.log('metaURI='+metaURI);
-    */
+
     // For quick access to those namespaces:
     var RDF = $rdf.Namespace("http://www.w3.org/1999/02/22-rdf-syntax-ns#");
     var WAC = $rdf.Namespace("http://www.w3.org/ns/auth/acl#");
@@ -422,13 +422,21 @@ wac.save = function(elt) {
         File = path.substring(0, path.length - 1);
         
     // Build the full .meta path URI
-    if (path == '/') {
+    if (path == '/') { // we're at the root level
         var metaURI = metaBase+'.meta';
         var innerRef = metaBase;
-    } else if (path.substr(0, 5) != '.meta') {
-        var metaURI = metaBase+'.meta.'+File;
-        var innerRef = '#'+path;
-    } else {
+    } else if (path.substr(0, 5) != '.meta') { // got a normal file
+        if (path+'/' == reqPath) { // we need to use the parent dir name
+            path = reqPath;
+            var metaBase = window.location.protocol+'//'+window.location.host+dirname(window.location.pathname)+'/';
+            var metaFile = '.meta.'+basename(window.location.pathname);
+            var metaURI = metaBase+metaFile;
+            var innerRef = '#'+path;
+        } else {
+            var metaURI = metaBase+'.meta.'+File;
+            var innerRef = '#'+path;
+        }
+    } else { // got a .meta file
         var metaURI = metaBase+path;
         path = path;
         var innerRef = metaURI;
@@ -489,7 +497,7 @@ wac.save = function(elt) {
                 graph.sym(metaURI));               
         graph.add(graph.sym(metaURI),
                 WAC('accessTo'),
-                graph.sym(metaURI));
+                graph.sym(innerRef));
         graph.add(graph.sym(metaURI),
                 WAC('agent'),
                 graph.sym(owner));
@@ -502,6 +510,7 @@ wac.save = function(elt) {
 
         // serialize
         var data = new $rdf.Serializer(graph).toN3(graph);
+        console.log(data);
         // POST the new rules to the server .meta file
         wac.post(metaURI, data, true);
     } else {

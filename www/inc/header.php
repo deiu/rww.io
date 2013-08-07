@@ -53,7 +53,7 @@ if (substr($_user, 0, 4) == 'dns:') {
             <div class="login">
                 <span class="login-links">
                     <a class="white" href="<?=$user_link?>" target="_blank"><?=$user_name?></a><br />
-                    <a class="white" href="/logout">Logout</a>
+                    <a class="white" href="?logout">Logout</a>
                 </span>
                 <a class="white" href="<?=$user_link?>" target="_blank">
                     <img class="login-photo img-border r3" src="<?=$user_pic?>" title="View profile" /></a>
