@@ -18,8 +18,18 @@ if (empty($_user))
     httpStatusExit(401, 'Unauthorized');
 
 // Web Access Control
-if ($_wac->can('Write') == false)
-    httpStatusExit(403, 'Forbidden');
+$can = false;
+$can = $_wac->can('Write');
+if (DEBUG) {
+    openlog('RWW.IO', LOG_PID | LOG_ODELAY,LOG_LOCAL4);
+    foreach($_wac->getDebug() as $line)
+        syslog(LOG_INFO, $line);
+    syslog(LOG_INFO, 'Verdict: '.$can.' / '.$_wac->getReason());
+    closelog();
+}
+if ($can == false)  {
+    httpStatusExit(403, 'Forbidden', '403-404.php');
+} 
 
 // intercept requests for WebID generator
 if (isset($_POST['SPKAC'])) {
@@ -31,6 +41,11 @@ if (isset($_POST['SPKAC'])) {
 // check quota
 if (check_quota($_root, $_SERVER["CONTENT_LENGTH"]) == false)
     httpStatusExit(507, 'Insufficient Storage');
+
+// action
+$d = dirname($_filename);
+if (!file_exists($d))
+    mkdir($d, 0777, true);
 
 // intercept requests for images
 if (isset($_FILES["image"])) {
@@ -65,12 +80,6 @@ if (isset($_FILES["image"])) {
     header('Location: '.$_SERVER["REDIRECT_SCRIPT_URI"]);
     exit;
 }
-
-
-// action
-$d = dirname($_filename);
-if (!file_exists($d))
-    mkdir($d, 0777, true);
 
 $_data = file_get_contents('php://input');
 
