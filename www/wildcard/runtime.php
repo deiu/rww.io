@@ -9,9 +9,9 @@ define('METHODS_S', 'GET, PUT, POST, OPTIONS, HEAD, MKCOL, DELETE, PATCH');
 
 require_once(dirname(__FILE__).'/../inc/runtime.inc.php');
 
-// cookie for displaying .meta files in the list
+// cookie for displaying .meta files in the list (one month cookie)
 if (!isset($_COOKIE['showMetaFiles'])) {
-    setcookie('showMetaFiles', true, time()+3600);
+    setcookie('showMetaFiles', true, time()+2592000);
 } 
 
 $_showMetaFiles = (isset($_COOKIE['showMetaFiles']))?$_COOKIE['showMetaFiles']:false;
