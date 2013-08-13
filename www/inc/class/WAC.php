@@ -115,7 +115,6 @@ class WAC {
         }
           
         // Recursively find a .meta
-
         $this->_debug[] = "Not the owner, going recursively! BASE=".REQUEST_BASE;
         $this->_debug[] = "User is: ".$this->_req_user;
         $res = $uri;

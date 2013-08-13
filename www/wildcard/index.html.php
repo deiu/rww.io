@@ -58,8 +58,12 @@ $quota = display_quota($_root);
     <input type="hidden" id="wac-owner" value="<?=$_user?>" />
     <div>
         <div class="left"><input type="checkbox" id="wac-read" name="Read"> Read </div>
-        <div class="left"><input type="checkbox" id="wac-write" name="Write"> Write </div>
-        <div id="recursive" class="left" style="display: none;"><input type="checkbox" id="wac-recursive" name="Recursive"> Default for new files?</div>
+        <div class="left"><input type="checkbox" id="wac-write" name="Write" onclick="toggleCheck('wac-write','wac-append')"> Write </div>
+        <div class="left"><input type="checkbox" id="wac-append" name="Append" onclick="toggleCheck('wac-append','wac-write')"> Append </div>
+        <br/>
+        <p>
+        <div id="recursive" class="left" style="display: none;"><input type="checkbox" id="wac-recursive" name="Recursive"> Default for all new files in this directory?</div>
+        </p>
     </div>
     <br />
     <br />
@@ -253,7 +257,6 @@ function submitImage() {
     $('cancel-image').hide();
 }
 
-
 function createItem() {
     var res = document.getElementById("create-item");
     console.log(res.name+' / val='+res.value);
@@ -290,6 +293,13 @@ function hideCloud() {
     $('create-item').clear();
     $('submit-item').hide();
     $('cancel-item').hide();
+}
+
+function toggleCheck(e1,e2) {
+    if ($(e1).checked == true)
+        $(e2).checked = false;
+    else
+        $(e2).checked = true;
 }
 
 $(document).observe('keydown', function(e) {

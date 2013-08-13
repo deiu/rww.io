@@ -128,6 +128,7 @@ wac.get = function(request_path, path) {
     // reset the checkboxes
     $('wac-read').checked = false;
     $('wac-write').checked = false;
+    $('wac-append').checked = false;
     $('wac-recursive').checked = false;
     $('wac-users').value = '';
     
@@ -215,7 +216,9 @@ wac.get = function(request_path, path) {
             if (mode == '<http://www.w3.org/ns/auth/acl#Read>')
                 $('wac-read').checked = true;               
             else if (mode == '<http://www.w3.org/ns/auth/acl#Write>')
-                $('wac-write').checked = true;            
+                $('wac-write').checked = true;
+            else if (mode == '<http://www.w3.org/ns/auth/acl#Append>')
+                $('wac-append').checked = true;
         }
         
         // defaultForNew
@@ -345,6 +348,7 @@ wac.save = function(elt) {
     var users = $('wac-users').value.split(",");
     var read = $('wac-read').checked;
     var write = $('wac-write').checked;
+    var append = $('wac-append').checked;
     var recursive = $('wac-recursive').checked;
     var exists = $('wac-exists').value;
     var owner = $('wac-owner').value;
@@ -481,6 +485,10 @@ wac.save = function(elt) {
         graph.add(graph.sym(innerRef),
             WAC('mode'),
             WAC('Write'));
+    } else if (append == true) {
+        graph.add(graph.sym(innerRef),
+            WAC('mode'),
+            WAC('Append'));
     }
     // add recursion
     if (recursive == true) {

@@ -19,7 +19,8 @@ if (empty($_user))
 
 // Web Access Control
 $can = false;
-$can = $_wac->can('Write');
+if ($_wac->can('Append') || $can = $_wac->can('Write'))
+    $can = true;
 if (DEBUG) {
     openlog('RWW.IO', LOG_PID | LOG_ODELAY,LOG_LOCAL4);
     foreach($_wac->getDebug() as $line)
