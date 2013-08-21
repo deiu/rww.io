@@ -7,10 +7,8 @@ RWW.IO
 
 RWW.IO is a personal Linked Data store, intended to be used as a
 backend service for your Linked Data applications, and it supports the
-latest standards and recommendations: [RDF]_, JSON-LD, SPARQL 1.1 Update,
+latest standards and recommendations: [RDF]_, [JSON-LD]_, SPARQL 1.1 Update,
 WebID.
-
-.. [RDF] http://www.w3.org/RDF/
 
 All data stores (endpoints) interpret the HTTP request URI as the base
 URI for RDF operations and the default-graph URI for SPARQL
@@ -110,5 +108,10 @@ by donating through the following links:
 - Flattr: https://flattr.com/thing/1748916/
 
 Every bit of cash helps. Thank you! :-)
+
+References
+==========
+.. [RDF] http://www.w3.org/RDF/
+.. [JSON-LD] http://www.w3.org/TR/json-ld/
 
 
