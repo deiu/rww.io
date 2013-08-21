@@ -7,7 +7,7 @@ RWW.IO
 
 RWW.IO is a personal Linked Data store, intended to be used as a
 backend service for your Linked Data applications, and it supports the
-latest standards and recommendations: [RDF]_, [JSON-LD]_, [SPARQL 1.1 Update]_,
+latest standards and recommendations: [RDF]_, [JSON-LD]_, [SPARQL1.1-Update]_,
 [WebID]_.
 
 All data stores (endpoints) interpret the HTTP request URI as the base
@@ -67,19 +67,27 @@ RWW.IO is live at http://rww.io/
 Installation 
 ============
 
-::
+Requirements:
+-------------
 
-    git clone https://github.com/deiu/rww.io.git
-
-
-- Check the apache conf files and change paths to your own server (see ``conf/httpd.conf``).
-
-- Requires the Redland librdf for php (http://librdf.org/docs/php.html)
+It requires the Redland librdf for php (http://librdf.org/docs/php.html)
 
 ::
 
     sudo apt-get install php5-librdf librdf0 librdf0-dev raptor2-utils libraptor2-dev libraptor2-0
     
+Getting the code:
+-----------------
+::
+
+    git clone https://github.com/deiu/rww.io.git
+
+Configuration:
+--------------
+
+- The contents of the ``www/`` dir should then be made available to your Apache server.
+
+- Check the apache conf files and change paths to your own server (see ``conf/httpd.conf``).
 
 - You need to create a default storage location for your users' personal data stores. If you installed RWW.IO under /var/www/rww.io/, then you have to manually create the /data/ directory under that path (/var/www/rww.io/data/). Don't forget to make the /data/ directory writable by the web server user!
 
@@ -114,5 +122,5 @@ References
 ==========
 .. [RDF] http://www.w3.org/RDF/
 .. [JSON-LD] http://www.w3.org/TR/json-ld/
-.. [SPARQL 1.1 Update] http://www.w3.org/TR/sparql11-update/
+.. [SPARQL1.1-Update] http://www.w3.org/TR/sparql11-update/
 .. [WebID] http://dvcs.w3.org/hg/WebID/raw-file/tip/spec/identity-respec.html
