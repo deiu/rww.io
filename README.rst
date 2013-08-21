@@ -100,10 +100,10 @@ At this point, the only existing documentation is this file and the commented
 code. Until proper documentation is available, do not hesitate to
 contact me with questions.
 
-The ``www/root`̀  dir contains the PHP scripts used to run the http://rwww.io/ welcome page.
+The ``www/root``  dir contains the PHP scripts used to run the http://rwww.io/ welcome page.
 
-The ``www/wildcard`̀  dir contains the PHP scripts used to run all the personal data stores. 
-Don't forget to check contents of the `̀ .htacces`̀  file there.
+The ``www/wildcard``  dir contains the PHP scripts used to run all the personal data stores. 
+Don't forget to check contents of the `` .htacces``  file there.
  
 
 License
