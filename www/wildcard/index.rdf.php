@@ -15,9 +15,9 @@ if (is_dir($_filename))
 foreach($listing as $item) {
     $len = strlen($item);
     if (!$len) continue;
-    if (($_request_path == '/' && $item == '..') ||
-        ($item[0] == '.' && $item != '..' && substr($item, 0, 5) != '.meta'))
-        continue;
+//    if (($_request_path == '/' && $item == '..') ||
+//        ($item[0] == '.' && $item != '..' && substr($item, 0, 5) != '.meta'))
+//        continue;
     $is_dir = is_dir("$_filename/$item");
     $item_ext = strrpos($item, '.');
     $item_ext = $item_ext ? substr($item, 1+$item_ext) : '';
