@@ -43,6 +43,7 @@ if ((basename($_filename) == 'logout') || (isset($_GET['logout']))) {
 if (!in_array($_method, array('GET', 'HEAD')) && !isset($i_query))
     httpStatusExit(501, 'Not Implemented');
 
+// on the fly output format conversions ?
 if (!file_exists($_filename) && in_array($_filename_ext, array('turtle','n3','json','rdf','nt','jsonld'))) {
     $_filename = substr($_filename, 0, -strlen($_filename_ext)-1);
     $_base = substr($_base, 0, -strlen($_filename_ext)-1);
@@ -100,8 +101,10 @@ if (is_dir($_filename) || substr($_filename,-1) == '/') {
                 break;
             }
         }
-        if ($dirindex)
+        if ($dirindex) {    	
+        	header('Link: <?theFirstPage>; rel="first"');
             include_once('index.rdf.php');
+  		}
     }
 }
 
