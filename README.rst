@@ -5,10 +5,15 @@
 RWW.IO
 ======
 
-RWW.IOis a personal Linked Data store, intended to be used as a backend service for your Linked Data applications, and it
-supports the latest standards and recommendations: RDF, JSON-LD, SPARQL 1.1 Update, WebID.
+RWW.IO is a personal Linked Data store, intended to be used as a
+backend service for your Linked Data applications, and it supports the
+latest standards and recommendations: _RDF: http://www.w3.org/RDF/, JSON-LD, SPARQL 1.1 Update,
+WebID.
 
-All data stores (endpoints) interpret the HTTP request URI as the base URI for RDF operations and the default-graph URI for SPARQL operations. When using the service as a backend, you need to follwo two basic rules:
+All data stores (endpoints) interpret the HTTP request URI as the base
+URI for RDF operations and the default-graph URI for SPARQL
+operations. When using the service as a backend, you need to follow
+two basic rules:
 
 - Specify the media type of your request data with a Content-Type HTTP header.
 - Specify your response type preference with an Accept HTTP header.
@@ -47,11 +52,15 @@ RDF media types (defaults to text/turtle):
 
 
 
-Currently, the UI is minimal, allowing you to edit RDF documents and set ACL rules. Users can also upload a limited range of images (PNG, JPG and GIF - for all your cat pictures, wee!).
+Currently, the UI is minimal, allowing you to edit RDF documents and
+set ACL rules. Users can also upload a limited range of images (PNG,
+JPG and GIF - for all your cat pictures, wee!).
 
-In case users do not have a WebID, they can create one once they have selected their personal data store (i.e. deiu.example.com).
+In case users do not have a WebID, they can create one once they have
+selected their personal data store (i.e. deiu.example.com).
 
-This project is currently being developed entirely in my free time, so please consider supporting it. Thank you!
+This project is currently being developed entirely in my free time, so
+please consider supporting it. Thank you!
 
 RWW.IO is live at http://rww.io/
 
@@ -78,7 +87,9 @@ Installation
 Documentation
 =============
 
-At this point, the only existing documentation is the commented code. Until proper documentation will be available, do not hesitate to contact me with questions.
+At this point, the only existing documentation is the commented
+code. Until proper documentation will be available, do not hesitate to
+contact me with questions.
 
 
 License
@@ -89,12 +100,13 @@ MIT (see LICENSE file)
 Support and donations
 =====================
 
-You can help with the costs of running the website at http://rww.io/ by donating through the following links:
+You can help with the costs of running the website at http://rww.io/
+by donating through the following links:
 
 - Bitcoin: https://coinbase.com/checkouts/ed957952a941abf15d50696973fa4b92
 - Paypal: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=YCG7HFRPTVD4A
 - Flattr: https://flattr.com/thing/1748916/
 
-Evry bit of cash helps. Thank you! :-)
+Every bit of cash helps. Thank you! :-)
 
 
