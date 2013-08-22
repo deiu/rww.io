@@ -24,7 +24,7 @@ foreach($listing as $item) {
     $len = strlen($item);
     if (!$len) continue;
     // don't report .. for the root
-    if ($_request_path == '/' || $item == '..')
+    if ($item == '..')
         continue;
     $is_dir = is_dir("$_filename/$item");
     $item_ext = strrpos($item, '.');
