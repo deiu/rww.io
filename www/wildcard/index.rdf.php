@@ -24,9 +24,8 @@ foreach($listing as $item) {
     $len = strlen($item);
     if (!$len) continue;
     // don't report .. for the root
-//    if (($_request_path == '/' && $item == '..') ||
-//        ($item[0] == '.' && $item != '..' && substr($item, 0, 5) != '.meta'))
-//        continue;
+    if ($_request_path == '/' || $item == '..')
+        continue;
     $is_dir = is_dir("$_filename/$item");
     $item_ext = strrpos($item, '.');
     $item_ext = $item_ext ? substr($item, 1+$item_ext) : '';
@@ -58,14 +57,12 @@ foreach($listing as $item) {
     $contents[] = $properties;
 }
 
-$p = 0;
-$complement = '';
+// serve LDP by default and beging with the first page
+$p = 1;
+$complement = '?p=1';
 if (isset($_GET['p'])) {
 	$p = (int) $_GET['p'];
-	$complement = ($p == 1)?'?theFirstPage':'?p='. (string) $p;
-} else { // serve LDP by default and beging with the first page
-	$p = 1;
-	$complement = '?theFirstPage';
+	$complement = '?p='. (string) $p;
 }
 
 if ($p > 0) { 
