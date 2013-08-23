@@ -13,6 +13,15 @@ defined('HEADER') || include_once('header.php');
 
 <div class="box welcome center width-1024">
  <strong> Welcome!</strong> This <a class="white link" target="_blank" href="http://www.w3.org/DesignIssues/ReadWriteLinkedData.html">Read/Write</a> <a class="white link" target="_blank" href="http://www.w3.org/DesignIssues/LinkedData.html">Linked Data</a> service is free (and open-source) for educational and personal use. <a class="white link" href="help.php">Click here</a> see what operations are supported.
+
+<?php
+	if (! function_exists('librdf_version_string_get')) {
+		print '<br /><br /><strong>Attention: missing librdf PHP library!</strong>';
+	}
+	if(!is_dir($_ENV['CLOUD_DATA'])) {
+		print "<br /><br /><strong>Attention: missing 'data/' subdir!</strong>";
+	}
+?>
 </div>
 
 <div class="getaccount center width-1024">
