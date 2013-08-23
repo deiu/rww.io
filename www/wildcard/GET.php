@@ -102,7 +102,7 @@ if (is_dir($_filename) || substr($_filename,-1) == '/') {
             }
         }
         if ($dirindex) {    	
-        	header('Link: <?theFirstPage>; rel="first"');
+        	header('Link: <?p=1>; rel="first"');
             include_once('index.rdf.php');
   		}
     }
