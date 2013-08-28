@@ -191,7 +191,7 @@ $test = new testACL();
 // For each method: uri => expected outcome
 $methods = array('Read' => array (
                     'https://deiu.example.com/' => 'pass',
-                    'https://deiu.example.com/.meta' => 'fail',
+                    'https://deiu.example.com/.acl' => 'fail',
                     'https://deiu.example.com/test/owned/' => 'pass',
                     'https://deiu.example.com/test/private/' => 'fail',
                     'https://deiu.example.com/test/public/' => 'pass',
@@ -200,7 +200,7 @@ $methods = array('Read' => array (
                     'https://deiu.example.com/test/recursive-write/dir/file' => 'fail',
                     ),
                 'Write' => array(
-                    'https://deiu.example.com/.meta' => 'fail',
+                    'https://deiu.example.com/.acl' => 'fail',
                     'https://deiu.example.com/test.ttl' => 'fail',
                     'https://deiu.example.com/test/owned/test.ttl' => 'pass',
                     'https://deiu.example.com/test/public/test.ttl' => 'fail', // defaultForNew only applies for read 

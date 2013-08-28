@@ -148,7 +148,7 @@ foreach($listing as $item) {
     if (($_request_path == '/' && $item == '..'))
         continue;
     if (($_showMetaFiles == false) && 
-        ((substr($item, 0, 5) == '.meta') || (substr($item, 0, 5) == '.acl')))
+        ((substr($item, 0, 5) == '.meta') || (substr($item, 0, 4) == '.acl')))
         continue;   
 
     // fake a valid file structure
