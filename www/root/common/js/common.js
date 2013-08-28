@@ -132,61 +132,61 @@ wac.get = function(request_path, path) {
     $('wac-recursive').checked = false;
     $('wac-users').value = '';
     
-    // remove trailing / from the file name we append after .meta
+    // remove trailing / from the file name we append after .acl
     console.log('Path='+path);
      
     var File = path;
     if (path.substring(path.length - 1) == '/')
         File = path.substring(0, path.length - 1);
   
-    var metaBase = window.location.protocol+'//'+window.location.host+window.location.pathname;
+    var aclBase = window.location.protocol+'//'+window.location.host+window.location.pathname;
 
-    // if the resource in question is not the .meta file itself
-    if (File.substr(0, 5) != '.meta') {
+    // if the resource in question is not the .acl file itself
+    if (File.substr(0, 5) != '.acl') {
         if (File == '..') { // we need to use the parent dir name
             path = basename(window.location.pathname);
-            var metaBase = window.location.protocol+'//'+window.location.host+dirname(window.location.pathname)+'/';
-            var metaFile = '.meta.'+basename(window.location.pathname);
-            var metaURI = metaBase+metaFile;
+            var aclBase = window.location.protocol+'//'+window.location.host+dirname(window.location.pathname)+'/';
+            var aclFile = '.acl.'+basename(window.location.pathname);
+            var aclURI = aclBase+aclFile;
             var innerRef = window.location.pathname; // the resource as inner ref
             var requestPath = request_path;
             var dir = window.location.protocol+'//'+window.location.host+innerRef;
             // Remove preceeding / from path
             if (innerRef.substr(0, 1) == '/')
                 innerRef = innerRef.substring(1);
-            innerRef = metaURI+'#'+innerRef;
+            innerRef = aclURI+'#'+innerRef;
         } else if (File == '') { // root
             path = '/';
-            var metaBase = window.location.protocol+'//'+window.location.host+'/';
-            var metaFile = '.meta';
-            var metaURI = metaBase+metaFile;
-            var innerRef = metaBase; // the resource as inner ref
+            var aclBase = window.location.protocol+'//'+window.location.host+'/';
+            var aclFile = '.acl';
+            var aclURI = aclBase+aclFile;
+            var innerRef = aclBase; // the resource as inner ref
             var requestPath = request_path;
             var dir = window.location.protocol+'//'+window.location.host+request_path;
         } else {
-            var metaFile = '.meta.'+File;
-            var metaURI = metaBase+metaFile;
+            var aclFile = '.acl.'+File;
+            var aclURI = aclBase+aclFile;
             var innerRef = path; // the resource as inner ref
             var dir = window.location.protocol+'//'+window.location.host+request_path+innerRef;
             var requestPath = request_path;
             // Remove preceeding / from path
             if (innerRef.substr(0, 1) == '/')
                 innerRef = innerRef.substring(1);
-            innerRef = metaURI+'#'+innerRef;
+            innerRef = aclURI+'#'+innerRef;
         }
-    } else { // the resource IS the meta file
-        var metaFile = File;
-        var metaURI = metaBase+File;
-        var innerRef = metaURI;
+    } else { // the resource IS the acl file
+        var aclFile = File;
+        var aclURI = aclBase+File;
+        var innerRef = aclURI;
         var dir = innerRef;
     }
     // DEBUG 
 
     console.log('resource='+innerRef);
-    console.log('metafile='+metaFile);
+    console.log('aclfile='+aclFile);
     console.log('RDFresource='+innerRef);
-    console.log('metaBase='+metaBase);
-    console.log('metaURI='+metaURI);
+    console.log('aclBase='+aclBase);
+    console.log('aclURI='+aclURI);
 
     // For quick access to those namespaces:
     var RDF = $rdf.Namespace("http://www.w3.org/1999/02/22-rdf-syntax-ns#");
@@ -197,7 +197,7 @@ wac.get = function(request_path, path) {
     var resource = $rdf.sym(innerRef);
     var fetch = $rdf.fetcher(graph);
 
-    fetch.nowOrWhenFetched(metaURI,undefined,function(){
+    fetch.nowOrWhenFetched(aclURI,undefined,function(){
         // permissions
         var perms = graph.each(resource, WAC('mode'));
 
@@ -205,7 +205,7 @@ wac.get = function(request_path, path) {
         $('wac-read').checked = false;
         $('wac-write').checked = false;
         
-        // we need to know if the .meta file doesn't exist or it's empty, so we
+        // we need to know if the .acl file doesn't exist or it's empty, so we
         // can later add default rules
         if (perms.length > 0)
             $('wac-exists').value = '1';
@@ -247,27 +247,27 @@ wac.edit = function(request_path, path) {
         isDir = true;
         File = path.substring(0, path.length - 1);
     }
-    var metaBase = window.location.protocol+'//'+window.location.host+window.location.pathname;
-    // if the resource in question is not the .meta file itself
-    if (File.substr(0, 5) != '.meta') {
+    var aclBase = window.location.protocol+'//'+window.location.host+window.location.pathname;
+    // if the resource in question is not the .acl file itself
+    if (File.substr(0, 5) != '.acl') {
         if (File == '..') { // we need to use the parent dir name
-            var metaBase = window.location.protocol+'//'+window.location.host+dirname(window.location.pathname)+'/';
-            var metaFile = '.meta.'+basename(window.location.pathname);
-            var metaURI = metaBase+metaFile;
+            var aclBase = window.location.protocol+'//'+window.location.host+dirname(window.location.pathname)+'/';
+            var aclFile = '.acl.'+basename(window.location.pathname);
+            var aclURI = aclBase+aclFile;
         } else if (File == '') { // root
-            var metaBase = window.location.protocol+'//'+window.location.host+'/';
-            var metaFile = '.meta';
-            var metaURI = metaBase+metaFile;
+            var aclBase = window.location.protocol+'//'+window.location.host+'/';
+            var aclFile = '.acl';
+            var aclURI = aclBase+aclFile;
         } else {
-            var metaFile = '.meta.'+File;
-            var metaURI = metaBase+metaFile;
+            var aclFile = '.acl.'+File;
+            var aclURI = aclBase+aclFile;
         }
-    } else { // the resource IS the meta file
-        var metaURI = metaBase+File;
+    } else { // the resource IS the acl file
+        var aclURI = aclBase+File;
     }
     
-    console.log('metaURI='+metaURI);
-    new HTTP(metaURI, {
+    console.log('aclURI='+aclURI);
+    new HTTP(aclURI, {
         method: 'get',
         requestHeaders: {'Content-Type': 'text/turtle'}, 
         onSuccess: function() {
@@ -357,11 +357,11 @@ wac.save = function(elt) {
     var RDF = $rdf.Namespace("http://www.w3.org/1999/02/22-rdf-syntax-ns#");
     var WAC = $rdf.Namespace("http://www.w3.org/ns/auth/acl#");
 
-/**** Domain specific meta ****/
-    // If there is no .meta at the root level, we must create one!
-    var rootMeta = window.location.protocol+'//'+window.location.host+'/.meta';
+/**** Domain specific acl ****/
+    // If there is no .acl at the root level, we must create one!
+    var rootMeta = window.location.protocol+'//'+window.location.host+'/.acl';
     var rootDir = window.location.protocol+'//'+window.location.host+'/';
-    // check if we have a meta for domain control
+    // check if we have a acl for domain control
     // DEBUG    
     console.log("rootMeta="+rootMeta);
     
@@ -413,44 +413,44 @@ wac.save = function(elt) {
     }
 
 
-/**** File specific meta ****/
-    var metaBase = window.location.protocol+'//'+window.location.host+reqPath;
+/**** File specific acl ****/
+    var aclBase = window.location.protocol+'//'+window.location.host+reqPath;
 
     // Remove preceeding / from path
     if (reqPath.substr(0, 1) == '/')
         reqPath = reqPath.substring(1);
 
-    // remove trailing slash from meta file
+    // remove trailing slash from acl file
     var File = path;
     if (path.substring(path.length - 1) == '/')
         File = path.substring(0, path.length - 1);
         
-    // Build the full .meta path URI
+    // Build the full .acl path URI
     if (path == '/') { // we're at the root level
-        var metaURI = metaBase+'.meta';
-        var innerRef = metaBase;
-    } else if (path.substr(0, 5) != '.meta') { // got a normal file
+        var aclURI = aclBase+'.acl';
+        var innerRef = aclBase;
+    } else if (path.substr(0, 5) != '.acl') { // got a normal file
         if (path+'/' == reqPath) { // we need to use the parent dir name
             path = reqPath;
-            var metaBase = window.location.protocol+'//'+window.location.host+dirname(window.location.pathname)+'/';
-            var metaFile = '.meta.'+basename(window.location.pathname);
-            var metaURI = metaBase+metaFile;
+            var aclBase = window.location.protocol+'//'+window.location.host+dirname(window.location.pathname)+'/';
+            var aclFile = '.acl.'+basename(window.location.pathname);
+            var aclURI = aclBase+aclFile;
             var innerRef = '#'+path;
         } else {
-            var metaURI = metaBase+'.meta.'+File;
+            var aclURI = aclBase+'.acl.'+File;
             var innerRef = '#'+path;
         }
-    } else { // got a .meta file
-        var metaURI = metaBase+path;
+    } else { // got a .acl file
+        var aclURI = aclBase+path;
         path = path;
-        var innerRef = metaURI;
+        var innerRef = aclURI;
     }
     // DEBUG
     console.log('path='+path);
     console.log('reqPath='+reqPath);
-    console.log('resource='+metaBase+path);
-    console.log('metaBase='+metaBase);
-    console.log('metaURI='+metaURI);
+    console.log('resource='+aclBase+path);
+    console.log('aclBase='+aclBase);
+    console.log('aclURI='+aclURI);
 
     // Create a new graph
     var graph = new $rdf.graph();
@@ -458,7 +458,7 @@ wac.save = function(elt) {
     // path
     graph.add(graph.sym(innerRef),
                 WAC('accessTo'),
-                graph.sym(metaBase+path));
+                graph.sym(aclBase+path));
                 
     // add allowed users
     if ((users.length > 0) && (users[0].length > 0)) {
@@ -494,67 +494,67 @@ wac.save = function(elt) {
     if (recursive == true) {
         graph.add(graph.sym(innerRef),
                 WAC('defaultForNew'),
-                graph.sym(metaBase+path));
+                graph.sym(aclBase+path));
     }
-    // create default rules for the .meta file itself if we create it for the
+    // create default rules for the .acl file itself if we create it for the
     // first time
     if (exists == '0') {
         // Add the #Default rule for this domain
-        graph.add(graph.sym(metaURI),
+        graph.add(graph.sym(aclURI),
                 WAC('accessTo'),
-                graph.sym(metaURI));
-        graph.add(graph.sym(metaURI),
+                graph.sym(aclURI));
+        graph.add(graph.sym(aclURI),
                 WAC('accessTo'),
-                graph.sym(metaBase+path));
-        graph.add(graph.sym(metaURI),
+                graph.sym(aclBase+path));
+        graph.add(graph.sym(aclURI),
                 WAC('agent'),
                 graph.sym(owner));
-        graph.add(graph.sym(metaURI),
+        graph.add(graph.sym(aclURI),
                 WAC('mode'),
                 WAC('Read'));
-        graph.add(graph.sym(metaURI),
+        graph.add(graph.sym(aclURI),
                 WAC('mode'),
                 WAC('Write'));
 
         // serialize
         var data = new $rdf.Serializer(graph).toN3(graph);
         console.log(data);
-        // POST the new rules to the server .meta file
-        wac.post(metaURI, data, true);
+        // POST the new rules to the server .acl file
+        wac.post(aclURI, data, true);
     } else {
-        // copy rules from old meta
+        // copy rules from old acl
         var g = $rdf.graph();
         var fetch = $rdf.fetcher(g);
               
-        fetch.nowOrWhenFetched(metaURI,undefined,function(){
+        fetch.nowOrWhenFetched(aclURI,undefined,function(){
             // add accessTo
-            graph.add(graph.sym(metaURI),
+            graph.add(graph.sym(aclURI),
                 WAC('accessTo'),
-                graph.sym(metaURI));
+                graph.sym(aclURI));
                 
             // add agents
-            var agents = g.each(g.sym(metaURI), WAC('agent'));
+            var agents = g.each(g.sym(aclURI), WAC('agent'));
 
             if (agents.length > 0) {
                 var i, n = agents.length;
                 for (i=0;i<n;i++) {
                     var agent = agents[i]['uri'];
-                    graph.add(graph.sym(metaURI),
+                    graph.add(graph.sym(aclURI),
                         WAC('agent'),
                         graph.sym(agent));
                 }
             } else {
-                graph.add(graph.sym(metaURI),
+                graph.add(graph.sym(aclURI),
                         WAC('agentClass'),
                         graph.sym('http://xmlns.com/foaf/0.1/Agent'));
             }
             // add permissions
-            var perms = g.each($rdf.sym(metaURI), WAC('mode'));
+            var perms = g.each($rdf.sym(aclURI), WAC('mode'));
             if (perms.length > 0) {
                 var i, n = perms.length;
                 for (i=0;i<n;i++) {
                     var perm = perms[i]['uri'];
-                    graph.add(graph.sym(metaURI),
+                    graph.add(graph.sym(aclURI),
                         WAC('mode'),
                         graph.sym(perm));
                 }
@@ -564,8 +564,8 @@ wac.save = function(elt) {
             var data = new $rdf.Serializer(graph).toN3(graph);
             // DEBUG
             console.log(data);
-            // PUT the new rules to the server .meta file
-            wac.put(metaURI, data, true);
+            // PUT the new rules to the server .acl file
+            wac.put(aclURI, data, true);
         });
     
     }
@@ -652,18 +652,18 @@ cloud.put = function(path, data, type) {
     });
 }
 cloud.rm = function(path) {
-    // also removes the corresponding .meta file if it exists
+    // also removes the corresponding .acl file if it exists
     var url = this.request_url;
     console.log('url='+url+' / path='+path);
     new HTTP(url+path, {
         method: 'delete',
         onSuccess: function() {
-            if (path.substr(0, 5) != '.meta') {
+            if (path.substr(0, 5) != '.acl') {
                 // remove trailing slash
                 if (path.substring(path.length - 1) == '/')
                     path = path.substring(0, path.length - 1);
-                // remove the .meta file
-                new HTTP(url+'.meta.'+path, { method: 'delete', onSuccess: function() {                
+                // remove the .acl file
+                new HTTP(url+'.acl.'+path, { method: 'delete', onSuccess: function() {                
                         window.location.reload();
                     }, onFailure: function() {
                         // refresh anyway

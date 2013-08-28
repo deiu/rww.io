@@ -70,7 +70,7 @@ $quota = display_quota($_root);
     <div>
         Allow access for:<br />
         <small>(comma separated WebID addresses OR leave blank for everyone)</small>
-    </div>    
+    </div>
     <textarea id="wac-users" name="users" cols="5" rows="5"></textarea>
     <br/>
     <div class="right actions"><a href="#" class="button button-rounded button-flat-caution" onclick="wac.hide()"><i class="icon-remove"></i> Cancel</a></div>
@@ -107,7 +107,7 @@ $quota = display_quota($_root);
         <?php } else { ?>
         <a class="pointer" onclick="setCookie('showMetaFiles', '1', '1');">Show</a>
         <?php } ?>
-        <span> .meta files?</span>
+        <span> hidden files?</span>
     </div>
     <?php if ($user_link) { ?>
         <div class="right top-5"><?=$quota?></div>
@@ -117,7 +117,7 @@ $quota = display_quota($_root);
 
 <table id="index" class="files center box-shadow">
 <thead>
-    <tr>        
+    <tr>
         <th> Name</th>
         <th>Size</th>
         <th>Type</th>
@@ -126,7 +126,6 @@ $quota = display_quota($_root);
     </tr>
 </thead>
 <tbody class="lines">
-    
 
 <?php
 // check if we have a real file structure
@@ -148,7 +147,8 @@ foreach($listing as $item) {
         continue;
     if (($_request_path == '/' && $item == '..'))
         continue;
-    if (($_showMetaFiles == false) && (substr($item, 0, 5) == '.meta'))
+    if (($_showMetaFiles == false) && 
+        ((substr($item, 0, 5) == '.meta') || (substr($item, 0, 5) == '.acl')))
         continue;   
 
     // fake a valid file structure
@@ -181,7 +181,7 @@ foreach($listing as $item) {
     echo '<td>';
     if ($is_dir) {
         echo ($item_elt != '/')?'Directory':'Root';
-    } elseif (substr($item_elt, 0, 5) == '.meta') {
+    } elseif ((substr($item_elt, 0, 5) == '.meta') || (substr($item_elt, 0, 4) == '.acl')) {
         echo 'text/turtle';
     } elseif (isset($_RAW_EXT[$item_ext])) {
         if ($_RAW_EXT[$item_ext] != 'text')

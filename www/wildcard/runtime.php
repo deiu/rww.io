@@ -9,7 +9,7 @@ define('METHODS_S', 'GET, PUT, POST, OPTIONS, HEAD, MKCOL, DELETE, PATCH');
 
 require_once(dirname(__FILE__).'/../inc/runtime.inc.php');
 
-// cookie for displaying .meta files in the list (one month cookie)
+// cookie for displaying hidden files in the list (one month cookie)
 if (!isset($_COOKIE['showMetaFiles'])) {
     setcookie('showMetaFiles', true, time()+2592000);
 } 
@@ -105,7 +105,8 @@ if ($_method == 'OPTIONS') {
 require_once('input.php');
 require_once('output.php');
 if (isset($_RAW_EXT[$_filename_ext])) {
-    if (substr(basename($_filename), 0, 5) == '.meta') {
+    if ((substr(basename($_filename), 0, 5) == '.meta') ||
+         (substr(basename($_filename), 0, 4) == '.acl')) {
         $_output = 'turtle';
         $_output_type = 'text/turtle';
     } else {
