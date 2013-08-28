@@ -89,7 +89,8 @@ Configuration:
 
 - Check the apache conf files and change paths to your own server (see ``conf/httpd.conf``).
 
-- You need to create a default storage location for your users' personal data stores. If you installed RWW.IO under /var/www/rww.io/, then you have to manually create the /data/ directory under that path (/var/www/rww.io/data/). Don't forget to make the /data/ directory writable by the web server user!
+- You need to create a default storage location for your users' personal data stores. 
+  If you installed RWW.IO under /var/www/rww.io/, then you have to manually create the /data/ directory under that path (/var/www/rww.io/data/). Don't forget to make the /data/ directory writable by the web server user!
 
 - You need to have an SSL cert file configured (see ``conf/ssl.conf``).
 
@@ -105,6 +106,9 @@ The ``www/root``  dir contains the PHP scripts used to run the http://rwww.io/ w
 The ``www/wildcard``  dir contains the PHP scripts used to run all the personal data stores. 
 Don't forget to check contents of the ``.htacces``  file there.
  
+You can test with curl, for instance : 
+::
+    curl -v -L -H 'Accept: text/turtle' http://A_USER.example.com/
 
 License
 =======
