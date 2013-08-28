@@ -5,7 +5,7 @@
 RWW.IO
 ======
 
-RWW.IOis a personal Linked Data store, intended to be used as a backend service for your Linked Data applications, and it
+RWW.IO is a personal Linked Data store, intended to be used as a backend service for your Linked Data applications, and it
 supports the latest standards and recommendations: RDF, JSON-LD, SPARQL 1.1 Update, WebID.
 
 All data stores (endpoints) interpret the HTTP request URI as the base URI for RDF operations and the default-graph URI for SPARQL operations. When using the service as a backend, you need to follwo two basic rules:
