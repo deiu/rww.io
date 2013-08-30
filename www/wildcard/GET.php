@@ -123,8 +123,8 @@ if (is_dir($_filename) || substr($_filename,-1) == '/') {
                 break;
             }
         }
-        if ($dirindex) {    	
-        	header('Link: <?p=1>; rel="first"');
+        if ($dirindex) {
+        	header('Link: <?p=1>; rel="first"', false);
             include_once('index.rdf.php');
   		}
     }
