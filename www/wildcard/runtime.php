@@ -47,6 +47,22 @@ $_RAW_EXT = array(
     'gif'=>'image',
     'txt'=>'text');
 
+$_content_types = array(
+    'text/turtle;charset=utf-8',
+    'text/n3;charset=utf-8',
+    'text/nt;charset=utf-8',
+    'text/css;charset=utf-8',
+    'text/html;charset=utf-8',
+    'text/javascript;charset=utf-8',
+    'text/plain;charset=utf-8',
+    'application/rdf+xml;charset=utf-8',
+    'application/json;charset=utf-8',
+    'image/jpeg',
+    'image/jpeg',
+    'image/png',
+    'image/gif'
+    );  
+
 header("User: $_user");
 
 // Cloud
@@ -73,7 +89,7 @@ $_request_path = substr($_filename, strlen($_filebase));
 
 // meta
 $_metabase = ($_SERVER['SCRIPT_URL'] != '/')?dirname($_base):$_base;
-$_metafile = ($_SERVER['SCRIPT_URL'] != '/')?'/.meta.'.basename($_SERVER['SCRIPT_URL']):'.meta';
+$_metaname = ($_SERVER['SCRIPT_URL'] != '/')?'/.meta.'.basename($_SERVER['SCRIPT_URL']):'.meta';
 
 if ($_options->debug) {
     header('Filename: '.$_filename);
@@ -101,7 +117,6 @@ if (isset($_SERVER['HTTP_ORIGIN'])) {
     header('Access-Control-Allow-Credentials: true');
 }
 
-
 // HTTP Methods
 $_method = '';
 foreach (array('REQUEST_METHOD', 'REDIRECT_REQUEST_METHOD') as $k) {
@@ -121,6 +136,7 @@ if ($_method == 'OPTIONS') {
 
     header('Allow: '.METHODS_S);
     header('Accept-Patch: application/json');
+    header('Accept-Post: '.implode(',', $_content_types));
     exit;
 }
 
