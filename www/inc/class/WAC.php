@@ -1,5 +1,25 @@
 <?php
+/*
+ *  Copyright (C) 2013 RWW.IO
+ *  
+ *  Permission is hereby granted, free of charge, to any person obtaining a copy
+ *  of this software and associated documentation files (the "Software"), to deal 
+ *  in the Software without restriction, including without limitation the rights 
+ *  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell 
+ *  copies of the Software, and to permit persons to whom the Software is furnished 
+ *  to do so, subject to the following conditions:
 
+ *  The above copyright notice and this permission notice shall be included in all 
+ *  copies or substantial portions of the Software.
+
+ *  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+ *  INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A 
+ *  PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+ *  HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION 
+ *  OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE 
+ *  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+ 
 /**
  * Web Access Control class
  * http://www.w3.org/wiki/WebAccessControl
@@ -37,11 +57,10 @@ class WAC {
         $this->_resource_uri = $resource_uri;
 
         $this->_req_user = $req_user;
-
         
         // building the acl file name
         // building the absolute path for the corresponding acl file
-        if (substr(basename($resource_uri), 0, 5) == '.acl') {      
+        if (substr(basename($resource_uri), 0, 4) == '.acl') {      
             $this->_acl_name = basename($resource_uri);
             $this->_acl_file = $aclbase;
             $acl_uri = REQUEST_BASE.'/'.$this->_acl_name;
@@ -56,6 +75,10 @@ class WAC {
         }
         
         $this->_acl_file_base = dirname($this->_acl_file);
+
+        // set the default rel=acl link
+        if ($options->linkmeta)
+            header('Link: <'.$acl_uri.'>; rel=acl', false);
 
         /*
         $this->_debug[] = "<--------WAC--------->";
@@ -129,7 +152,7 @@ class WAC {
             $r = REQUEST_BASE.$path;
 
             if ($path != '/') {
-                $acl_file = (substr(basename($r), 0, 5) != '.acl')?'.'.basename($r):'';
+                $acl_file = (substr(basename($r), 0, 4) != '.acl')?'.'.basename($r):'';
                 $acl_path = $sys.'/.acl'.$acl_file;
                 $acl_uri = dirname($r).'/.acl'.$acl_file;
                 $this->_debug[] = "PATH > ACL path=".$acl_path." | ACL URI=".$acl_uri;
@@ -160,7 +183,7 @@ class WAC {
             
             if (is_file($acl_path)) { 
                 $g = new Graph('', $acl_path, '',$acl_uri);
-                if ($g->size() > 0) {                  
+                if ($g->size() > 0) {
                     // specific authorization
                     $q = "PREFIX acl: <http://www.w3.org/ns/auth/acl#>
                           SELECT * WHERE { 

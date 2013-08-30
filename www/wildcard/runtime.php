@@ -3,6 +3,25 @@
  * cloud common includes
  *
  * $Id$
+ *
+ *  Copyright (C) 2013 RWW.IO
+ *  
+ *  Permission is hereby granted, free of charge, to any person obtaining a copy
+ *  of this software and associated documentation files (the "Software"), to deal 
+ *  in the Software without restriction, including without limitation the rights 
+ *  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell 
+ *  copies of the Software, and to permit persons to whom the Software is furnished 
+ *  to do so, subject to the following conditions:
+
+ *  The above copyright notice and this permission notice shall be included in all 
+ *  copies or substantial portions of the Software.
+
+ *  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+ *  INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A 
+ *  PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+ *  HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION 
+ *  OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE 
+ *  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
 define('METHODS_S', 'GET, PUT, POST, OPTIONS, HEAD, MKCOL, DELETE, PATCH');
@@ -28,6 +47,22 @@ $_RAW_EXT = array(
     'gif'=>'image',
     'txt'=>'text');
 
+$_content_types = array(
+    'text/turtle;charset=utf-8',
+    'text/n3;charset=utf-8',
+    'text/nt;charset=utf-8',
+    'text/css;charset=utf-8',
+    'text/html;charset=utf-8',
+    'text/javascript;charset=utf-8',
+    'text/plain;charset=utf-8',
+    'application/rdf+xml;charset=utf-8',
+    'application/json;charset=utf-8',
+    'image/jpeg',
+    'image/jpeg',
+    'image/png',
+    'image/gif'
+    );  
+
 header("User: $_user");
 
 // Cloud
@@ -51,6 +86,10 @@ if (!strlen($_filename) || $_filename[0] != '/')
 if (substr($_filename, 0, strlen($_filebase)) != $_filebase)
     $_filename = "$_filebase$_filename";
 $_request_path = substr($_filename, strlen($_filebase));
+
+// meta
+$_metabase = ($_SERVER['SCRIPT_URL'] != '/')?dirname($_base):$_base;
+$_metaname = ($_SERVER['SCRIPT_URL'] != '/')?'/.meta.'.basename($_SERVER['SCRIPT_URL']):'.meta';
 
 if ($_options->debug) {
     header('Filename: '.$_filename);
@@ -78,7 +117,6 @@ if (isset($_SERVER['HTTP_ORIGIN'])) {
     header('Access-Control-Allow-Credentials: true');
 }
 
-
 // HTTP Methods
 $_method = '';
 foreach (array('REQUEST_METHOD', 'REDIRECT_REQUEST_METHOD') as $k) {
@@ -98,6 +136,7 @@ if ($_method == 'OPTIONS') {
 
     header('Allow: '.METHODS_S);
     header('Accept-Patch: application/json');
+    header('Accept-Post: '.implode(',', $_content_types));
     exit;
 }
 
@@ -109,7 +148,7 @@ if (isset($_RAW_EXT[$_filename_ext])) {
          (substr(basename($_filename), 0, 4) == '.acl')) {
         $_output = 'turtle';
         $_output_type = 'text/turtle';
-    } else {
+    } else {   
         $_input = 'raw';
         $_output = 'raw';
         $_output_type = $_RAW_EXT[$_filename_ext].'/'.($_filename_ext=='js'?'javascript':$_filename_ext);
