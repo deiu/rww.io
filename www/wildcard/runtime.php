@@ -52,6 +52,10 @@ if (substr($_filename, 0, strlen($_filebase)) != $_filebase)
     $_filename = "$_filebase$_filename";
 $_request_path = substr($_filename, strlen($_filebase));
 
+// meta
+$_metabase = ($_SERVER['SCRIPT_URL'] != '/')?dirname($_base):$_base;
+$_metafile = ($_SERVER['SCRIPT_URL'] != '/')?'/.meta.'.basename($_SERVER['SCRIPT_URL']):'.meta';
+
 if ($_options->debug) {
     header('Filename: '.$_filename);
 }
@@ -109,7 +113,7 @@ if (isset($_RAW_EXT[$_filename_ext])) {
          (substr(basename($_filename), 0, 4) == '.acl')) {
         $_output = 'turtle';
         $_output_type = 'text/turtle';
-    } else {
+    } else {   
         $_input = 'raw';
         $_output = 'raw';
         $_output_type = $_RAW_EXT[$_filename_ext].'/'.($_filename_ext=='js'?'javascript':$_filename_ext);

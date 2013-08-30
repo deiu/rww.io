@@ -90,6 +90,9 @@ if (is_dir($_filename) || substr($_filename,-1) == '/') {
         header("Location: $_base/");
         exit;
     } elseif (!isset($_output) || empty($_output) || $_output == 'html') {
+        if ($_options->linkmeta)
+            header('Link: <'.$_metabase.$_metafile.'>; rel=meta', false);
+
         include_once('index.html.php');
         exit;
     } else {
@@ -125,6 +128,9 @@ if ($_output == 'raw') {
     if (strlen($etag))
         $etag = trim(array_shift(explode(' ', $etag)));
     header('ETag: "'.$etag.'"');
+
+    if ($_options->linkmeta)
+        header('Link: <'.$_metabase.'/'.$_metafile.'>; rel=meta', false);
 
     if ($_method == 'GET')
         readfile($_filename);

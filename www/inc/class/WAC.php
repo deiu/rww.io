@@ -37,11 +37,10 @@ class WAC {
         $this->_resource_uri = $resource_uri;
 
         $this->_req_user = $req_user;
-
         
         // building the acl file name
         // building the absolute path for the corresponding acl file
-        if (substr(basename($resource_uri), 0, 5) == '.acl') {      
+        if (substr(basename($resource_uri), 0, 4) == '.acl') {      
             $this->_acl_name = basename($resource_uri);
             $this->_acl_file = $aclbase;
             $acl_uri = REQUEST_BASE.'/'.$this->_acl_name;
@@ -56,6 +55,10 @@ class WAC {
         }
         
         $this->_acl_file_base = dirname($this->_acl_file);
+
+        // set the default rel=acl link
+        if ($ptions->linkmeta)
+            header('Link: <'.$acl_uri.'>; rel=acl', false);
 
         /*
         $this->_debug[] = "<--------WAC--------->";
@@ -129,7 +132,7 @@ class WAC {
             $r = REQUEST_BASE.$path;
 
             if ($path != '/') {
-                $acl_file = (substr(basename($r), 0, 5) != '.acl')?'.'.basename($r):'';
+                $acl_file = (substr(basename($r), 0, 4) != '.acl')?'.'.basename($r):'';
                 $acl_path = $sys.'/.acl'.$acl_file;
                 $acl_uri = dirname($r).'/.acl'.$acl_file;
                 $this->_debug[] = "PATH > ACL path=".$acl_path." | ACL URI=".$acl_uri;
@@ -160,7 +163,7 @@ class WAC {
             
             if (is_file($acl_path)) { 
                 $g = new Graph('', $acl_path, '',$acl_uri);
-                if ($g->size() > 0) {                  
+                if ($g->size() > 0) {
                     // specific authorization
                     $q = "PREFIX acl: <http://www.w3.org/ns/auth/acl#>
                           SELECT * WHERE { 

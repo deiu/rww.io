@@ -142,7 +142,7 @@ wac.get = function(request_path, path) {
     var aclBase = window.location.protocol+'//'+window.location.host+window.location.pathname;
 
     // if the resource in question is not the .acl file itself
-    if (File.substr(0, 5) != '.acl') {
+    if (File.substr(0, 4) != '.acl') {
         if (File == '..') { // we need to use the parent dir name
             path = basename(window.location.pathname);
             var aclBase = window.location.protocol+'//'+window.location.host+dirname(window.location.pathname)+'/';
@@ -249,7 +249,7 @@ wac.edit = function(request_path, path) {
     }
     var aclBase = window.location.protocol+'//'+window.location.host+window.location.pathname;
     // if the resource in question is not the .acl file itself
-    if (File.substr(0, 5) != '.acl') {
+    if (File.substr(0, 4) != '.acl') {
         if (File == '..') { // we need to use the parent dir name
             var aclBase = window.location.protocol+'//'+window.location.host+dirname(window.location.pathname)+'/';
             var aclFile = '.acl.'+basename(window.location.pathname);
@@ -429,7 +429,7 @@ wac.save = function(elt) {
     if (path == '/') { // we're at the root level
         var aclURI = aclBase+'.acl';
         var innerRef = aclBase;
-    } else if (path.substr(0, 5) != '.acl') { // got a normal file
+    } else if (path.substr(0, 4) != '.acl') { // got a normal file
         if (path+'/' == reqPath) { // we need to use the parent dir name
             path = reqPath;
             var aclBase = window.location.protocol+'//'+window.location.host+dirname(window.location.pathname)+'/';
@@ -658,7 +658,7 @@ cloud.rm = function(path) {
     new HTTP(url+path, {
         method: 'delete',
         onSuccess: function() {
-            if (path.substr(0, 5) != '.acl') {
+            if (path.substr(0, 4) != '.acl') {
                 // remove trailing slash
                 if (path.substring(path.length - 1) == '/')
                     path = path.substring(0, path.length - 1);
