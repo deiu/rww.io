@@ -77,7 +77,7 @@ class WAC {
         $this->_acl_file_base = dirname($this->_acl_file);
 
         // set the default rel=acl link
-        if ($ptions->linkmeta)
+        if ($options->linkmeta)
             header('Link: <'.$acl_uri.'>; rel=acl', false);
 
         /*
