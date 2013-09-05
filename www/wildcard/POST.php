@@ -123,6 +123,7 @@ if ($_method == 'PATCH') {
 } elseif ($_content_type == 'application/sparql-update') {
     require_once('SPARQL.php');
 } else {
+    header('Accept-Post: '.implode(',', $_content_types));
     httpStatusExit(406, 'Content-Type ('.$_content_type.') Not Acceptable');
 }
 
