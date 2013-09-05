@@ -76,10 +76,11 @@ function webid_getinfo($uri) {
     $q = $g->SELECT(sprintf("PREFIX : <http://xmlns.com/foaf/0.1/>
                      SELECT ?name ?pic ?depic FROM <%s> WHERE { 
                         ?s a :Person .
+                        FILTER (?s = <%s>) .
                         OPTIONAL { ?s :name ?name } . 
                         OPTIONAL { ?s :img ?pic } .
                         OPTIONAL { ?s :depiction ?depic } .
-                    }", $uri));
+                    }", $uri, $uri));
 
     if (isset($q['results']) && isset($q['results']['bindings']))
         $r = $q['results']['bindings']; 
