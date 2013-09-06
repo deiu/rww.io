@@ -84,6 +84,7 @@ function display_quota($dir) {
             number_format($used, 2).' MB / '.
             number_format($total).' MB">';
     $ret .= '   <div class="meter '.$bg.'" style="width:'.$width.'%;"></div>';
+    $ret .= '   <div class="meter-inner">'.number_format($used, 2).'MB /'.number_format($total).'MB</div>';
     $ret .= '</div>';
     
     return $ret;
