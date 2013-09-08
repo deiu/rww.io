@@ -19,7 +19,7 @@
  *  OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE 
  *  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
- 
+
 HTTP = Class.create(Ajax.Request, {
   request: function(url) {
     this.url = url;
@@ -151,14 +151,14 @@ wac.get = function(request_path, path) {
     $('wac-append').checked = false;
     $('wac-recursive').checked = false;
     $('wac-users').value = '';
-    
+
     // remove trailing / from the file name we append after .acl
     console.log('Path='+path);
-     
+
     var File = path;
     if (path.substring(path.length - 1) == '/')
         File = path.substring(0, path.length - 1);
-  
+
     var aclBase = window.location.protocol+'//'+window.location.host+window.location.pathname;
 
     // if the resource in question is not the .acl file itself
@@ -211,7 +211,7 @@ wac.get = function(request_path, path) {
     // For quick access to those namespaces:
     var RDF = $rdf.Namespace("http://www.w3.org/1999/02/22-rdf-syntax-ns#");
     var WAC = $rdf.Namespace("http://www.w3.org/ns/auth/acl#");
-    
+
     var graph = $rdf.graph();
 
     var resource = $rdf.sym(innerRef);
@@ -224,30 +224,30 @@ wac.get = function(request_path, path) {
         // reset the checkboxes
         $('wac-read').checked = false;
         $('wac-write').checked = false;
-        
+
         // we need to know if the .acl file doesn't exist or it's empty, so we
         // can later add default rules
         if (perms.length > 0)
             $('wac-exists').value = '1';
-        
+
         var i, n = perms.length, mode;
         for (i=0;i<n;i++) {
             var mode = perms[i];
             if (mode == '<http://www.w3.org/ns/auth/acl#Read>')
-                $('wac-read').checked = true;               
+                $('wac-read').checked = true;
             else if (mode == '<http://www.w3.org/ns/auth/acl#Write>')
                 $('wac-write').checked = true;
             else if (mode == '<http://www.w3.org/ns/auth/acl#Append>')
                 $('wac-append').checked = true;
         }
-        
+
         // defaultForNew
         var defaultForNew = graph.each(resource, WAC('defaultForNew'));
         console.log('Rec-link='+defaultForNew.toString().replace(/\<(.*?)\>/g, "$1"));
         console.log('Resource='+dir);
         if (defaultForNew.toString().replace(/\<(.*?)\>/g, "$1") == dir)
             $('wac-recursive').checked = true;
-            
+
         // users
         var users = graph.each(resource, WAC('agent'));
         // remove the < > signs from URIs
@@ -285,11 +285,11 @@ wac.edit = function(request_path, path) {
     } else { // the resource IS the acl file
         var aclURI = aclBase+File;
     }
-    
+
     console.log('aclURI='+aclURI);
     new HTTP(aclURI, {
         method: 'get',
-        requestHeaders: {'Content-Type': 'text/turtle'}, 
+        requestHeaders: {'Content-Type': 'text/turtle'},
         onSuccess: function() {
             // display the editor
             wac.get(request_path, path);
@@ -301,10 +301,10 @@ wac.edit = function(request_path, path) {
         },
         onFailure: function(r) {
             var status = r.status.toString();
-            if (status != '404') { 
+            if (status != '404') {
                 var msg = 'Access denied';
                 console.log(msg);
-                        
+
                 notify(msg, 'error');
                 window.setTimeout("notify()", 2000);
             } else {
@@ -324,11 +324,11 @@ wac.hide = function() {
     $('wac-editor').hide();
 }
 // overwrite
-wac.put = function(uri, data, refresh) {    
+wac.put = function(uri, data, refresh) {
     new HTTP(uri, {
         method: 'put',
         body: data,
-        requestHeaders: {'Content-Type': 'text/turtle'}, 
+        requestHeaders: {'Content-Type': 'text/turtle'},
         onSuccess: function() {
             if (refresh == true)
                 window.location.reload(true);
@@ -336,14 +336,14 @@ wac.put = function(uri, data, refresh) {
         onFailure: function() {
             var msg = 'Access denied';
             console.log(msg);
-                        
+
             notify(msg, 'error');
             window.setTimeout("notify()", 2000);
         }
     });
 }
 // append
-wac.post = function(uri, data, refresh) {    
+wac.post = function(uri, data, refresh) {
     new HTTP(uri, {
         method: 'post',
         body: data,
@@ -355,9 +355,27 @@ wac.post = function(uri, data, refresh) {
         onFailure: function() {
             var msg = 'Access denied';
             console.log(msg);
-                        
+
             notify(msg, 'error');
             window.setTimeout("notify()", 2000);
+        }
+    });
+}
+// delete
+wac.rm = function(uri, refresh) {
+    new HTTP(uri, {
+        method: 'delete',
+        onSuccess: function () {
+            if (refresh == true)
+                window.location.reload(true);
+        },
+        onFailure: function () {
+            var status = r.status.toString();
+            if (status == '404') {
+                var msg = 'Access denied';
+                notify(msg, 'error');
+                window.setTimeout("notify()", 2000);
+            }
         }
     });
 }
@@ -376,7 +394,7 @@ wac.save = function(elt) {
     // For quick access to those namespaces:
     var RDF = $rdf.Namespace("http://www.w3.org/1999/02/22-rdf-syntax-ns#");
     var WAC = $rdf.Namespace("http://www.w3.org/ns/auth/acl#");
-
+    var FOAF = $rdf.Namespace("http://xmlns.com/foaf/0.1/");
 /**** Domain specific acl ****/
     // If there is no .acl at the root level, we must create one!
     var rootMeta = window.location.protocol+'//'+window.location.host+'/.acl';
@@ -384,11 +402,11 @@ wac.save = function(elt) {
     // check if we have a acl for domain control
     // DEBUG    
     console.log("rootMeta="+rootMeta);
-    
+
     var gotRootMeta = false;
     new HTTP(rootMeta, {
         method: 'get',
-        requestHeaders: {'Content-Type': 'text/turtle'}, 
+        requestHeaders: {'Content-Type': 'text/turtle'},
         onSuccess: function() {
              gotRootMeta = true;
         }
@@ -405,7 +423,7 @@ wac.save = function(elt) {
                 $rdf.sym(rootMeta));
         ng.add($rdf.sym(rootMeta),
                 WAC('agent'),
-                $rdf.sym(owner));        
+                $rdf.sym(owner));
         ng.add($rdf.sym(rootMeta),
                 WAC('mode'),
                 WAC('Read'));
@@ -421,7 +439,7 @@ wac.save = function(elt) {
                 $rdf.sym(rootDir));
         ng.add($rdf.sym(rootDir),
                 WAC('agentClass'),
-                $rdf.sym('http://xmlns.com/foaf/0.1/Agent'));
+                FOAF('Agent'));
         ng.add($rdf.sym(rootDir),
                 WAC('defaultForNew'),
                 $rdf.sym(window.location.protocol+'//'+window.location.host+'/'));
@@ -434,6 +452,7 @@ wac.save = function(elt) {
 
 
 /**** File specific acl ****/
+    // don't do anything if no ACL mode is checked in the UI
     var aclBase = window.location.protocol+'//'+window.location.host+reqPath;
 
     // Remove preceeding / from path
@@ -444,7 +463,7 @@ wac.save = function(elt) {
     var File = path;
     if (path.substring(path.length - 1) == '/')
         File = path.substring(0, path.length - 1);
-        
+
     // Build the full .acl path URI
     if (path == '/') { // we're at the root level
         var aclURI = aclBase+'.acl';
@@ -475,121 +494,123 @@ wac.save = function(elt) {
     // Create a new graph
     var graph = new $rdf.graph();
 
-    // path
-    graph.add(graph.sym(innerRef),
-                WAC('accessTo'),
-                graph.sym(aclBase+path));
-                
-    // add allowed users
-    if ((users.length > 0) && (users[0].length > 0)) {
-        var i, n = users.length, user;
-        for (i=0;i<n;i++) {
-            var user = users[i].replace(/\s+|\n|\r/g,'');
-            graph.add(graph.sym(innerRef),
-                WAC('agent'),
-                graph.sym(user));
-        }
+    if (read == false && write == false && append == false) {
+        wac.rm(aclURI, true);
     } else {
+        // path
         graph.add(graph.sym(innerRef),
-                WAC('agentClass'),
-                graph.sym('http://xmlns.com/foaf/0.1/Agent'));
-    }
-    
-    // add access modes
-    if (read == true) {
-        graph.add(graph.sym(innerRef),
-            WAC('mode'),
-            WAC('Read'));
-    }
-    if (write == true) {
-        graph.add(graph.sym(innerRef),
-            WAC('mode'),
-            WAC('Write'));
-    } else if (append == true) {
-        graph.add(graph.sym(innerRef),
-            WAC('mode'),
-            WAC('Append'));
-    }
-    // add recursion
-    if (recursive == true) {
-        graph.add(graph.sym(innerRef),
-                WAC('defaultForNew'),
-                graph.sym(aclBase+path));
-    }
-    // create default rules for the .acl file itself if we create it for the
-    // first time
-    if (exists == '0') {
-        // Add the #Default rule for this domain
-        graph.add(graph.sym(aclURI),
-                WAC('accessTo'),
-                graph.sym(aclURI));
-        graph.add(graph.sym(aclURI),
-                WAC('accessTo'),
-                graph.sym(aclBase+path));
-        graph.add(graph.sym(aclURI),
-                WAC('agent'),
-                graph.sym(owner));
-        graph.add(graph.sym(aclURI),
+                    WAC('accessTo'),
+                    graph.sym(aclBase+path));
+
+        // add allowed users
+        if ((users.length > 0) && (users[0].length > 0)) {
+            var i, n = users.length, user;
+            for (i=0;i<n;i++) {
+                var user = users[i].replace(/\s+|\n|\r/g,'');
+                graph.add(graph.sym(innerRef),
+                    WAC('agent'),
+                    graph.sym(user));
+            }
+        } else {
+            graph.add(graph.sym(innerRef),
+                    WAC('agentClass'),
+                    FOAF('Agent'));
+        }
+
+        // add access modes
+        if (read == true) {
+            graph.add(graph.sym(innerRef),
                 WAC('mode'),
                 WAC('Read'));
-        graph.add(graph.sym(aclURI),
+        }
+        if (write == true) {
+            graph.add(graph.sym(innerRef),
                 WAC('mode'),
                 WAC('Write'));
-
-        // serialize
-        var data = new $rdf.Serializer(graph).toN3(graph);
-        console.log(data);
-        // POST the new rules to the server .acl file
-        wac.post(aclURI, data, true);
-    } else {
-        // copy rules from old acl
-        var g = $rdf.graph();
-        var fetch = $rdf.fetcher(g);
-              
-        fetch.nowOrWhenFetched(aclURI,undefined,function(){
-            // add accessTo
+        } else if (append == true) {
+            graph.add(graph.sym(innerRef),
+                WAC('mode'),
+                WAC('Append'));
+        }
+        // add recursion
+        if (recursive == true) {
+            graph.add(graph.sym(innerRef),
+                    WAC('defaultForNew'),
+                    graph.sym(aclBase+path));
+        }
+        // create default rules for the .acl file itself if we create it for the
+        // first time
+        if (exists == '0') {
+            // Add the #Default rule for this domain
             graph.add(graph.sym(aclURI),
-                WAC('accessTo'),
-                graph.sym(aclURI));
-                
-            // add agents
-            var agents = g.each(g.sym(aclURI), WAC('agent'));
-
-            if (agents.length > 0) {
-                var i, n = agents.length;
-                for (i=0;i<n;i++) {
-                    var agent = agents[i]['uri'];
-                    graph.add(graph.sym(aclURI),
-                        WAC('agent'),
-                        graph.sym(agent));
-                }
-            } else {
-                graph.add(graph.sym(aclURI),
-                        WAC('agentClass'),
-                        graph.sym('http://xmlns.com/foaf/0.1/Agent'));
-            }
-            // add permissions
-            var perms = g.each($rdf.sym(aclURI), WAC('mode'));
-            if (perms.length > 0) {
-                var i, n = perms.length;
-                for (i=0;i<n;i++) {
-                    var perm = perms[i]['uri'];
-                    graph.add(graph.sym(aclURI),
-                        WAC('mode'),
-                        graph.sym(perm));
-                }
-            }
+                    WAC('accessTo'),
+                    graph.sym(aclURI));
+            graph.add(graph.sym(aclURI),
+                    WAC('accessTo'),
+                    graph.sym(aclBase+path));
+            graph.add(graph.sym(aclURI),
+                    WAC('agent'),
+                    graph.sym(owner));
+            graph.add(graph.sym(aclURI),
+                    WAC('mode'),
+                    WAC('Read'));
+            graph.add(graph.sym(aclURI),
+                    WAC('mode'),
+                    WAC('Write'));
 
             // serialize
             var data = new $rdf.Serializer(graph).toN3(graph);
-            // DEBUG
             console.log(data);
-            // PUT the new rules to the server .acl file
-            wac.put(aclURI, data, true);
-        });
-    
-    }
+            // POST the new rules to the server .acl file
+            wac.post(aclURI, data, true);
+        } else {
+            // copy rules from old acl
+            var g = $rdf.graph();
+            var fetch = $rdf.fetcher(g);
 
+            fetch.nowOrWhenFetched(aclURI,undefined,function(){
+                // add accessTo
+                graph.add($rdf.sym(aclURI),
+                    WAC('accessTo'),
+                    $rdf.sym(aclURI));
+
+                // add agents
+                var agents = g.each($rdf.sym(aclURI), WAC('agent'));
+
+                if (agents.length > 0) {
+                    var i, n = agents.length;
+                    for (i=0;i<n;i++) {
+                        var agent = agents[i]['uri'];
+                        graph.add($rdf.sym(aclURI),
+                            WAC('agent'),
+                            $rdf.sym(agent));
+                    }
+                } else {
+                    graph.add($rdf.sym(aclURI),
+                            WAC('agentClass'),
+                            FOAF('Agent'));
+                }
+                // add permissions
+                var perms = g.each($rdf.sym(aclURI), WAC('mode'));
+                if (perms.length > 0) {
+                    var i, n = perms.length;
+                    for (i=0;i<n;i++) {
+                        var perm = perms[i]['uri'];
+                        graph.add($rdf.sym(aclURI),
+                            WAC('mode'),
+                            $rdf.sym(perm));
+                    }
+                }
+
+                // serialize
+                var data = new $rdf.Serializer(graph).toN3(graph);
+                // DEBUG
+                console.log(data);
+                // PUT the new rules to the server .acl file
+                wac.put(aclURI, data, true);
+            });
+        }
+    }
     // hide the editor
     $('wac-editor').hide();
 }
@@ -597,7 +618,7 @@ wac.save = function(elt) {
 cloud = {};
 cloud.append = function(path, data) {
     data = data || ''
-    new HTTP(this.request_url+path, { 
+    new HTTP(this.request_url+path, {
         method: 'post',
         body: data,
         contentType: 'text/turtle',
@@ -607,7 +628,7 @@ cloud.append = function(path, data) {
         onFailure: function() {
             var msg = 'Access denied';
             console.log(msg);
-                        
+
             alert(msg, 'error');
             window.setTimeout("alert()", 2000);
         }
@@ -632,14 +653,14 @@ cloud.get = function(path) {
         }, onFailure: function() {
             var msg = 'Access denied';
             console.log(msg);
-                        
+
             notify(msg, 'error');
             window.setTimeout("notify()", 2000);
         }
     });
 }
 cloud.mkdir = function(path) {
-    new HTTP(this.request_url+path, { 
+    new HTTP(this.request_url+path, {
         method: 'mkcol',
         onSuccess: function() {
             window.location.reload();
@@ -647,7 +668,7 @@ cloud.mkdir = function(path) {
         onFailure: function() {
             var msg = 'Access denied';
             console.log(msg);
-                        
+
             alert(msg, 'error');
             window.setTimeout("alert()", 2000);
         }
@@ -665,7 +686,7 @@ cloud.put = function(path, data, type) {
         onFailure: function() {
             var msg = 'Access denied';
             console.log(msg);
-                        
+
             notify(msg, 'error');
             window.setTimeout("notify()", 2000);
         }
@@ -683,11 +704,11 @@ cloud.rm = function(path) {
                 if (path.substring(path.length - 1) == '/')
                     path = path.substring(0, path.length - 1);
                 // remove the .acl file
-                new HTTP(url+'.acl.'+path, { method: 'delete', onSuccess: function() {                
+                new HTTP(url+'.acl.'+path, { method: 'delete', onSuccess: function() {
                         window.location.reload();
                     }, onFailure: function() {
                         // refresh anyway
-                        window.location.reload(); 
+                        window.location.reload();
                     }
                 });
             } else {

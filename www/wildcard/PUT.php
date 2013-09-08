@@ -31,13 +31,17 @@ if (empty($_user))
     httpStatusExit(401, 'Unauthorized');
 
 // Web Access Control
-if ($_wac->can('Write') == false)
+// - allow Append for PUT if the resource doesn't exist.
+if (!file_exists($_filename)) {
+    if ($_wac->can('Append') == false)
+        httpStatusExit(403, 'Forbidden');
+} else if ($_wac->can('Write') == false) {
     httpStatusExit(403, 'Forbidden');
+}
 
 // check quota
 if (check_quota($_root, $_SERVER["CONTENT_LENGTH"]) == false)
     httpStatusExit(507, 'Insufficient Storage');
-
 
 // action
 $d = dirname($_filename);
@@ -60,6 +64,7 @@ if (!empty($_input) && $g->append($_input, $_data)) {
     librdf_php_last_log_level() && httpStatusExit(400, 'Bad Request', null, librdf_php_last_log_message());
     $g->save();
 } else {
+    header('Accept-Post: '.implode(',', $_content_types));
     httpStatusExit(406, 'Content-Type ('.$_content_type.') Not Acceptable');
 }
 
