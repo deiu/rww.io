@@ -315,10 +315,10 @@ function hideCloud() {
 }
 
 function toggleCheck(e1,e2) {
-    if ($(e1).checked == true)
-        $(e2).checked = false;
-    else
-        $(e2).checked = true;
+    if ($(e2).checked == true) {
+        if ($(e1).checked == true)
+            $(e2).checked = false;
+    } 
 }
 
 $(document).observe('keydown', function(e) {

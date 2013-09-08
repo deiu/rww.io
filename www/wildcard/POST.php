@@ -48,7 +48,10 @@ if (DEBUG) {
     closelog();
 }
 if ($can == false)  {
-    httpStatusExit(403, 'Forbidden', '403-404.php');
+    if ($_output == 'html')
+        httpStatusExit(403, 'Forbidden', '403-404.php');
+    else
+        httpStatusExit(403, 'Forbidden');
 } 
 
 // intercept requests for WebID generator
@@ -123,6 +126,7 @@ if ($_method == 'PATCH') {
 } elseif ($_content_type == 'application/sparql-update') {
     require_once('SPARQL.php');
 } else {
+    header('Accept-Post: '.implode(',', $_content_types));
     httpStatusExit(406, 'Content-Type ('.$_content_type.') Not Acceptable');
 }
 

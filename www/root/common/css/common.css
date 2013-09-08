@@ -319,6 +319,13 @@ input.account-input {
     height:15px;
 }
 
+.meter-inner {
+    position: absolute;
+    margin-top: -15px;
+    margin-left:10px;
+    color: grey;
+}
+
 .quota {
     width: 100px;
     height: 15px;
