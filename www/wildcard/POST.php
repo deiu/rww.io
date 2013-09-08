@@ -48,7 +48,10 @@ if (DEBUG) {
     closelog();
 }
 if ($can == false)  {
-    httpStatusExit(403, 'Forbidden', '403-404.php');
+    if ($_output == 'html')
+        httpStatusExit(403, 'Forbidden', '403-404.php');
+    else
+        httpStatusExit(403, 'Forbidden');
 } 
 
 // intercept requests for WebID generator
