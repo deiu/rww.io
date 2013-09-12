@@ -201,13 +201,13 @@ foreach($listing as $item) {
     if ($is_dir) {
         echo ($item_elt != '/')?'Directory':'Root';
     } elseif ((substr($item_elt, 0, 5) == '.meta') || (substr($item_elt, 0, 4) == '.acl')) {
-        echo 'text/turtle';
+        echo 'RDF';
     } elseif (isset($_RAW_EXT[$item_ext]['short'])) {
         if ($_RAW_EXT[$item_ext]['short'] != 'text')
             $is_dir = true; // fake a dir to disable the edit button
         echo $_RAW_EXT[$item_ext]['type'];
     } elseif (!strlen($item_ext)) {
-        echo 'text/turtle';
+        echo 'RDF';
     }
     if ($fake)
         echo '</td><td>'.strftime('%F %X %Z', time()).'</td>';
