@@ -74,6 +74,8 @@ Installation
 
 - You need to create a default storage location for your users' personal data stores. If you installed RWW.IO under /var/www/rww.io/, then you have to manually create the /data/ directory under that path (/var/www/rww.io/data/). Don't forget to make the /data/ directory writable by the web server user!
 
+- If you run into this Apache issue: ``VirtualHost overlap on port 443, the first has precedence``, please open the file /etc/apache2/ports.conf and make sure the ``<IfModule mod_ssl.c>`` directive also contains ``NameVirtualHost *:443``
+
 
 Documentation
 =============
