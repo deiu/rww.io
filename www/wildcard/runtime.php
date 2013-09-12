@@ -37,15 +37,20 @@ $_showMetaFiles = (isset($_COOKIE['showMetaFiles']))?$_COOKIE['showMetaFiles']:f
 $_checkedShowMeta = ($_showMetaFiles == true)?'checked':'';
 
 $_RAW_EXT = array(
-    'css'=>'text',
-    'htm'=>'text',
-    'html'=>'text',
-    'js'=>'text',
-    'jpg'=>'image',
-    'jpeg'=>'image',
-    'png'=>'image',
-    'gif'=>'image',
-    'txt'=>'text');
+    'otf'=>array('short'=>'font', 'type'=>'font/otf'),
+    'css'=>array('short'=>'text', 'type'=>'text/css'),
+    'htm'=>array('short'=>'text', 'type'=>'text/htm'),
+    'html'=>array('short'=>'text', 'type'=>'text/html'),
+    'js'=>array('short'=>'text', 'type'=>'text/javascript'),
+    'jpg'=>array('short'=>'image', 'type'=>'image/jpg'),
+    'jpeg'=>array('short'=>'image', 'type'=>'image/jpg'),
+    'png'=>array('short'=>'image', 'type'=>'image/png'),
+    'gif'=>array('short'=>'image',  'type'=>'image/gif'),
+    'txt'=>array('short'=>'text', 'type'=>'text/txt'),
+    'ttl'=>array('short'=>'turtle', 'type'=>'text/turtle'),
+    'n3'=>array('short'=>'n3', 'type'=>'text/n3'),
+    'nt'=>array('short'=>'nt', 'type'=>'text/nt'),
+    );
 
 $_content_types = array(
     'text/turtle;charset=utf-8',
@@ -60,7 +65,8 @@ $_content_types = array(
     'image/jpeg',
     'image/jpeg',
     'image/png',
-    'image/gif'
+    'image/gif',
+    'font/otf'
     );  
 
 header("User: $_user");
@@ -151,6 +157,6 @@ if (isset($_RAW_EXT[$_filename_ext])) {
     } else {   
         $_input = 'raw';
         $_output = 'raw';
-        $_output_type = $_RAW_EXT[$_filename_ext].'/'.($_filename_ext=='js'?'javascript':$_filename_ext);
+        $_output_type = $_RAW_EXT[$_filename_ext]['type'];
     }
 }

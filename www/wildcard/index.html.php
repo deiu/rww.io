@@ -202,10 +202,10 @@ foreach($listing as $item) {
         echo ($item_elt != '/')?'Directory':'Root';
     } elseif ((substr($item_elt, 0, 5) == '.meta') || (substr($item_elt, 0, 4) == '.acl')) {
         echo 'text/turtle';
-    } elseif (isset($_RAW_EXT[$item_ext])) {
-        if ($_RAW_EXT[$item_ext] != 'text')
+    } elseif (isset($_RAW_EXT[$item_ext]['short'])) {
+        if ($_RAW_EXT[$item_ext]['short'] != 'text')
             $is_dir = true; // fake a dir to disable the edit button
-        echo $_RAW_EXT[$item_ext].'/', $item_ext=='js'?'javascript':$item_ext;
+        echo $_RAW_EXT[$item_ext]['type'];
     } elseif (!strlen($item_ext)) {
         echo 'text/turtle';
     }
