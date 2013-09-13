@@ -238,9 +238,9 @@ foreach($listing as $item) {
 </div>
 
 <script type="text/javascript">
-function showWebID() {
+function showWebID(e) {
     // get the mouse position
-    var e = window.event;
+    var e = window.event || e;
     var topVal = e.clientY;
     var leftVal = e.clientX-300;
     // set the coords

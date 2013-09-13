@@ -80,7 +80,7 @@ if (substr($_user, 0, 4) == 'dns:') {
         <?php } else { ?> 
             <div class="login"> 
                 <span class="login-links"><a class="white" href="https://<?=BASE_DOMAIN?>">WebID Login</a>
-                <br/><a class="white" href="#" onclick="showWebID()">Get a WebID</a></span>
+                <br/><a class="white" href="#" onclick="showWebID(event)">Get a WebID</a></span>
                 <img class="login-photo" src="/common/images/nouser.png" />
             </div>
     <?php
