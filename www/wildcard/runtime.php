@@ -120,6 +120,7 @@ if (isset($_SERVER['HTTP_ORIGIN'])) {
         $n = '*';
     }
     header('Access-Control-Allow-Origin: '.$n);
+    header('Access-Control-Expose-Headers: User');
     header('Access-Control-Allow-Credentials: true');
 }
 
@@ -142,6 +143,7 @@ if ($_method == 'OPTIONS') {
 
     header('Allow: '.METHODS_S);
     header('Accept-Patch: application/json');
+    header('Access-Control-Expose-Headers: User');
     header('Accept-Post: '.implode(',', $_content_types));
     exit;
 }
