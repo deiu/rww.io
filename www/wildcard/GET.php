@@ -28,7 +28,6 @@ require_once('runtime.php');
 
 // serve the favicon
 if (basename($_filename) == 'favicon.ico') {
-    //header('Location: http'.(isHTTPS()?'s':'').'://'.BASE_DOMAIN.$_options->base_url.'/favicon.ico');
     $length = filesize($_SERVER["DOCUMENT_ROOT"].'/favicon.ico');
     header('Accept-Ranges: bytes');
 	header('Content-Length: ' . $length);
@@ -145,7 +144,15 @@ if ($_output == 'raw') {
         header("Content-Type: $_output_type");
     if (!file_exists($_filename))
         httpStatusExit(404, 'Not Found', '403-404.php');
-
+    
+    // caching
+    $expires = 14*24*60*60; // 14 days
+    $last_modified = filemtime($_filename);
+    header("Pragma: public");
+    header("Cache-Control: maxage=".$expires, true);
+    header('Expires: '.gmdate('D, d M Y H:i:s', time()+$expires) . ' GMT');
+    header('Last-Modified: '.gmdate('D, d M Y H:i:s', $last_modified).' GMT', true, 200);
+    
     $etag = `md5sum $_filename`;
     if (strlen($etag))
         $etag = trim(array_shift(explode(' ', $etag)));
@@ -153,6 +160,12 @@ if ($_output == 'raw') {
 
     if ($_options->linkmeta)
         header('Link: <'.$_metabase.'/'.$_metaname.'>; rel=meta', false);
+
+    if (@strtotime($_SERVER['HTTP_IF_MODIFIED_SINCE']) == $last_modified || 
+        trim($_SERVER['HTTP_IF_NONE_MATCH']) == $etag) { 
+        header("HTTP/1.1 304 Not Modified"); 
+        exit; 
+    }
 
     if ($_method == 'GET')
         readfile($_filename);
