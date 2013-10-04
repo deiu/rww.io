@@ -63,9 +63,25 @@ if (substr($_user, 0, 4) == 'dns:') {
         <div id="alertbody" style="display: inline;"></div>
     </div>
     <div id="title" style="display: none;"><?=$TITLE?></div>
-    
+
     <div id="topnav" class="topnav center">
-    <img src="/common/images/logo.svg" class="logo-icon left" /><span class="title" title="Home"><a href="http://<?=ROOT_DOMAIN?>">RWW.I/O</a></span>
+    <img src="/common/images/logo.svg" class="logo-icon left" /><span class="title" title="Home"><a href="/"><?=BASE_DOMAIN?></a>
+    <?php $paths = explode('/', REQUEST_URL); array_pop($paths);
+    $plen = '';
+    foreach ($paths as $k=>$v) {
+        if ($k > 0) {
+            $plen .= $v;
+            if (strlen($plen) < 45) {
+                echo '<a href="', REQUEST_BASE, implode('/', array_slice($paths, 0, $k+1)), '">', urldecode($v), '</a>';
+            } else {
+                echo '...';
+                break;
+            }
+        }
+        echo ' / ';
+    } ?>
+
+    </span>
     <?php
     if ($_SERVER['SERVER_NAME'] != ROOT_DOMAIN) {
         if ($user_link) { ?>
@@ -77,8 +93,8 @@ if (substr($_user, 0, 4) == 'dns:') {
                 <a class="white" href="<?=$user_link?>" target="_blank">
                     <img class="login-photo img-border r3" src="<?=$user_pic?>" title="View profile" /></a>
             </div>
-        <?php } else { ?> 
-            <div class="login"> 
+        <?php } else { ?>
+            <div class="login">
                 <span class="login-links"><a class="white" href="https://<?=BASE_DOMAIN?>">WebID Login</a>
                 <br/><a class="white" href="#" onclick="showWebID(event)">Get a WebID</a></span>
                 <img class="login-photo" src="/common/images/nouser.png" />

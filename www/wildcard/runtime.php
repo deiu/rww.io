@@ -30,7 +30,7 @@ require_once(dirname(__FILE__).'/../inc/runtime.inc.php');
 
 // cookie for displaying hidden files in the list (one month cookie)
 if (!isset($_COOKIE['showMetaFiles'])) {
-    setcookie('showMetaFiles', true, time()+2592000);
+    setcookie('showMetaFiles', false, time()+2592000);
 } 
 
 $_showMetaFiles = (isset($_COOKIE['showMetaFiles']))?$_COOKIE['showMetaFiles']:false;
