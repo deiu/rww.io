@@ -48,14 +48,6 @@ if (isset($timings)) {
 ?>
 
 <div onclick="$('codeID').toggle();">
-<?php
-
-if ($_options->coderev) {
-$src = explode('/', __FILE__);
-$src = array_slice($src, array_search('www', $src));
-$src = implode('/', $src);
-$src = "https://github.com/deiu/rww.io/tree/master/$src";
-?>
 <div class="footer">
 <span class="left">
     <a href="https://github.com/deiu/rww.io" target="_blank">GitHub</a> | <a href="http://<?=ROOT_DOMAIN?>/help">Help?</a> | Show your support
@@ -85,10 +77,6 @@ $src = "https://github.com/deiu/rww.io/tree/master/$src";
 
 </div>
 </div>
-<?php
-}
-
-?>
 <div class="clear"></div>
 </div>
 
