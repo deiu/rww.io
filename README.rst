@@ -97,6 +97,6 @@ You can help with the costs of running the website at http://rww.io/ by donating
 - Paypal: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=YCG7HFRPTVD4A
 - Flattr: https://flattr.com/thing/1748916/
 
-Evry bit of cash helps. Thank you! :-)
+Every bit of cash helps. Thank you! :-)
 
 
