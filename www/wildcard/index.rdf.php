@@ -108,10 +108,7 @@ foreach($contents as $properties) {
     if ($properties['resource'] == "./") {
         $g->append('turtle', "@prefix ldp: <http://www.w3.org/ns/ldp#> . @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>. ".
             "<".$properties['resource']."> a ldp:Container ; " .
-            "ldp:membershipSubject <> ; ".
-            "ldp:membershipPredicate rdfs:member ; ".
-            "ldp:membershipObject ldp:MemberSubject ; ".
-            "rdfs:member ".implode(",", $ldprs)." .");
+            "ldp:member ".implode(",", $ldprs)." .");
     }
 
 }
