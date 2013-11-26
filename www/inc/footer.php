@@ -79,7 +79,8 @@ if (isset($timings)) {
 </div>
 <div class="clear"></div>
 </div>
-
-
+<!-- Analytics -->
+<?php include_once("analytics.php"); ?>
+<!-- End analytics -->
 </body>
 </html>

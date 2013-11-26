@@ -1,2 +1,4 @@
 data/*
 *.swp
+
+www/inc/analytics.php
