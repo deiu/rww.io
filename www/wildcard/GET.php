@@ -130,6 +130,25 @@ if (is_dir($_filename) || substr($_filename,-1) == '/') {
             include_once('index.rdf.php');
   		}
     }
+} else {
+    // caching for files
+    $expires = 14*24*60*60; // 14 days
+    $last_modified = filemtime($_filename);
+    header("Pragma: public");
+    header("Cache-Control: maxage=".$expires, true);
+    header('Expires: '.gmdate('D, d M Y H:i:s', time()+$expires) . ' GMT');
+    header('Last-Modified: '.gmdate('D, d M Y H:i:s', $last_modified).' GMT', true, 200);
+
+    $etag = `md5sum $_filename`;
+    if (strlen($etag))
+        $etag = trim(array_shift(explode(' ', $etag)));
+    header('ETag: "'.$etag.'"');
+
+    if (@strtotime($_SERVER['HTTP_IF_MODIFIED_SINCE']) == $last_modified || 
+        trim($_SERVER['HTTP_IF_NONE_MATCH']) == $etag) { 
+        header("HTTP/1.1 304 Not Modified"); 
+        exit; 
+    }
 }
 
 // set default output
@@ -141,25 +160,6 @@ if (empty($_output)) {
 // add meta relation
 if ($_options->linkmeta)
     header('Link: <'.$_metabase.'/'.$_metaname.'>; rel=meta', false);
-
-// caching
-$expires = 14*24*60*60; // 14 days
-$last_modified = filemtime($_filename);
-header("Pragma: public");
-header("Cache-Control: maxage=".$expires, true);
-header('Expires: '.gmdate('D, d M Y H:i:s', time()+$expires) . ' GMT');
-header('Last-Modified: '.gmdate('D, d M Y H:i:s', $last_modified).' GMT', true, 200);
-
-$etag = `md5sum $_filename`;
-if (strlen($etag))
-    $etag = trim(array_shift(explode(' ', $etag)));
-header('ETag: "'.$etag.'"');
-
-if (@strtotime($_SERVER['HTTP_IF_MODIFIED_SINCE']) == $last_modified || 
-    trim($_SERVER['HTTP_IF_NONE_MATCH']) == $etag) { 
-    header("HTTP/1.1 304 Not Modified"); 
-    exit; 
-}
 
 // output raw
 if ($_output == 'raw') {
