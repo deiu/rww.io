@@ -43,7 +43,7 @@ if (substr($_user, 0, 4) == 'dns:') {
 }
 
 ?><!DOCTYPE html>
-<html>
+<html class="ng-app">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title><?=$_SERVER['SERVER_NAME']?>: <?=$TITLE?></title>
@@ -51,6 +51,8 @@ if (substr($_user, 0, 4) == 'dns:') {
     <link rel="stylesheet" href="/common/css/common.css" type="text/css" media="screen, projection" />
     <link rel="stylesheet" href="/common/css/font-awesome.min.css" type="text/css" media="screen, projection" />
     <link rel="stylesheet" href="/common/css/buttons.css" type="text/css" media="screen, projection" />
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+    <script>jQuery.noConflict();</script>
     <script src="/common/js/rdflib.js" type="text/javascript"></script>
     <script src="/common/js/prototype.js" type="text/javascript"></script>
     <script src="/common/js/common.js" type="text/javascript"></script>

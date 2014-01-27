@@ -56,7 +56,7 @@ if ($can == false)  {
 
 // intercept requests for WebID generator
 if (isset($_POST['SPKAC'])) {
-    require_once 'webidgen.php';
+    require_once '../inc/webidgen.php';
     // exit required so it can successfully send the certificate
     exit;
 }

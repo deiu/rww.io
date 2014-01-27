@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html class="ng-app">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <!-- App/UI -->
+    <link rel="stylesheet" href="style.css" type="text/css" media="screen, projection" />
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+    <script>jQuery.noConflict();</script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/angular.js/1.1.5/angular.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/angular-ui/0.4.0/angular-ui.min.js"></script>
+</head>
+<script>
+    ngLD = angular.module('LD', ['ui','ui.filters']);
+    function Onboarding($scope, $timeout) {
+        // prepare a list of storage providers
+        $scope.locations = [
+            {locationURI : 'data.fm', LocationName : 'data.fm'},
+            {locationURI : 'rww.io', LocationName : 'rww.io'} ];
+        // select a default storage provider
+        $scope.storageLocation = window.location.host;
+        // default username
+        $scope.account = 'username';
+        // current step
+        $scope.step = 'start';
+        // create iframe for WebID cert generation
+        f = document.createElement('iframe');
+        f.src = '//'+$scope.storageLocation+'/server.html';
+        f.style.display = 'none';
+        document.body.appendChild(f);
+        window.addEventListener("message", function(ev) {
+            $scope.$apply(function() {
+                console.log(ev.data.response);
+                $scope[ev.data.method+'Data'] = ev.data.response;
+            });
+        });
+        // update storage location
+        $scope.locationUpdate = function() {
+            f.src = '//'+$scope.storageLocation+'/server.html';
+            f.onload = $scope.accountStatus;
+            console.log(f.src);
+        }
+        $scope.storageStatus = function() {
+            f.contentWindow.postMessage({method: 'storageStatus', storageName: $scope.storageName }, "*");
+        }
+        $scope.accountStatus = function() {
+            if ($scope.accountName && $scope.accountName.length > 0)
+                f.contentWindow.postMessage({method: 'accountStatus', accountName: $scope.accountName }, "*");
+        }
+        $scope.accountCreate = function() {
+            window.opener.location='https://'+$scope.accountName+'.'+$scope.storageLocation;
+        }
+        // update account
+        $scope.$watch('accountName', function(newVal, oldVal) {
+            $scope.account = (!newVal || (newVal.length == 0)) ? 'username' : newVal;
+        });
+        // add or remove the <keygen> element depending whether the user wants a WebID or not (no point wasting time generating keys)
+        $scope.$watch('getWebID', function(newVal, oldVal) {
+            console.log(newVal, oldVal);
+            if (newVal == false)
+                jQuery('#onboarding').append('<keygen class="spkac" name="SPKAC" challenge="randomchars" keytype="rsa" style="display:none" />');
+            else if (newVal == true && jQuery('.spkac'))
+                jQuery('.spkac').remove();
+        });
+    }
+</script>
+<body ng-controller="Onboarding">
+    <nav class="navigation">
+        <a href="#start" ng-click="step='start'">
+          <span class="upperArrowElement" ng-class="step=='start'?'selected':''"></span>
+          <span class="lowerArrowElement" ng-class="step=='start'?'selected':''"></span>
+          <span class="content">Getting Started</span>
+        </a>
+        <a href="#signup" ng-click="step='signup'">
+          <span class="upperArrowElement" ng-class="step=='signup'?'selected':''"></span>
+          <span class="lowerArrowElement" ng-class="step=='signup'?'selected':''"></span>
+          <span class="content">Sign Up</span>
+        </a>
+        <a href="#login" ng-click="step='login'">
+          <span class="upperArrowElement" ng-class="step=='login'?'selected':''"></span>
+          <span class="lowerArrowElement" ng-class="step=='login'?'selected':''"></span>
+          <span class="content">Login</span>
+        </a>
+    </nav>
+    <div class="center registration">
+        <!-- GET STARTED -->
+        <fieldset class="panel" ng-show="step=='start'">
+            <legend><strong>Getting Started</strong></legend>
+            <div>
+                <p>This process will help you get set up with a unique WebID as well as dedicated personal data store (think of it as Dropbox but for Linked Data).</p>
+                <p>Since WebID doesn't rely on passwords, every time you login with WebID, a certificate selection dialog will pop up. To login, you just have to select the WebID certificate you want to use.</p>
+                <button type="submit" ng-click="step='signup'" class="button enabled radius">Start</button>
+                <button type="cancel" onclick="javascript: window.close();" class="button cancel radius">Close</button>
+            </div>
+        </fieldset>
+        <!-- SIGN UP -->
+        <fieldset class="panel" ng-show="step=='signup'">
+            <legend><strong>Sign up for personal storage space &amp; WebID account</strong></legend>
+            <div>
+                <form method="POST" id="onboarding" name="onboarding" action="/api/spkac" target="spkac">
+                <keygen class="spkac" name="SPKAC" challenge="randomchars" keytype="rsa" style="display:none" />
+                <p><input type="checkbox" name="webid" ng-model="getWebID" /><span class="checkboxtext">I already have a WebID, I just want storage.</span></p>
+                <p>Name: <input type="text" name="name" ng-model="name" placeholder="your full name" ng-disabled="getWebID" class="clear" ng-minlength=2 ng-maxlength=50 required /> <small>(2 characters min.)</small></p>
+                <p>Email: <input type="email" name="email" ng-model="email" placeholder="you@somewhere.com" ng-disabled="getWebID" class="clear" /> <small>(optional)</small></p>
+                <p>https:// <input type="text" name="username" ng-model="accountName" ng-change="accountStatus()" placeholder="username" class="clear" ng-class="accountStatusData.available ? 'ng-valid':'ng-invalid'" required /> <b>.</b> <select ng-model="storageLocation" ng-options="item.locationURI as item.LocationName for item in locations" ng-change="locationUpdate()"></select></p>
+                <span><small>Your WebID: <em>https://</em><b ng-class="!accountStatusData.available && accountName ? 'alert':''">{{account}}</b>.<em>{{storageLocation}}/profile/card#me</em></small></span><br/>
+                <span><small>Your storage: <em>https://</em><b ng-class="!accountStatusData.available && accountName ? 'alert':''">{{account}}</b>.<em>{{storageLocation}}/</em></small></span>
+                <br/>
+                <button type="submit" ng-click="step='login'" ng-disabled="!accountStatusData.available || (!name && !getWebID) || !accountName" ng-class="!accountStatusData.available || (!name && !getWebID) || !accountName ? 'disabled':'enabled'" class="button radius" />Create</button>
+                <button type="cancel" ng-click="step='start'" class="button cancel radius">Back</button>
+                <button type="cancel" onclick="javascript: window.close();" class="button cancel radius">Close</button>
+              </form>
+            </div>
+            <iframe class="push-2" name="spkac" style="height: 5em; display:none;"></iframe>
+        </fieldset>
+        <!-- LOGIN -->
+        <fieldset class="panel" ng-show="step=='login'">
+            <legend><strong>Login with your new WebID</strong></legend>
+            <div ng-hide="!accountStatusData.available || (!name && !getWebID) || !accountName">
+                <p>Congratulations! You now have a WebID.</p>
+                <p>Click <a href="https://{{account}}.{{storageLocation}}/profile/card#me" onclick="javascript: window.close();" target="_blank">here</a> to view your WebID profile.</p>
+                <p>Click <a href="https://{{account}}.{{storageLocation}}" onclick="javascript: window.close();" target="_blank">here</a> to be redirected to your personal data store. You can also click the button below to close this window.</p>
+                <p>Once you close this window, you will be able to log in with your new WebID.</p>
+            </div>
+            <div ng-show="!accountStatusData.available || (!name && !getWebID) || !accountName">
+                <p>You have not yet completed the singup process. Please click the Back button to return to the previous step.</p>
+            </div>
+            <div>
+                <button type="cancel" ng-click="step='signup'" class="button cancel radius">Back</button>
+                <button type="cancel" onclick="javascript: window.close();" class="button cancel radius">Close</button>
+            </div>
+        </fieldset>
+    </div>
+    <div class="clearfix"></div>
+</body>
+</html>
