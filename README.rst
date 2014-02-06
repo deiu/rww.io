@@ -69,10 +69,20 @@ Installation
 
 ::
 
-    sudo apt-get install php5-librdf librdf0 librdf0-dev raptor2-utils libraptor2-dev libraptor2-0
+    sudo apt-get install php5-librdf php5-json librdf0 librdf0-dev raptor2-utils libraptor2-dev libraptor2-0
     
 
 - You need to create a default storage location for your users' personal data stores. If you installed RWW.IO under /var/www/rww.io/, then you have to manually create the /data/ directory under that path (/var/www/rww.io/data/). Don't forget to make the /data/ directory writable by the web server user!
+
+Possible issues
+===============
+
+- In case you run into either ``Call to undefined function json_decode()`` or ``Call to undefined function librdf_new_world()``, you may have to add the following lines to your php.ini file:
+::
+
+    extension = json.so
+    extension = redland.so
+
 
 - If you run into this Apache issue: ``VirtualHost overlap on port 443, the first has precedence``, please open the file /etc/apache2/ports.conf and make sure the ``<IfModule mod_ssl.c>`` directive also contains ``NameVirtualHost *:443``
 
