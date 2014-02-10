@@ -92,7 +92,7 @@ function webid_getinfo($uri) {
         $depic = $r[0]['depic']['value'];
 
         if (strlen($name) == 0)
-            $name = 'Anonymous';
+            $name = 'No name';
         
         if (strlen($pic) == 0)
             $pic = (strlen($depic) > 0)?$depic:'/common/images/nouser.png';    
