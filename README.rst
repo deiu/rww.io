@@ -67,6 +67,8 @@ Current LDP support
 
 
 
+Misc
+----
 
 Currently, the UI is minimal, allowing you to edit RDF documents and set ACL rules. Users can also upload a limited range of images (PNG, JPG and GIF - for all your cat pictures, wee!).
 
