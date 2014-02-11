@@ -50,7 +50,7 @@ $quota = display_quota($_root);
     </form>
 </table>
 
-<div id="editor" class="editor" style="display:none">
+<div id="editor" class="editor ui-widget-content" style="display:none">
     <input class="cleft left" style="margin: 0;" type="text" id="editorpath" placeholder="loading..." />
     <select id="editorType" class="left" style="margin: 0;" onchange="cloud.edit($F('editorpath'))">
         <option disabled="disabled"></option>
@@ -70,7 +70,7 @@ $quota = display_quota($_root);
     <div class="right"><a href="#" class="button button-rounded button-flat-primary" onclick="cloud.save();"><i class="icon-save"></i> Save</a></div>
 </div>
 
-<div id="wac-editor" class="wac-editor" style="display: none;">
+<div id="wac-editor" class="wac-editor ui-widget-content" style="display: none;">
     <span id="wac-reqpath" name="wac-reqpath" style="display: none;"></span>
     <h3>Resource name: <b><span id="wac-path" name="wac-path"></span></b></h3>
     <input type="hidden" id="wac-exists" value="0" />
@@ -238,6 +238,9 @@ foreach($listing as $item) {
 </div>
 
 <script type="text/javascript">
+jQuery('#editor').draggable();
+jQuery('#wac-editor').draggable();
+
 function showWebID(e) {
     // get the mouse position
     var e = window.event || e;

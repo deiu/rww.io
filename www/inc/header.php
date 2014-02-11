@@ -52,6 +52,7 @@ if (substr($_user, 0, 4) == 'dns:') {
     <link rel="stylesheet" href="/common/css/font-awesome.min.css" type="text/css" media="screen, projection" />
     <link rel="stylesheet" href="/common/css/buttons.css" type="text/css" media="screen, projection" />
     <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script> 
     <script>jQuery.noConflict();</script>
     <script src="/common/js/rdflib.js" type="text/javascript"></script>
     <script src="/common/js/prototype.js" type="text/javascript"></script>
