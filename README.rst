@@ -38,12 +38,33 @@ Supported response types
 
 
 RDF media types (defaults to text/turtle):
-----------------
+------------------------------------------
 - JSON: application/json
 - NTriples: */rdf+nt, */nt
 - RDF/XML: */rdf+xml
 - RDFa: */html, */xhtml
 - Turtle: */turtle, */rdf+n3, */n3
+
+
+Current LDP support
+-------------------
+
+- LDPC:
+	- BasicContainer
+	- GET, POST, PUT, DELETE, HEAD, OPTIONS
+	- full paging through the new Link headers
+	- Prefer header
+	- Accept-Post 
+
+- LDPR:
+	- GET, POST, PUT, DELETE, HEAD, OPTIONS
+	- If-Match and ETag
+
+- Pending: 
+	- PATCH
+	- DirectContainer and IndirectContainer 
+	- Ordering/sorting 
+
 
 
 
