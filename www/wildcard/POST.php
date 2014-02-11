@@ -65,6 +65,18 @@ if (isset($_POST['SPKAC'])) {
 if (check_quota($_root, $_SERVER["CONTENT_LENGTH"]) == false)
     httpStatusExit(507, 'Insufficient Storage');
 
+// check if we post through LDP or not (post to a dir)
+if (is_dir($_filename)) {
+    if (isset($_SERVER['HTTP_SLUG'])) {
+        $_filename = $_filename.$_SERVER['HTTP_SLUG'];
+    } else {
+        // generate/autoincrement file ID
+        $c = count(glob($_filename.LDPR_SUFFIX.'*'));
+        $c++;
+        $_filename = $_filename.LDPR_SUFFIX.$c;
+    }
+}
+
 // action
 $d = dirname($_filename);
 if (!file_exists($d))

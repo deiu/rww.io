@@ -31,3 +31,6 @@ define('IMAGE_SIZE', 3000000);
 
 // disk quota for each data store (default=10MB)
 define('DISK_QUOTA', 10);
+
+// default filename for new resources created through LDPCs
+define('LDPR_SUFFIX', 'resource_');

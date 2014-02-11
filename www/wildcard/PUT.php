@@ -56,6 +56,18 @@ if ($_input == 'raw') {
     httpStatusExit(201, 'Created');
 }
 
+// check if we post through LDP or not (post to a dir)
+if (is_dir($_filename)) {
+    if (isset($_SERVER['HTTP_SLUG'])) {
+        $_filename = $_filename.$_SERVER['HTTP_SLUG'];
+    } else {
+        // generate/autoincrement file ID
+        $c = count(glob($_filename.LDPR_SUFFIX.'*'));
+        $c++;
+        $_filename = $_filename.LDPR_SUFFIX.$c;
+    }
+}
+
 $g = new Graph('', $_filename, '', $_base);
 require_once('if-match.php');
 

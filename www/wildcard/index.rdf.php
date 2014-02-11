@@ -71,46 +71,106 @@ foreach($listing as $item) {
 
 // serve LDP by default and beging with the first page
 $p = 1;
-$complement = '?p=1';
+$complement = $filename.'?p=1';
+header("Link: <".$complement.">; rel='first'", false);
+
 if (isset($_GET['p'])) {
 	$p = (int) $_GET['p'];
 	$complement = '?p='. (string) $p;
 }
 
-if ($p > 0) { 
-	$contents_chunks = array_chunk($contents, $pl);
-	$contents = $contents_chunks[$p-1];
-	if($p < count($contents_chunks)) {
-    	$g->append('turtle', "@prefix ldp: <http://www.w3.org/ns/ldp#> . <". $_request_path . $complement ."> ldp:nextPage <". $_request_path . "?p=". (string) ($p+1) ."> ." );
-	} 
-	else {
-		$g->append('turtle', "@prefix ldp: <http://www.w3.org/ns/ldp#> . @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> . <". $_request_path . $complement ."> ldp:nextPage rdf:nil ." );
-	}
-	$g->append('turtle', "@prefix ldp: <http://www.w3.org/ns/ldp#> . <". $_request_path . $complement ."> a ldp:Page . <". $_request_path . $complement ."> ldp:pageOf <". $_request_path ."> ." );
-}
-
-
+// prepare list of LDPRs
 $ldprs = array();
 foreach ($contents as $item) {
     if ($item['resource'] != './')
         $ldprs[] = '<'.$item['resource'].'>';
 }
 
-foreach($contents as $properties) {
-    // filesystem resources
-	$g->append('turtle', "@prefix p: <http://www.w3.org/ns/posix/stat#> . <".
-        $properties['resource']."> a ".
-        $properties['type'] ." ; p:mtime ".
-        $properties['mtime'] ." ; p:size ".
-        $properties['size'] ." .");
+// default -> show all
+$show_members = true;
+$show_containment = true;
+$show_empty = false;
 
-    // LDP resoures
-    if ($properties['resource'] == "./") {
-        $g->append('turtle', "@prefix ldp: <http://www.w3.org/ns/ldp#> . @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>. ".
-            "<".$properties['resource']."> a ldp:Container ; " .
-            "ldp:member ".implode(",", $ldprs)." .");
+// parse headers to retrieve preferred representation
+if (isset($_SERVER['HTTP_PREFER'])) {
+    $h = array();
+    $opts = explode(';', $_SERVER['HTTP_PREFER']);
+    foreach ($opts as $opt) {
+        $o = explode('=', trim($opt));
+        $v = explode(' ', trim($o[1], '"'));
+        
+        $h[$o[0]] = $v;
     }
 
+    if (isset($h['omit'])) {
+        foreach ($h['omit'] as $opt) {
+            if ($opt == 'http://www.w3.org/ns/ldp#PreferContainment')
+                $show_containment = false;
+            else if ($opt == 'http://www.w3.org/ns/ldp#PreferMembership')
+                $show_members = false;
+            else if ($opt == 'http://www.w3.org/ns/ldp#PreferEmptyContainer')
+                $show_empty = true;
+        }
+    }
+    // include takes precedence whatever the case
+    if (isset($h['include'])) {
+        $show_members = false;
+        $show_containment = false;
+        $show_empty = false;
+        foreach ($h['include'] as $opt) {
+            if ($opt == 'http://www.w3.org/ns/ldp#PreferContainment')
+                $show_containment = true;
+            else if ($opt == 'http://www.w3.org/ns/ldp#PreferMembership')
+                $show_members = true;
+            else if ($opt == 'http://www.w3.org/ns/ldp#PreferEmptyContainer')
+                $show_empty = true;
+        }
+    
+    }
+    // return the ack header
+    header('Preference-Applied: return=representation', false);
+}
+
+// split members into pages
+$contents_chunks = array_chunk($contents, $pl);
+$contents = $contents_chunks[$p-1];
+$pages = count($contents_chunks);
+// add paging headers
+if (!$show_empty && $p > 0) {
+    // set last page
+    header("Link: <".$filename."?p=".(string)($pages).">; rel='last'", false);
+
+    if ($p > 1)
+        header("Link: <".$filename."?p=".(string)($p-1).">; rel='prev'", false);
+    if($p < $pages) {
+        header("Link: <".$filename."?p=".(string)($p+1).">; rel='next'", false);
+        header("HTTP/1.1 333 Returning Related", false, 333);
+    }
+}
+
+
+// list each member
+foreach($contents as $properties) {
+    // LDPRs
+    if (!$show_empty) {
+        $g->append('turtle', "@prefix p: <http://www.w3.org/ns/posix/stat#> . <".
+            $properties['resource']."> a ".
+            $properties['type'] ." ; p:mtime ".
+            $properties['mtime'] ." ; p:size ".
+            $properties['size'] ." .");
+    }
+
+    // LDPC
+    if ($properties['resource'] == "./") {
+        $ttl = "@prefix ldp: <http://www.w3.org/ns/ldp#> . @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> . ".
+                "<".$properties['resource']."> a ldp:Container, ldp:BasicContainer ; ";
+
+        // list LDPR members in the LDPC
+        if ($show_containment)
+            $ttl .= "ldp:contains ".implode(",", $ldprs)." . ";
+        
+        $g->append('turtle', $ttl);
+    }
 }
 
 

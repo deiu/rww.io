@@ -112,7 +112,7 @@ if (is_dir($_filename) || substr($_filename,-1) == '/') {
         exit;
     } elseif (!isset($_output) || empty($_output) || $_output == 'html') {
         if ($_options->linkmeta)
-            header('Link: <'.$_metabase.$_metaname.'>; rel=meta', false);
+            header("Link: <".$_metabase.$_metaname.">; rel='meta'", false);
 
         include_once('index.html.php');
         exit;
@@ -126,7 +126,6 @@ if (is_dir($_filename) || substr($_filename,-1) == '/') {
             }
         }
         if ($dirindex) {
-        	header('Link: <?p=1>; rel="first"', false);
             include_once('index.rdf.php');
   		}
     }
@@ -140,7 +139,7 @@ if (empty($_output)) {
 
 // add meta relation
 if ($_options->linkmeta)
-    header('Link: <'.$_metabase.'/'.$_metaname.'>; rel=meta', false);
+    header("Link: <".$_metabase.$_metaname.">; rel='meta'", false);
 
 // output raw
 if ($_output == 'raw') {
@@ -210,6 +209,12 @@ if (isset($i_wait)) {
 $etag = $g->etag();
 if ($etag)
     header('ETag: "'.$etag.'"');
+
+// LDP type
+if (is_dir($_filename))
+    header("Link: <http://www.w3.org/ns/ldp#Container>; rel=\"type\"", false);
+else
+    header("Link: <http://www.w3.org/ns/ldp#Resource>; rel=\"type\"", false);
 
 // offer WebSocket updates
 $updatesVia = isHTTPS() ? 'wss:' : 'ws:';
