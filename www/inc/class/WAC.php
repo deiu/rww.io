@@ -78,7 +78,7 @@ class WAC {
 
         // set the default rel=acl link
         if ($options->linkmeta)
-            header("Link: <".$acl_uri.">; rel='acl'", false);
+            header("Link: <".$acl_uri.">; rel=acl", false);
 
         /*
         $this->_debug[] = "<--------WAC--------->";

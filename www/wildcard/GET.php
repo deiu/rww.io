@@ -112,7 +112,7 @@ if (is_dir($_filename) || substr($_filename,-1) == '/') {
         exit;
     } elseif (!isset($_output) || empty($_output) || $_output == 'html') {
         if ($_options->linkmeta)
-            header("Link: <".$_metabase.$_metaname.">; rel='meta'", false);
+            header("Link: <".$_metabase.$_metaname.">; rel=meta", false);
 
         include_once('index.html.php');
         exit;
@@ -139,7 +139,7 @@ if (empty($_output)) {
 
 // add meta relation
 if ($_options->linkmeta)
-    header("Link: <".$_metabase.$_metaname.">; rel='meta'", false);
+    header("Link: <".$_metabase.$_metaname.">; rel=meta", false);
 
 // output raw
 if ($_output == 'raw') {
