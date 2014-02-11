@@ -52,9 +52,9 @@ Current LDP support
 - LDPC:
 	- BasicContainer
 	- GET, POST, PUT, DELETE, HEAD, OPTIONS
-	- full paging through the new Link headers
+	- Full paging through Link headers
 	- Prefer header
-	- Accept-Post 
+	- Accept-Post header
 
 - LDPR:
 	- GET, POST, PUT, DELETE, HEAD, OPTIONS
