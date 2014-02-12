@@ -107,13 +107,14 @@ if ($can == false)  {
 
 // directory indexing
 if (is_dir($_filename) || substr($_filename,-1) == '/') {
+    // add meta relation
+    if ($_options->linkmeta)
+        header("Link: <".$_metabase.$_metaname.">; rel=meta", false);
+    
     if (substr($_filename, -1) != '/') {
         header("Location: $_base/");
         exit;
     } elseif (!isset($_output) || empty($_output) || $_output == 'html') {
-        if ($_options->linkmeta)
-            header("Link: <".$_metabase.$_metaname.">; rel=meta", false);
-
         include_once('index.html.php');
         exit;
     } else {
@@ -137,10 +138,6 @@ if (empty($_output)) {
     $_output_type = 'text/turtle';
 }
 
-// add meta relation
-if ($_options->linkmeta)
-    header("Link: <".$_metabase.$_metaname.">; rel=meta", false);
-
 // output raw
 if ($_output == 'raw') {
     if ($_output_type)
@@ -148,6 +145,10 @@ if ($_output == 'raw') {
     if (!file_exists($_filename))
         httpStatusExit(404, 'Not Found', '403-404.php');
     
+    // add meta relation
+    if ($_options->linkmeta)
+        header("Link: <".$_metabase.$_metaname.">; rel=meta", false);
+
     // caching for files
     $expires = 14*24*60*60; // 14 days
     $last_modified = filemtime($_filename);
