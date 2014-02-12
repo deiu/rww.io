@@ -148,7 +148,6 @@ if (!$show_empty && $p > 0) {
     }
 }
 
-
 // list each member
 foreach($contents as $properties) {
     // LDPRs
@@ -162,16 +161,13 @@ foreach($contents as $properties) {
 
     // LDPC
     if ($properties['resource'] == "./") {
-        $ttl = "@prefix ldp: <http://www.w3.org/ns/ldp#> . @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> . ".
+        $ldpc = "@prefix ldp: <http://www.w3.org/ns/ldp#> . @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> . ".
                 "<".$properties['resource']."> a ldp:Container, ldp:BasicContainer ; ";
 
         // list LDPR members in the LDPC
-        if ($show_containment)
-            $ttl .= "ldp:contains ".implode(",", $ldprs)." . ";
-        
-        $g->append('turtle', $ttl);
+        if ($show_containment && sizeof($ldprs) > 0)
+            $ldpc .= "ldp:contains ".implode(",", $ldprs)." . ";
+
+        $g->append('turtle', $ldpc);
     }
 }
-
-
-
