@@ -104,20 +104,45 @@ if (isset($_FILES["image"])) {
     exit;
 }
 
-// check if we post through LDP or not (post to a dir)
-if (is_dir($_filename)) {
-    if (isset($_SERVER['HTTP_SLUG'])) {
-        $_filename = $_filename.$_SERVER['HTTP_SLUG'];
-        $new_file = $_SERVER['HTTP_SLUG'];
-    } else {
-        // generate/autoincrement file ID
-        $c = count(glob($_filename.LDPR_SUFFIX.'*'));
-        $c++;
-        $new_file = LDPR_SUFFIX.$c;
-        $_filename = $_filename.$new_file;
+// check if we post through LDP or not (by posting to a dir)
+// TODO: create dirs through LDP
+if (is_dir($_filename)) {  
+    $slug = (isset($_SERVER['HTTP_SLUG']))?trim($_SERVER['HTTP_SLUG']):'';
+
+    // check if we need to create a dir
+    if (isset($_SERVER['HTTP_LINK'])) {
+        // look for an ldp:Container in the Link header
+        if (in_array('http://www.w3.org/ns/ldp#Container', http_parse_link_header($_SERVER['HTTP_LINK']))) {
+            if (strlen($slug) > 0) {
+                $_dir = $_filename.$slug;
+            } else {
+                $c = count(glob($_filename.LDPC_SUFFIX.'*'));
+                $c++;
+                $_dir = LDPC_SUFFIX.$c;
+            }
+            $d = $_filename.$_dir;
+            // set the filename to the .meta file (we might need to post triples about the container there)
+            $metafile = '.meta.'.$_dir;
+            $_filename = $_filename.$metafile;
+
+            if (!file_exists($d))
+                mkdir($d, 0777, true);
+
+        } else if (in_array('http://www.w3.org/ns/ldp#Resource', http_parse_link_header($_SERVER['HTTP_LINK']))) {
+            if (strlen($slug)> 0) {
+                $_filename = $_filename.$slug;
+                $metafile = $slug;
+            } else {
+                // generate and autoincrement file ID
+                $c = count(glob($_filename.LDPR_SUFFIX.'*'));
+                $c++;
+                $metafile = LDPR_SUFFIX.$c;
+                $_filename = $_filename.$metafile;
+            }
+        }
     }
 } else {
-    $new_file = $_SERVER['SCRIPT_URL'];
+    $metafile = $_SERVER['SCRIPT_URL'];
 }
 
 $_data = file_get_contents('php://input');
@@ -136,14 +161,14 @@ if ($_method == 'PATCH') {
         librdf_php_last_log_level() && httpStatusExit(400, 'Bad Request', null, librdf_php_last_log_message());
         $g->save();
         header('Triples: '.$g->size());
-        header("Link: <".$_base.$new_file.">; rel=meta", false);
+        header("Link: <".$_base.$metafile.">; rel=meta", false);
         httpStatusExit(201, 'Created');
     }
 } elseif (!empty($_input) && ($g->append($_input, $_data) || 1)) {
     librdf_php_last_log_level() && httpStatusExit(400, 'Bad Request', null, librdf_php_last_log_message());
     $g->save();
     header("Triples: ".$g->size(), false);
-    header("Link: <".$_base.$new_file.">; rel=meta", false);
+    header("Link: <".$_base.$metafile.">; rel=meta", false);
     httpStatusExit(201, 'Created');
 } elseif ($_content_type == 'application/sparql-update') {
     require_once('SPARQL.php');

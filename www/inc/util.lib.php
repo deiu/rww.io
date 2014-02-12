@@ -24,6 +24,18 @@
  *  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+// parse a given http header
+function http_parse_link_header( $header ) {
+    $retVal = array();
+    $elems = explode(';', $header);
+    foreach ($elems as $v) {
+        $v = str_replace('<', '', $v);
+        $v = str_replace('>', '', $v);
+        array_push($retVal , trim($v));
+    }
+
+    return $retVal;
+}
 
 // check if a dir is empty
 function is_dir_empty($dir) {
