@@ -71,7 +71,7 @@ foreach($listing as $item) {
 
 // serve LDP by default and beging with the first page
 $p = 1;
-$complement = $_filename.'?p=1';
+$complement = $_base.'?p=1';
 header("Link: <".$complement.">; rel='first'", false);
 
 if (isset($_GET['p'])) {
@@ -138,12 +138,12 @@ $pages = count($contents_chunks);
 // add paging headers
 if (!$show_empty && $p > 0) {
     // set last page
-    header("Link: <".$_filename."?p=".(string)($pages).">; rel='last'", false);
+    header("Link: <".$_base."?p=".(string)($pages).">; rel='last'", false);
 
     if ($p > 1)
-        header("Link: <".$_filename."?p=".(string)($p-1).">; rel='prev'", false);
+        header("Link: <".$_base."?p=".(string)($p-1).">; rel='prev'", false);
     if($p < $pages) {
-        header("Link: <".$_filename."?p=".(string)($p+1).">; rel='next'", false);
+        header("Link: <".$_base."?p=".(string)($p+1).">; rel='next'", false);
         header("HTTP/1.1 333 Returning Related", false, 333);
     }
 }
