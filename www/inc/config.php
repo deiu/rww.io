@@ -34,3 +34,4 @@ define('DISK_QUOTA', 10);
 
 // default filename for new resources created through LDPCs
 define('LDPR_SUFFIX', 'resource_');
+define('LDPC_SUFFIX', 'dir_');
