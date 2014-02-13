@@ -97,10 +97,6 @@ $_request_path = substr($_filename, strlen($_filebase));
 $_metabase = ($_SERVER['SCRIPT_URL'] != '/')?dirname($_base):$_base;
 $_metaname = ($_SERVER['SCRIPT_URL'] != '/')?'/.meta.'.basename($_SERVER['SCRIPT_URL']):'.meta';
 
-if ($_options->debug) {
-    header('Filename: '.$_filename);
-}
-
 // Web Access Control
 $_wac = new WAC($_user, $_filename, $_filebase, $_base, $_options);
 
