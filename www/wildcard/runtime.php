@@ -95,6 +95,7 @@ $_request_path = substr($_filename, strlen($_filebase));
 
 // meta
 $_metabase = ($_SERVER['SCRIPT_URL'] != '/')?dirname($_base):$_base;
+$_metafile = ($_SERVER['SCRIPT_URL'] != '/')?dirname($_filename).'/.meta.'.basename($_SERVER['SCRIPT_URL']):$_filename.'.meta.'.basename($_SERVER['SCRIPT_URL']);
 $_metaname = ($_SERVER['SCRIPT_URL'] != '/')?'/.meta.'.basename($_SERVER['SCRIPT_URL']):'.meta';
 
 // Web Access Control

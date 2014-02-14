@@ -104,8 +104,7 @@ if (isset($_FILES["image"])) {
     exit;
 }
 
-// check if we post through LDP or not (by posting to a dir)
-// TODO: create dirs through LDP
+// check if we post using LDP (by posting to a dir)
 if (is_dir($_filename)) {  
     include('ldp.php');
 } else {
@@ -128,7 +127,7 @@ if ($_method == 'PATCH') {
         librdf_php_last_log_level() && httpStatusExit(400, 'Bad Request', null, librdf_php_last_log_message());
         $g->save();
         header('Triples: '.$g->size());
-        header("Link: <".$_base.$metafile.">; rel=meta", false);
+        header("Link: <".dirname($_base).'/'.$metafile.">; rel=meta", false);
         httpStatusExit(201, 'Created');
     }
 } elseif (!empty($_input) && ($g->append($_input, $_data) || 1)) {
