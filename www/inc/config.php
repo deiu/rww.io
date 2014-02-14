@@ -33,5 +33,5 @@ define('IMAGE_SIZE', 3000000);
 define('DISK_QUOTA', 10);
 
 // default filename for new resources created through LDPCs
-define('LDPR_SUFFIX', 'resource_');
-define('LDPC_SUFFIX', 'dir_');
+define('LDPR_PREFIX', 'resource_');
+define('LDPC_PREFIX', 'dir_');
