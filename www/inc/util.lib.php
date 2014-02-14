@@ -24,6 +24,23 @@
  *  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+// check if the LDPC offers default prefixes
+function LDP_get_prefix($path, $uri, $type='http://ns.rww.io/ldpx#LDPRprefix') {
+    if ($path && $uri) {
+        $g = new Graph('', $path, '',$uri);
+        if ($g->size() > 0) {
+            // specific authorization
+            $q = 'SELECT ?s, ?prefix WHERE { ?s <'.$type.'> ?prefix }';
+            $s = $g->SELECT($q);
+            $res = $s['results']['bindings'];
+
+            if (isset($res) && count($res) > 0)
+                return $res[0]['prefix']['value'];
+        }
+    }
+    return null;
+}
+
 // parse a given http header
 function http_parse_link_header( $header ) {
     $retVal = array();
