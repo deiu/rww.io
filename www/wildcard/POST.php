@@ -108,7 +108,8 @@ if (isset($_FILES["image"])) {
 if (is_dir($_filename)) {  
     include('ldp.php');
 } else {
-    $metafile = $_SERVER['SCRIPT_URL'];
+    $metafile = '';
+    $ldp_location = $_base;
 }
 
 $_data = file_get_contents('php://input');
@@ -128,6 +129,7 @@ if ($_method == 'PATCH') {
         $g->save();
         header('Triples: '.$g->size());
         header("Link: <".dirname($_base).'/'.$metafile.">; rel=meta", false);
+        header('Location: '.$ldp_location);
         httpStatusExit(201, 'Created');
     }
 } elseif (!empty($_input) && ($g->append($_input, $_data) || 1)) {
@@ -135,6 +137,7 @@ if ($_method == 'PATCH') {
     $g->save();
     header("Triples: ".$g->size(), false);
     header("Link: <".$_base.$metafile.">; rel=meta", false);
+    header('Location: '.$ldp_location);
     httpStatusExit(201, 'Created');
 } elseif ($_content_type == 'application/sparql-update') {
     require_once('SPARQL.php');

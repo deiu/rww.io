@@ -22,6 +22,8 @@ if (isset($_SERVER['HTTP_LINK'])) {
         // set the filename to the .meta file (we might need to post triples about the container there)
         $metafile = '.meta.'.$_dir;
         $_filename = $_filename.$metafile;
+        $_dir = (strrpos($_dir, '/', -1))?$_dir:$_dir.'/'; // add trailing slash for dirs/containers        
+        $ldp_location = $_base.$_dir;
 
         if (!file_exists($d))
             mkdir($d, 0777, true);
@@ -42,4 +44,5 @@ if ($got_resource) {
         $metafile = $prefix.$c;
     }
     $_filename = $_filename.$metafile;
+    $ldp_location = $_base.$metafile;
 }

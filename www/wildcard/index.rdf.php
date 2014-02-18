@@ -43,7 +43,7 @@ foreach($listing as $item) {
     $len = strlen($item);
     if (!$len) continue;
     // don't report .. for the root
-    if ($item == '..')
+    if (($item == '..') || ($item == '.'))
         continue;
     $is_dir = is_dir("$_filename/$item");
     $item_ext = strrpos($item, '.');
@@ -85,6 +85,9 @@ foreach ($contents as $item) {
     if ($item['resource'] != './')
         $ldprs[] = '<'.$item['resource'].'>';
 }
+// split members into pages
+$ldprs_chunks = array_chunk($ldprs, $pl);
+$ldprs_page = $ldprs_chunks[$p-1];
 
 // default -> show all
 $show_members = true;
@@ -148,6 +151,19 @@ if (!$show_empty && $p > 0) {
     }
 }
 
+
+// List LDPC info
+$ldpc = "@prefix ldp: <http://www.w3.org/ns/ldp#> . @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> . @prefix p: <http://www.w3.org/ns/posix/stat#> .".
+        "<".$_base."> a ldp:Container, ldp:BasicContainer, p:Directory ; ".
+        "p:mtime ".filemtime($_filename)." ;".
+        "p:size ".filesize($_filename)." ;";
+
+if ($show_containment && sizeof($ldprs) > 0)
+    $ldpc .= "ldp:contains ".implode(",", $ldprs_page)." . ";
+
+$g->append('turtle', $ldpc);
+
+
 // list each member
 foreach($contents as $properties) {
     // LDPRs
@@ -157,17 +173,5 @@ foreach($contents as $properties) {
             $properties['type'] ." ; p:mtime ".
             $properties['mtime'] ." ; p:size ".
             $properties['size'] ." .");
-    }
-
-    // LDPC
-    if ($properties['resource'] == "./") {
-        $ldpc = "@prefix ldp: <http://www.w3.org/ns/ldp#> . @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> . ".
-                "<".$properties['resource']."> a ldp:Container, ldp:BasicContainer ; ";
-
-        // list LDPR members in the LDPC
-        if ($show_containment && sizeof($ldprs) > 0)
-            $ldpc .= "ldp:contains ".implode(",", $ldprs)." . ";
-
-        $g->append('turtle', $ldpc);
     }
 }
