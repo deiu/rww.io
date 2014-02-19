@@ -56,22 +56,6 @@ if ($_input == 'raw') {
     httpStatusExit(201, 'Created');
 }
 
-// check if we post through LDP or not (post to a dir)
-if (is_dir($_filename)) {
-    if (isset($_SERVER['HTTP_SLUG'])) {
-        $_filename = $_filename.$_SERVER['HTTP_SLUG'];
-        $new_file = $_SERVER['HTTP_SLUG'];
-    } else {
-        // generate/autoincrement file ID
-        $c = count(glob($_filename.LDPR_SUFFIX.'*'));
-        $c++;
-        $new_file = LDPR_SUFFIX.$c;
-        $_filename = $_filename.$new_file;
-    }
-} else {
-    $new_file = $_SERVER['SCRIPT_URL'];
-}
-
 $g = new Graph('', $_filename, '', $_base);
 require_once('if-match.php');
 
@@ -79,8 +63,6 @@ $g->truncate();
 if (!empty($_input) && $g->append($_input, $_data)) {
     librdf_php_last_log_level() && httpStatusExit(400, 'Bad Request', null, librdf_php_last_log_message());
     $g->save();
-    header('Triples: '.$g->size());
-    header("Link: <".$_base.$new_file.">; rel=meta", false);
     httpStatusExit(201, 'Created');
 } else {
     librdf_php_last_log_level() && httpStatusExit(400, 'Bad Request', null, librdf_php_last_log_message());
