@@ -160,8 +160,27 @@ $ldpc = "@prefix ldp: <http://www.w3.org/ns/ldp#> . @prefix rdfs: <http://www.w3
 
 if ($show_containment && sizeof($ldprs) > 0)
     $ldpc .= "ldp:contains ".implode(",", $ldprs_page)." . ";
-
+// add triples for the LDPC to the graph
 $g->append('turtle', $ldpc);
+
+// add contents from .meta.LDPC
+$meta_uri = dirname($_base).'/.meta.'.basename($_base);
+$meta_file = dirname($_filename).'/.meta.'.basename($_filename);
+$mg = new Graph('', $meta_file, '',$meta_uri);
+if ($mg->size() > 0) {
+    // specific authorization
+    $q = 'SELECT * WHERE { <'.$_base.'> ?p ?o }';
+    $s = $mg->SELECT($q);
+    $res = $s['results']['bindings'];
+
+    if (isset($res) && count($res) > 0) {
+        foreach ($res as $t) {
+            $nt = '<'.$_base.'> <'.$t['p']['value'].'> ';
+            $nt .= ($t['o']['type']=='uri')?'<'.$t['o']['value'].'> .':'"'.$t['o']['value'].'" .';
+            $g->append('turtle', $nt);
+        }
+    }
+}
 
 
 // list each member
