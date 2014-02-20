@@ -369,7 +369,7 @@ wac.rm = function(uri, refresh) {
             if (refresh == true)
                 window.location.reload(true);
         },
-        onFailure: function () {
+        onFailure: function (r) {
             var status = r.status.toString();
             if (status == '404') {
                 var msg = 'Access denied';
@@ -683,9 +683,20 @@ cloud.put = function(path, data, type) {
         onSuccess: function() {
             window.location.reload();
         },
-        onFailure: function() {
-            var msg = 'Access denied';
-            console.log(msg);
+        onFailure: function(r) {
+            var status = r.status.toString();
+            var msg = '';
+
+            if (status == '400')
+                msg = 'Bad request (check your syntax).';
+            else if (status == '401')
+                msg = 'Unauthorized request (not logged in?).';
+            else if (status == '403')
+                msg = 'Forbidden! You do not have access.';
+            else if (status == '406')
+                msg = 'Content-Type not acceptable.';
+            else
+                msg = 'Unknown error.';
 
             notify(msg, 'error');
             window.setTimeout("notify()", 2000);
