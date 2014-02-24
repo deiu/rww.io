@@ -99,7 +99,7 @@ $_metafile = ($_SERVER['SCRIPT_URL'] != '/')?dirname($_filename).'/.meta.'.basen
 $_metaname = ($_SERVER['SCRIPT_URL'] != '/')?'/.meta.'.basename($_SERVER['SCRIPT_URL']):'.meta';
 
 // Web Access Control
-$_wac = new WAC($_user, $_filename, $_filebase, $_base, $_options);
+$_wac = new WAC($_user, $_filename, $_filebase, $_base, $_SERVER['SCRIPT_URL'], $_options->linkmeta);
 
 // WebDAV
 header('MS-Author-Via: DAV, SPARQL');

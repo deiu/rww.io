@@ -45,11 +45,11 @@ class WAC {
      *
      * @return boolean (always true for now)
      */
-    function __construct($req_user, $aclbase, $base_path, $resource_uri, $options) {
+    function __construct($req_user, $aclbase, $base_path, $resource_uri, $path, $showlinkmeta=false) {
         if (substr($aclbase, -1) == '/')
             $aclbase = substr($aclbase, 0, -1);
 
-        $this->_path = $_SERVER['SCRIPT_URL'];
+        $this->_path = $path;
 
         $this->_base_path = $base_path;
         
@@ -60,14 +60,15 @@ class WAC {
         
         // building the acl file name
         // building the absolute path for the corresponding acl file
-        if (substr(basename($resource_uri), 0, 4) == '.acl') {      
-            $this->_acl_name = basename($resource_uri);
-            $this->_acl_file = $aclbase;
-            $acl_uri = REQUEST_BASE.'/'.$this->_acl_name;
-        } else if ($_SERVER['SERVER_NAME'] == basename($aclbase)) {// we're at the root level
+        
+        if ($_SERVER['SERVER_NAME'] == basename($aclbase)) { // we're at the root level
             $this->_acl_name = '.acl';
             $this->_acl_file = $aclbase.'/'.$this->_acl_name;
-            $acl_uri = REQUEST_BASE.'/'.$this->_acl_name;
+            $acl_uri = dirname($path).'/'.$this->_acl_name;
+        } else if (substr(basename($resource_uri), 0, 4) == '.acl') {      
+            $this->_acl_name = basename($resource_uri);
+            $this->_acl_file = $aclbase;
+            $acl_uri = dirname($path).'/'.$this->_acl_name;
         } else {
             $this->_acl_name = '.acl.'.basename($aclbase);
             $this->_acl_file = dirname($aclbase).'/'.$this->_acl_name;
@@ -77,19 +78,18 @@ class WAC {
         $this->_acl_file_base = dirname($this->_acl_file);
 
         // set the default rel=acl link
-        if ($options->linkmeta)
+        if ($showlinkmeta)
             header("Link: <".$acl_uri.">; rel=acl", false);
 
-        /*
         $this->_debug[] = "<--------WAC--------->";
         $this->_debug[] = "acl_file_name=".$this->_acl_name;
         $this->_debug[] = "acl_file_path=".$this->_acl_file;
         $this->_debug[] = "acl_uri=".$acl_uri;
         $this->_debug[] = "aclbase=".$aclbase;
-        $this->_debug[] = "Request base=".REQUEST_BASE;
+        $this->_debug[] = "Request base=".dirname($path);
         $this->_debug[] = "resource_uri=".$this->_resource_uri;
         $this->_debug[] = "WebID=".$this->_req_user;
-        */
+        
         return true;
     }
 
@@ -138,23 +138,26 @@ class WAC {
         }
           
         // Recursively find a .acl
-        $this->_debug[] = "Not the owner, going recursively! BASE=".REQUEST_BASE;
-        $this->_debug[] = "User is: ".$this->_req_user;
         $res = $uri;
         $sys = $this->_acl_file_base;
         $path = $this->_path;
         $break = false;
+
+        // debug
+        $this->_debug[] = "Not the owner, going recursively! BASE=".$path;
+        $this->_debug[] = "User is: ".$this->_req_user;
+
         // walk path
         while(true) {
             if ($break == true)
                 return true;
 
-            $r = REQUEST_BASE.$path;
+            $r = $path;
 
             if ($path != '/') {
-                $acl_file = (substr(basename($r), 0, 4) != '.acl')?'.'.basename($r):'';
-                $acl_path = $sys.'/.acl'.$acl_file;
-                $acl_uri = dirname($r).'/.acl'.$acl_file;
+                $acl_file = (substr(basename($r), 0, 4) != '.acl')?'/.acl.'.basename($r):'/'.basename($r);
+                $acl_path = $sys.$acl_file;
+                $acl_uri = (dirname($r) == '/')?$acl_file:dirname($r).$acl_file;
                 $this->_debug[] = "PATH > ACL path=".$acl_path." | ACL URI=".$acl_uri;
                 $sys = (dirname($path) == '/')?$sys:dirname($sys);
                 $path = dirname($path);
