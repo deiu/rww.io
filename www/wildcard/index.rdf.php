@@ -51,7 +51,7 @@ foreach($listing as $item) {
     $item_elt = $item;
     if (in_array($item_ext, array('sqlite')))
         $item_elt = substr($item_elt, 0, -strlen($item_ext)-1);
-    if ($is_dir) 
+    if ($is_dir)
         $item_elt = "$item_elt/";
     if ($is_dir)
         $item_type = 'p:Directory';
@@ -60,10 +60,9 @@ foreach($listing as $item) {
     else
         $item_type = '<http://www.w3.org/2000/01/rdf-schema#Resource>';
     $mtime = filemtime("$_filename/$item");
-    $size = filesize("$_filename/$item");    
-    $uri = ($is_dir)?$_base.basename($item).'/':$_base.basename($item);
+    $size = filesize("$_filename/$item");
+    
     $properties = array( 'resource' => $item_elt,
-                         'uri' => $uri,
     					 'type' => $item_type,
     					 'mtime' => $mtime,
     					 'size' => $size);
@@ -152,6 +151,7 @@ if (!$show_empty && $p > 0) {
     }
 }
 
+
 // List LDPC info
 $ldpc = "@prefix ldp: <http://www.w3.org/ns/ldp#> . @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> . @prefix p: <http://www.w3.org/ns/posix/stat#> .".
         "<".$_base."> a ldp:Container, ldp:BasicContainer, p:Directory ; ".
@@ -166,7 +166,6 @@ $g->append('turtle', $ldpc);
 // add contents from .meta.LDPC
 $meta_uri = dirname($_base).'/.meta.'.basename($_base);
 $meta_file = dirname($_filename).'/.meta.'.basename($_filename);
-
 $mg = new Graph('', $meta_file, '',$meta_uri);
 if ($mg->size() > 0) {
     // specific authorization
@@ -193,27 +192,5 @@ foreach($contents as $properties) {
             $properties['type'] ." ; p:mtime ".
             $properties['mtime'] ." ; p:size ".
             $properties['size'] ." .");
-
-        //TODO: add triples from the .meta files too (only for LDPCs)
-        if ($properties['type'] == 'p:Directory') {
-            $meta_uri = dirname($properties['uri']).'/.meta.'.basename($properties['uri']);
-            $meta_file = $_filename.'.meta.'.basename($properties['resource']);
-            
-            $dg = new Graph('', $meta_file, '',$meta_uri);
-            if ($dg->size() > 0) {
-                // specific authorization
-                $q = 'SELECT * WHERE { <'.$properties['uri'].'> ?p ?o }';
-                $s = $dg->SELECT($q);
-                $res = $s['results']['bindings'];
-
-                if (isset($res) && count($res) > 0) {
-                    foreach ($res as $t) {
-                        $nt = '<'.$properties['uri'].'> <'.$t['p']['value'].'> ';
-                        $nt .= ($t['o']['type']=='uri')?'<'.$t['o']['value'].'> .':'"'.$t['o']['value'].'" .';
-                        $g->append('turtle', $nt);
-                    }
-                }
-            }
-        }
     }
 }
