@@ -193,20 +193,18 @@ foreach($contents as $properties) {
     if ($show_containment) 
         $g->append('turtle', "<".$_base."> <http://www.w3.org/ns/ldp#contains> <".$properties['resource']."> . ");
 
-
     // add resource type from resources containing metadata
     if ($properties['type'] != 'p:File') {
         if ($properties['type'] == 'p:Directory') {
             $meta_uri = dirname($properties['uri']).'/.meta.'.basename($properties['uri']);
-            $meta_file = $_filename.basename($properties['resource']);
+            $meta_file = $_filename.'.meta.'.basename($properties['resource']);
         } else {
             $meta_uri = $properties['uri'];
             $meta_file = $_filename.basename($properties['resource']);
         }
         $dg = new Graph('', $meta_file, '',$meta_uri);
         if ($dg->size() > 0) {
-            // specific authorization
-            $q = 'SELECT * WHERE { <'.$properties['uri'].'> ?p ?o }';
+            $q = 'SELECT * WHERE { <'.$properties['resource'].'> ?p ?o }';
             $s = $dg->SELECT($q);
             $res = $s['results']['bindings'];
 
