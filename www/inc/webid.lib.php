@@ -24,21 +24,23 @@ function webid_claim() {
     $r = array('uri'=>array());
     if (isset($_SERVER['SSL_CLIENT_CERT'])) {
         $pem = $_SERVER['SSL_CLIENT_CERT'];
-        $x509 = openssl_x509_read($pem);
-        $pubKey = openssl_pkey_get_public($x509);
-        $keyData = openssl_pkey_get_details($pubKey);
-        if (isset($keyData['rsa'])) {
-            if (isset($keyData['rsa']['n']))
-                $r['m'] = strtolower(array_pop(unpack("H*", $keyData['rsa']['n'])));
-            if (isset($keyData['rsa']['e']))
-                $r['e'] = hexdec(array_shift(unpack("H*", $keyData['rsa']['e'])));
-        }
+        if ($pem) {
+            $x509 = openssl_x509_read($pem);
+            $pubKey = openssl_pkey_get_public($x509);
+            $keyData = openssl_pkey_get_details($pubKey);
+            if (isset($keyData['rsa'])) {
+                if (isset($keyData['rsa']['n']))
+                    $r['m'] = strtolower(array_pop(unpack("H*", $keyData['rsa']['n'])));
+                if (isset($keyData['rsa']['e']))
+                    $r['e'] = hexdec(array_shift(unpack("H*", $keyData['rsa']['e'])));
+            }
 
-        $d = openssl_x509_parse($x509);
-        if (isset($d['extensions']) && isset($d['extensions']['subjectAltName'])) {
-            foreach (explode(', ', $d['extensions']['subjectAltName']) as $elt) {
-                if (substr($elt, 0, 4) == 'URI:') {
-                    $r['uri'][] = substr($elt, 4);
+            $d = openssl_x509_parse($x509);
+            if (isset($d['extensions']) && isset($d['extensions']['subjectAltName'])) {
+                foreach (explode(', ', $d['extensions']['subjectAltName']) as $elt) {
+                    if (substr($elt, 0, 4) == 'URI:') {
+                        $r['uri'][] = substr($elt, 4);
+                    }
                 }
             }
         }
@@ -86,7 +88,7 @@ function webid_getinfo($uri) {
     if (isset($q['results']) && isset($q['results']['bindings']))
         $r = $q['results']['bindings']; 
 
-    if (isset($r) && is_array($r)) {
+    if (isset($r) && is_array($r) && sizeof($r) > 0) {
         $name = $r[0]['name']['value'];
         $pic = $r[0]['pic']['value'];
         $depic = $r[0]['depic']['value'];
