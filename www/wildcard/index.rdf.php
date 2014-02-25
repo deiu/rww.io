@@ -10,9 +10,6 @@ require_once('runtime.php');
 
 $g = new Graph('memory', '', '', $_base);
 
-// page length (number of items on a page)
-$pl = 10;
-
 $listing = array();
 if (is_dir($_filename))
     $listing = scandir($_filename);
@@ -49,26 +46,6 @@ foreach($listing as $item) {
     					 'size' => $size);
     $contents[] = $properties;
 }
-
-// serve LDP by default and beging with the first page
-$p = 1;
-$complement = $_base.'?p=1';
-header("Link: <".$complement.">; rel='first'", false);
-
-if (isset($_GET['p'])) {
-	$p = (int) $_GET['p'];
-	$complement = '?p='. (string) $p;
-}
-
-// prepare list of LDPRs
-$ldprs = array();
-foreach ($contents as $item) {
-    if ($item['resource'] != './')
-        $ldprs[] = '<'.$item['resource'].'>';
-}
-// split members into pages
-$ldprs_chunks = array_chunk($ldprs, $pl);
-$ldprs_page = $ldprs_chunks[$p-1];
 
 // default -> show all
 $show_members = true;
@@ -115,22 +92,35 @@ if (isset($_SERVER['HTTP_PREFER'])) {
     header('Preference-Applied: return=representation', false);
 }
 
+// serve LDP by default and beging with the first page
+$p = 1;
+// page length (number of items on a page)
+$pl = 10;
+
+$complement = $_base.'?p=1';
+header("Link: <".$complement.">; rel='first'", false);
+
 // split members into pages
 $contents_chunks = array_chunk($contents, $pl);
-$contents = $contents_chunks[$p-1];
 $pages = count($contents_chunks);
-// add paging headers
-if (!$show_empty && $p > 0) {
-    // set last page
-    header("Link: <".$_base."?p=".(string)($pages).">; rel='last'", false);
 
-    if ($p > 1)
-        header("Link: <".$_base."?p=".(string)($p-1).">; rel='prev'", false);
-    if($p < $pages) {
-        header("Link: <".$_base."?p=".(string)($p+1).">; rel='next'", false);
-        header("HTTP/1.1 333 Returning Related", false, 333);
-    }
+if (isset($_GET['p'])) {
+    $p = (int) $_GET['p'];
+    $contents = $contents_chunks[$p-1];
+    $complement = '?p='. (string) $p;
 }
+
+// add paging headers
+// set last page
+header("Link: <".$_base."?p=".(string)($pages).">; rel='last'", false);
+
+if ($p > 1)
+    header("Link: <".$_base."?p=".(string)($p-1).">; rel='prev'", false);
+if($p < $pages) {
+    header("Link: <".$_base."?p=".(string)($p+1).">; rel='next'", false);
+    header("HTTP/1.1 333 Returning Related", false, 333);
+}
+
 
 // List LDPC info
 $ldpc = "@prefix ldp: <http://www.w3.org/ns/ldp#> . @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> . @prefix p: <http://www.w3.org/ns/posix/stat#> .".
@@ -218,23 +208,4 @@ foreach($contents as $properties) {
         }
     }
 }
-/*
-// TODO: add a list of resources with a given predicate (membership triples vs contained items)
-if ($show_members) {
-    foreach ($ldprs as $ldpr) {
-        $q = 'SELECT * WHERE { <'.$_base.'> <http://www.w3.org/ns/ldp#hasMemberRelation> ?r } ';
-        $s = $mg->SELECT($q);
-        $res = $s['results']['bindings'];
-
-        if (isset($res) && count($res) > 0) {
-            foreach ($res as $t) {
-                $nt = '<'.$_base.'> <'.$t['p']['value'].'> ';
-                $nt .= ($t['o']['type']=='uri')?'<'.$t['o']['value'].'> .':'"'.$t['o']['value'].'" .';
-                $g->append('turtle', $nt);
-            }
-        }
-
-    }
-}
-*/
 
