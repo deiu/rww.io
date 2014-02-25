@@ -92,7 +92,7 @@ if (empty($_user)) {
 $can = false;
 $can = $_wac->can('Read');
 if (DEBUG) {
-    openlog('RWW.IO', LOG_PID | LOG_ODELAY,LOG_LOCAL4);
+    openlog('ldphp', LOG_PID | LOG_ODELAY,LOG_LOCAL4);
     foreach($_wac->getDebug() as $line)
         syslog(LOG_INFO, $line);
     syslog(LOG_INFO, 'Verdict: '.$can.' / '.$_wac->getReason());

@@ -154,19 +154,14 @@ if (!$show_empty && $p > 0) {
 
 // List LDPC info
 $ldpc = "@prefix ldp: <http://www.w3.org/ns/ldp#> . @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> . @prefix p: <http://www.w3.org/ns/posix/stat#> .".
-        "<".$_base."> a ldp:Container, ldp:BasicContainer, p:Directory ; ".
+        "<".$_base."> a ldp:Container, p:Directory ; ".
         "p:mtime ".filemtime($_filename)." ;".
         "p:size ".filesize($_filename)." ;";
-
-if ($show_containment && sizeof($ldprs) > 0)
-    $ldpc .= "ldp:contains ".implode(",", $ldprs_page)." . ";
-// add triples for the LDPC to the graph
 $g->append('turtle', $ldpc);
 
-// add contents from .meta.LDPC
+// add extra LDPC metadata from .meta.<LDPC>
 $meta_uri = dirname($_base).'/.meta.'.basename($_base);
 $meta_file = dirname($_filename).'/.meta.'.basename($_filename);
-
 $mg = new Graph('', $meta_file, '',$meta_uri);
 if ($mg->size() > 0) {
     // specific authorization
@@ -176,44 +171,92 @@ if ($mg->size() > 0) {
 
     if (isset($res) && count($res) > 0) {
         foreach ($res as $t) {
-            $nt = '<'.$_base.'> <'.$t['p']['value'].'> ';
-            $nt .= ($t['o']['type']=='uri')?'<'.$t['o']['value'].'> .':'"'.$t['o']['value'].'" .';
-            $g->append('turtle', $nt);
+	    $g->append_objects($_base, $t['p']['value'], array($t['o']));
         }
     }
 }
 
-
 // list each member
 foreach($contents as $properties) {
+/*
+    // check ACL for each member resource
+    $meta_uri = $properties['uri'];
+    $meta_file = $_filename.basename($properties['resource']);
+
+    // WebACL
+    $wac = new WAC($_user, $meta_file, $meta_uri);
+    $can = false;
+    $can = $wac->can('Read');
+    if (DEBUG) {
+        openlog('RWW.IO', LOG_PID | LOG_ODELAY,LOG_LOCAL4);
+        foreach($wac->getDebug() as $line)
+            syslog(LOG_INFO, $line);
+        syslog(LOG_INFO, 'Verdict: '.$can.' / '.$wac->getReason());
+        closelog();
+    }
+    if (!$can) {    
+        //$g->append('turtle', '<'.$properties['resource'].'> <http://www.w3.org/ns/auth/acl#verdict> <http://www.w3.org/ns/auth/acl#denied>.');
+        continue;
+    }
+*/
     // LDPRs
+    // add metadata info for each member
     if (!$show_empty) {
         $g->append('turtle', "@prefix p: <http://www.w3.org/ns/posix/stat#> . <".
             $properties['resource']."> a ".
             $properties['type'] ." ; p:mtime ".
             $properties['mtime'] ." ; p:size ".
             $properties['size'] ." .");
+    }
 
-        //TODO: add triples from the .meta files too (only for LDPCs)
+    // add ldp:contains triple to the LDPC
+    if ($show_containment) 
+        $g->append('turtle', "<".$_base."> <http://www.w3.org/ns/ldp#contains> <".$properties['resource']."> . ");
+
+
+    // add resource type from resources containing metadata
+    if ($properties['type'] != 'p:File') {
         if ($properties['type'] == 'p:Directory') {
             $meta_uri = dirname($properties['uri']).'/.meta.'.basename($properties['uri']);
-            $meta_file = $_filename.'.meta.'.basename($properties['resource']);
-            
-            $dg = new Graph('', $meta_file, '',$meta_uri);
-            if ($dg->size() > 0) {
-                // specific authorization
-                $q = 'SELECT * WHERE { <'.$properties['uri'].'> ?p ?o }';
-                $s = $dg->SELECT($q);
-                $res = $s['results']['bindings'];
+            $meta_file = $_filename.basename($properties['resource']);
+        } else {
+            $meta_uri = $properties['uri'];
+            $meta_file = $_filename.basename($properties['resource']);
+        }
+        $dg = new Graph('', $meta_file, '',$meta_uri);
+        if ($dg->size() > 0) {
+            // specific authorization
+            $q = 'SELECT * WHERE { <'.$properties['uri'].'> ?p ?o }';
+            $s = $dg->SELECT($q);
+            $res = $s['results']['bindings'];
 
-                if (isset($res) && count($res) > 0) {
-                    foreach ($res as $t) {
-                        $nt = '<'.$properties['uri'].'> <'.$t['p']['value'].'> ';
-                        $nt .= ($t['o']['type']=='uri')?'<'.$t['o']['value'].'> .':'"'.$t['o']['value'].'" .';
-                        $g->append('turtle', $nt);
-                    }
+            // add the resource type
+            if (isset($res) && count($res) > 0) {
+                foreach ($res as $t) {
+                    if ($t['p']['value'] == 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type')
+                        $g->append_objects($properties['uri'], $t['p']['value'], array($t['o']));
                 }
             }
         }
     }
 }
+/*
+// TODO: add a list of resources with a given predicate (membership triples vs contained items)
+if ($show_members) {
+    foreach ($ldprs as $ldpr) {
+        $q = 'SELECT * WHERE { <'.$_base.'> <http://www.w3.org/ns/ldp#hasMemberRelation> ?r } ';
+        $s = $mg->SELECT($q);
+        $res = $s['results']['bindings'];
+
+        if (isset($res) && count($res) > 0) {
+            foreach ($res as $t) {
+                $nt = '<'.$_base.'> <'.$t['p']['value'].'> ';
+                $nt .= ($t['o']['type']=='uri')?'<'.$t['o']['value'].'> .':'"'.$t['o']['value'].'" .';
+                $g->append('turtle', $nt);
+            }
+        }
+
+    }
+}
+*/
+
