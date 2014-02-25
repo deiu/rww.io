@@ -136,7 +136,8 @@ class WAC {
             if ($break == true)
                 return true;
 
-            $r = (substr($path, -1) != '/')?$path.'/':$path;
+            //$r = (substr($path, -1) != '/')?$path.'/':$path;
+            $r = $path;
             $this->_debug[] = "------------";
             $this->_debug[] = "Current level: ".$r;
 
