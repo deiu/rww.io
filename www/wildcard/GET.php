@@ -190,7 +190,11 @@ if ($_options->glob && (strpos($_filename, '*') !== false || strpos($_filename, 
         $item_ext = strrchr($item, '.');
         if ($item_ext == '.sqlite' || ($item_ext && in_array(substr($item_ext, 1), $_RAW_EXT))) continue;
         $item_uri = REQUEST_BASE.substr($item, strlen($_filebase));
-        $g->append_file('turtle', "file://$item", $item_uri);
+
+        // WebACL
+        $wac = new WAC($_user, $item, $item_uri);
+        if ($wac->can('Read'))
+            $g->append_file('turtle', "file://$item", $item_uri);        
     }
 } elseif (!empty($_filename) && !$g->exists() && !$g->size())
     if (!$_options->wiki)
