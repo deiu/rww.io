@@ -97,7 +97,7 @@ if (isset($_SERVER['HTTP_ORIGIN'])) {
         $n = '*';
     }
     header('Access-Control-Allow-Origin: '.$n);
-    header('Access-Control-Expose-Headers: User, Triples');
+    header('Access-Control-Expose-Headers: User, Triples, Location');
     header('Access-Control-Allow-Credentials: true');
 }
 
