@@ -66,7 +66,7 @@ if (!file_exists($_filename) && in_array($_filename_ext, array('turtle','n3','js
 // permissions
 if (empty($_user)) {
     httpStatusExit(401, 'Unauthorized', '401.php');
-} 
+}
 
 // WebACL
 $can = false;
@@ -130,27 +130,37 @@ if ($_output == 'raw') {
         header("Link: <".$_metabase.$_metaname.">; rel=meta", false);
 
     // caching for files
-    $expires = 14*24*60*60; // 14 days
-    $last_modified = filemtime($_filename);
+    $expires = 14*24*60*60; // 14 days   
     header("Pragma: public");
     header("Cache-Control: maxage=".$expires, true);
     header('Expires: '.gmdate('D, d M Y H:i:s', time()+$expires) . ' GMT');
-    header('Last-Modified: '.gmdate('D, d M Y H:i:s', $last_modified).' GMT', true, 200);
 
-    $etag = `md5sum $_filename`;
-    if (strlen($etag))
-        $etag = trim(array_shift(explode(' ', $etag)));
-    header('ETag: "'.$etag.'"');
+    if ($_method == 'GET')
+        readfile($_filename);
+    exit;
+}
 
+if (is_dir($_filename)) {
+    $_f = $_filename.'.';
+    $etag = md5_dir($_f);
+} else {
+    $_f = $_filename;
+    $etag = md5_file($_f);
+}
+// add ETag and Last-Modified headers
+$last_modified = filemtime($_f);
+
+if (strlen($etag))
+    $etag = trim(array_shift(explode(' ', $etag)));
+header('ETag: "'.$etag.'"');
+header('Last-Modified: '.gmdate('D, d M Y H:i:s', $last_modified).' GMT', true, 200);
+
+if (isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) || isset($_SERVER['HTTP_IF_NONE_MATCH'])) {
     if (@strtotime($_SERVER['HTTP_IF_MODIFIED_SINCE']) == $last_modified || 
         trim($_SERVER['HTTP_IF_NONE_MATCH']) == $etag) { 
         header("HTTP/1.1 304 Not Modified"); 
         exit; 
     }
-
-    if ($_method == 'GET')
-        readfile($_filename);
-    exit;
 }
 
 // tabulator data skin

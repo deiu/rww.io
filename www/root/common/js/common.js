@@ -336,7 +336,6 @@ wac.put = function(uri, data, refresh) {
         onFailure: function() {
             var msg = 'Access denied';
             console.log(msg);
-
             notify(msg, 'error');
             window.setTimeout("notify()", 2000);
         }
