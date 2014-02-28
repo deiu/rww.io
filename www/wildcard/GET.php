@@ -140,16 +140,34 @@ if ($_output == 'raw') {
     exit;
 }
 
-if (is_dir($_filename)) {
+// *: glob
+if ($_options->glob && (strpos($_filename, '*') !== false || strpos($_filename, '{') !== false)) {
+    $last_mtime = 0;
+    $glob_md5 = '';
+    foreach(glob($_filename, GLOB_BRACE|GLOB_NOSORT) as $item) {
+        if (!substr($item, 0, strlen($_filebase)) == $_filebase) continue;
+        $item_ext = strrchr($item, '.');
+        if ($item_ext == '.sqlite' || ($item_ext && in_array(substr($item_ext, 1), $_RAW_EXT))) continue;  
+
+        // get file mtime and md5 
+        $mtime = filemtime($item);
+        if ($mtime > $last_mtime)
+            $last_mtime = $mtime;
+        $glob_md5 .= md5_file($item);
+    }
+    $etag = md5($glob_md5);
+    $last_modified = $last_mtime;
+} else if (is_dir($_filename)) {
     $_f = $_filename.'.';
     $etag = md5_dir($_f);
+    $last_modified = filemtime($_f);
 } else {
     $_f = $_filename;
     $etag = md5_file($_f);
+    $last_modified = filemtime($_f);
 }
-// add ETag and Last-Modified headers
-$last_modified = filemtime($_f);
 
+// add ETag and Last-Modified headers
 if (strlen($etag))
     $etag = trim(array_shift(explode(' ', $etag)));
 header('ETag: "'.$etag.'"');
@@ -175,17 +193,26 @@ if (!isset($g))
 
 // *: glob
 if ($_options->glob && (strpos($_filename, '*') !== false || strpos($_filename, '{') !== false)) {
+    $last_mtime = 0;
+    $glob_md5 = '';
     foreach(glob($_filename, GLOB_BRACE|GLOB_NOSORT) as $item) {
         if (!substr($item, 0, strlen($_filebase)) == $_filebase) continue;
         $item_ext = strrchr($item, '.');
         if ($item_ext == '.sqlite' || ($item_ext && in_array(substr($item_ext, 1), $_RAW_EXT))) continue;
         $item_uri = REQUEST_BASE.substr($item, strlen($_filebase));
 
+        // get file mtime and md5 
+        $mtime = filemtime($item);
+        if ($mtime > $last_mtime)
+            $last_mtime = $mtime;
+        $glob_md5 .= md5_file($item);
+
         // WebACL
         $wac = new WAC($_user, $item, $item_uri);
         if ($wac->can('Read'))
             $g->append_file('turtle', "file://$item", $item_uri);        
     }
+
 } elseif (!empty($_filename) && !$g->exists() && !$g->size())
     if (!$_options->wiki)
         header('HTTP/1.1 404 Not Found');
