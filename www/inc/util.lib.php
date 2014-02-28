@@ -53,7 +53,7 @@ function md5_dir($dir) {
     while (false !== ($entry = $d->read())) {
         if ($entry != '.' && $entry != '..') {
              if (is_dir($dir.'/'.$entry))
-                 $filemd5s[] = MD5_DIR($dir.'/'.$entry);
+                 $filemd5s[] = md5_dir($dir.'/'.$entry);
              else
                  $filemd5s[] = md5_file($dir.'/'.$entry);
          }
