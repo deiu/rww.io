@@ -130,7 +130,7 @@ if ($_output == 'raw') {
         header("Link: <".$_metabase.$_metaname.">; rel=meta", false);
 
     // caching for files
-    $expires = 14*24*60*60; // 14 days   
+    $expires = 60*60; // 1 hour
     header("Pragma: public");
     header("Cache-Control: maxage=".$expires, true);
     header('Expires: '.gmdate('D, d M Y H:i:s', time()+$expires) . ' GMT');
@@ -138,6 +138,9 @@ if ($_output == 'raw') {
     if ($_method == 'GET')
         readfile($_filename);
     exit;
+} else {
+    // always revalidate cache for RDF documents
+    header("Cache-Control: maxage=0", true);
 }
 
 // *: glob
