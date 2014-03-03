@@ -33,7 +33,7 @@ if (isset($_POST['SPKAC']) && isset($_POST['username'])) {
             die('Cannot create directory at '.dirname($webid_file).', please check permissions.');
     }
 
-    $BASE = 'http://'.$_POST['username'].'.'.$_SERVER['SERVER_NAME']; // force https
+    $BASE = 'https://'.$_POST['username'].'.'.$_SERVER['SERVER_NAME']; // force https
     $email = isset($_POST['email'])?$_POST['email']:null;
     $spkac = str_replace(str_split("\n\r"), '', $_POST['SPKAC']);
     $webid = $BASE.'/'.$path;
@@ -50,38 +50,21 @@ if (isset($_POST['SPKAC']) && isset($_POST['username'])) {
     $cert = trim(shell_exec($cert_cmd));
     $ret_cmd = "echo '$cert' | openssl x509 -in /dev/stdin -outform der";
     echo trim(shell_exec($ret_cmd));
-    
+
     $mod_cmd = "echo '$cert' | openssl x509 -in /dev/stdin -modulus -noout";
     // remove the Modulus= part
     $output = explode('=', trim(shell_exec($mod_cmd)));
     $modulus = $output[1];
     
     // --- Workspaces ---
-    // create master workspace
-    $mw = 'ws/';
-    $mw_file = $_root.'/'.$mw;
-    $mw_uri = $BASE.'/'.$mw;
-    if (!mkdir($_root.'/'.$mw, 0755, true))
-            die('Cannot create workspace "'.$_root.'/'.$mw.'", please check permissions');
-    // create dedicated workspaces
-    $ws = array('apps', 'public', 'shared', 'private');
-    foreach ($ws as $w) {
-        $w = $_root.'/'.$mw.$w;
-        if (!mkdir($w, 0755, true))
-            die('Cannot create workspace "'.$w.'", please check permissions');
-    }
-    $ap_uri = $mw_uri.'apps/';
-    $ap_file = $mw_file.'apps/';
-    $sh_uri = $mw_uri.'shared/';
-    $sh_file = $mw_file.'shared/';
-    $pu_uri = $mw_uri.'public/';
-    $sh_file = $mw_file.'public/';
-    $pr_uri = $mw_uri.'private/';
-    $pr_file =$mw_file.'private/';
+    // create shared storage space
+    $storage_uri = $BASE.'/storage/';
+    $storage_file = $_root.'/storage/';
+    if (!mkdir($storage_file, 0755, true))
+        die('Cannot create storage space "'.$storage_file.'", please check permissions');   
     // end workspaces
 
     // --- Profile --- 
-    
     // Write the new profile to disk
     $document = new Graph('', $webid_file, '', $BASE.'/'.$profile);
     if (!$document) {
@@ -113,26 +96,10 @@ if (isset($_POST['SPKAC']) && isset($_POST['username'])) {
     }
 
     // ---- Add workspaces ----
-    // add master workspace
+    // add shared storage space
     $document->append_objects($webid,
-            'http://www.w3.org/ns/pim/space#masterWorkspace',
-            array(array('type'=>'uri', 'value'=>$mw_uri)));
-    // add apps workspace
-    $document->append_objects($webid,
-            'http://www.w3.org/ns/pim/space#workspace',
-            array(array('type'=>'uri', 'value'=>$ap_uri)));
-    // add public
-    $document->append_objects($webid,
-            'http://www.w3.org/ns/pim/space#workspace',
-            array(array('type'=>'uri', 'value'=>$pu_uri)));
-    // add shared
-    $document->append_objects($webid,
-            'http://www.w3.org/ns/pim/space#workspace',
-            array(array('type'=>'uri', 'value'=>$sh_uri)));
-    // add private
-    $document->append_objects($webid,
-            'http://www.w3.org/ns/pim/space#workspace',
-            array(array('type'=>'uri', 'value'=>$pr_uri)));
+            'http://www.w3.org/ns/pim/space#storage',
+            array(array('type'=>'uri', 'value'=>$storage_uri)));
     
     // ---- Certificate ----
     // add modulus and exponent as bnode
