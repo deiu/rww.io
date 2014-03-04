@@ -140,6 +140,7 @@ if ($_output == 'raw') {
     exit;
 } else {
     // always revalidate cache for RDF documents
+    header("Vary: Accept");
     header("Cache-Control: maxage=0", true);
 }
 
