@@ -122,30 +122,5 @@ if (isset($_POST['SPKAC']) && isset($_POST['username'])) {
     $document->save();
     
     // ------ DONE WITH PROFILE -------
-    
-    // ------ ACLs ------
-    // TODO: check if this is something we should do on the server side
-    /*
-    // master workspace
-    $mw_acl = new Graph('', $mw_file, '', $mw_uri);
-    $ap_acl = new Graph('', $ap_file, '', $ap_uri);
-    $sh_acl = new Graph('', $sh_file, '', $sh_uri);
-    $pu_acl = new Graph('', $pu_file, '', $pu_uri);
-    $pr_acl = new Graph('', $pr_file, '', $pr_uri);
-    
-    if (!$mw_acl || !$ap_acl || $sh_acl || !pu_acl || !pr_acl) {
-        echo "Cannot create ACL graphs!";
-        exit;
-    }
-    
-    <>
-    <http://www.w3.org/ns/auth/acl#accessTo> <> ;
-    <http://www.w3.org/ns/auth/acl#agent> <https://my-profile.eu/people/deiu/card#me> ;
-    <http://www.w3.org/ns/auth/acl#mode> <http://www.w3.org/ns/auth/acl#Read>, <http://www.w3.org/ns/auth/acl#Write> .
-
-<#private/>
-    <http://www.w3.org/ns/auth/acl#accessTo> <private/> ;
-    <http://www.w3.org/ns/auth/acl#agent> <https://my-profile.eu/people/deiu/card#me> ;
-    <http://www.w3.org/ns/auth/acl#mode> <http://www.w3.org/ns/auth/acl#Read>, <http://www.w3.org/ns/auth/acl#Write> .
-    */
 }
+
