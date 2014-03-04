@@ -132,7 +132,7 @@ if ($_output == 'raw') {
     // caching for files
     $expires = 60*60; // 1 hour
     header("Pragma: public");
-    header("Cache-Control: maxage=".$expires, true);
+    header("Cache-Control: max-age=".$expires, true);
     header('Expires: '.gmdate('D, d M Y H:i:s', time()+$expires) . ' GMT');
 
     if ($_method == 'GET')
@@ -141,7 +141,7 @@ if ($_output == 'raw') {
 } else {
     // always revalidate cache for RDF documents
     header("Vary: Accept");
-    header("Cache-Control: maxage=0", true);
+    header("Cache-Control: max-age=0", true);
 }
 
 // *: glob
