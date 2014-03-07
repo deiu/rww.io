@@ -140,9 +140,9 @@ if ($_output == 'raw') {
     exit;
 } else {
     // always revalidate cache for RDF documents
-    header("Vary: Accept, Origin");
     header("Cache-Control: max-age=0", true);
 }
+header("Vary: Accept, Origin, If-Modified-Since, ETag");
 
 // *: glob
 if ($_options->glob && (strpos($_filename, '*') !== false || strpos($_filename, '{') !== false)) {
