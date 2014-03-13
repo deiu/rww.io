@@ -172,12 +172,13 @@ if ($_options->glob && (strpos($_filename, '*') !== false || strpos($_filename, 
 }
 
 // add ETag and Last-Modified headers
-if (strlen($etag))
+if (strlen($etag)) {
     $etag = trim(array_shift(explode(' ', $etag)));
-header('ETag: "'.$etag.'"');
+    header('ETag: "'.$etag.'"');
+}
 header('Last-Modified: '.gmdate('D, d M Y H:i:s', $last_modified).' GMT', true, 200);
-
-if (isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) || isset($_SERVER['HTTP_IF_NONE_MATCH'])) {
+if (isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) || 
+    (isset($_SERVER['HTTP_IF_NONE_MATCH']) && (strlen($_SERVER['HTTP_IF_NONE_MATCH']) > 0))) {
     if (@strtotime($_SERVER['HTTP_IF_MODIFIED_SINCE']) == $last_modified || 
         trim($_SERVER['HTTP_IF_NONE_MATCH']) == $etag) { 
         header("HTTP/1.1 304 Not Modified"); 
@@ -232,9 +233,11 @@ if (isset($i_wait)) {
 }
 
 // ETag
+/*
 $etag = $g->etag();
 if ($etag)
     header('ETag: "'.$etag.'"');
+*/
 
 // LDP type
 if (is_dir($_filename))
