@@ -142,7 +142,7 @@ if ($_output == 'raw') {
     // always revalidate cache for RDF documents
     header("Cache-Control: max-age=0", true);
 }
-header("Vary: Accept, Origin, If-Modified-Since, If-None-Match, ETag");
+header("Vary: Accept, Origin, If-Modified-Since, If-None-Match");
 
 // *: glob
 if ($_options->glob && (strpos($_filename, '*') !== false || strpos($_filename, '{') !== false)) {
@@ -176,9 +176,9 @@ if (strlen($etag)) {
     $etag = trim(array_shift(explode(' ', $etag)));
     header('ETag: "'.$etag.'"');
 }
+
 header('Last-Modified: '.gmdate('D, d M Y H:i:s', $last_modified).' GMT', true, 200);
-if (isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) || 
-    (isset($_SERVER['HTTP_IF_NONE_MATCH']) && (strlen($_SERVER['HTTP_IF_NONE_MATCH']) > 0))) {
+if (isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) || isset($_SERVER['HTTP_IF_NONE_MATCH'])) {
     if (@strtotime($_SERVER['HTTP_IF_MODIFIED_SINCE']) == $last_modified || 
         trim($_SERVER['HTTP_IF_NONE_MATCH']) == $etag) { 
         header("HTTP/1.1 304 Not Modified"); 
