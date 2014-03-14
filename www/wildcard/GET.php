@@ -232,13 +232,6 @@ if (isset($i_wait)) {
     $g->reload();
 }
 
-// ETag
-/*
-$etag = $g->etag();
-if ($etag)
-    header('ETag: "'.$etag.'"');
-*/
-
 // LDP type
 if (is_dir($_filename))
     header("Link: <http://www.w3.org/ns/ldp#Container>; rel=\"type\"", false);

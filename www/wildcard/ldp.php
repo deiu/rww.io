@@ -12,7 +12,11 @@ if (isset($_SERVER['HTTP_LINK'])) {
         if (strlen($slug) > 0) {
             $_dir = $slug;
         } else {
-            $p = LDP_get_prefix($_metafile, $_metabase.$_metaname, 'http://ns.rww.io/ldpx#LDPCprefix');
+            // try to find a dedicated LDPC prefix first
+            $p = LDP_get_prefix($_metafile, $_metabase.$_metaname, 'http://ns.rww.io/ldpx#ldpcPrefix');
+            // else, try to find a generic prefix
+            if (!$p)
+                $p = LDP_get_prefix($_metafile, $_metabase.$_metaname, 'http://ns.rww.io/ldpx#ldprPrefix');
             $prefix = ($p)?$p:LDPC_PREFIX;
             $c = count(glob($_filename.$prefix.'*'));
             $c++;
@@ -37,7 +41,7 @@ if ($got_resource) {
         $metafile = $slug;
     } else {
         // generate and autoincrement file ID
-        $p = LDP_get_prefix($_metafile, $_metabase.$_metaname, 'http://ns.rww.io/ldpx#LDPRprefix');
+        $p = LDP_get_prefix($_metafile, $_metabase.$_metaname, 'http://ns.rww.io/ldpx#ldprPrefix');
         $prefix = ($p)?$p:LDPR_PREFIX;
         $c = count(glob($_filename.$prefix.'*'));
         $c++;

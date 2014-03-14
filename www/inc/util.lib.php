@@ -25,7 +25,7 @@
  */
 
 // check if the LDPC offers default prefixes
-function LDP_get_prefix($path, $uri, $type='http://ns.rww.io/ldpx#LDPRprefix') {
+function LDP_get_prefix($path, $uri, $type='http://ns.rww.io/ldpx#ldprPrefix') {
     if ($path && $uri) {
         $g = new Graph('', $path, '',$uri);
         if ($g->size() > 0) {
