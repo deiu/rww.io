@@ -35,6 +35,7 @@ if (isset($_POST['SPKAC']) && isset($_POST['username'])) {
 
     $BASE = 'https://'.$_POST['username'].'.'.$_SERVER['SERVER_NAME']; // force https
     $email = isset($_POST['email'])?$_POST['email']:null;
+    $pic = isset($_POST['img'])?$_POST['img']:null;
     $spkac = str_replace(str_split("\n\r"), '', $_POST['SPKAC']);
     $webid = $BASE.'/'.$path;
     
@@ -94,7 +95,12 @@ if (isset($_POST['SPKAC']) && isset($_POST['username'])) {
                 'http://xmlns.com/foaf/0.1/mbox',
                 array(array('type'=>'uri', 'value'=>'mailto:'.$email)));
     }
-
+    // add avatar if we have one
+    if (strlen($pic) > 0) {
+        $document->append_objects($webid,
+                'http://xmlns.com/foaf/0.1/img',
+                array(array('type'=>'uri', 'value'=>$pic)));
+    }
     // ---- Add workspaces ----
     // add shared storage space
     $document->append_objects($webid,
