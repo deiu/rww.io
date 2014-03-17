@@ -77,23 +77,26 @@ foreach (array($_SERVER['REMOTE_USER'], sess('u:id')) as $_user) {
 
 if (isset($_SERVER['SSL_CLIENT_CERT'])) {
     require_once('webid.lib.php');
-    $_user = webid_verify();
-    
-    $_webid = webid_getinfo($_user);
-    
-    if (DEBUG) {
-        openlog('RWW.IO', LOG_PID | LOG_ODELAY,LOG_LOCAL4);
-        syslog(LOG_INFO, 'Authenticated: '.$_user.' / '.$_webid['name']);
-        closelog();
+    $q = webid_claim();
+    if (isset($q['uri']) && $q['uri'] != $_user) {        
+        $_user = webid_verify();
+        
+        $_webid = webid_getinfo($_user);
+        
+        if (DEBUG) {
+            openlog('RWW.IO', LOG_PID | LOG_ODELAY,LOG_LOCAL4);
+            syslog(LOG_INFO, 'Authenticated: '.$_user.' / '.$_webid['name']);
+            closelog();
+        }
+
+        //if (!isSess('u:name')) 
+        sess('u:name', $_webid['name']);
+        //if (!isSess('u:pic'))
+        sess('u:pic', $_webid['pic']);
+
+        if (strlen($_user) && isset($_SERVER['SSL_CLIENT_S_DN_CN']))
+            $_user_name = $_SERVER['SSL_CLIENT_S_DN_CN'];
     }
-
-    //if (!isSess('u:name')) 
-    sess('u:name', $_webid['name']);
-    //if (!isSess('u:pic'))
-    sess('u:pic', $_webid['pic']);
-
-    if (strlen($_user) && isset($_SERVER['SSL_CLIENT_S_DN_CN']))
-        $_user_name = $_SERVER['SSL_CLIENT_S_DN_CN'];
 }
 
 # proper Emails
