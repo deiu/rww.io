@@ -69,6 +69,9 @@ if ($can == false)  {
         httpStatusExit(403, 'Forbidden');
 } 
 
+// add Vary header
+header("Vary: Accept, Origin, If-Modified-Since, If-None-Match");
+
 // directory indexing
 if (is_dir($_filename) || substr($_filename,-1) == '/') {
     // add meta relation
@@ -126,7 +129,6 @@ if ($_output == 'raw') {
     // always revalidate cache for RDF documents
     header("Cache-Control: max-age=0", true);
 }
-header("Vary: Accept, Origin, If-Modified-Since, If-None-Match");
 
 // *: glob
 if ($_options->glob && (strpos($_filename, '*') !== false || strpos($_filename, '{') !== false)) {
@@ -163,8 +165,8 @@ if (strlen($etag)) {
 
 header('Last-Modified: '.gmdate('D, d M Y H:i:s', $last_modified).' GMT', true, 200);
 if (isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) || isset($_SERVER['HTTP_IF_NONE_MATCH'])) {
-    if (@strtotime($_SERVER['HTTP_IF_MODIFIED_SINCE']) == $last_modified || 
-        trim($_SERVER['HTTP_IF_NONE_MATCH']) == $etag) { 
+    //if (@strtotime($_SERVER['HTTP_IF_MODIFIED_SINCE']) == $last_modified || 
+       if (str_replace('"', '', trim($_SERVER['HTTP_IF_NONE_MATCH'])) == $etag) { 
         header("HTTP/1.1 304 Not Modified"); 
         exit; 
     }
