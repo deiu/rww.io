@@ -43,9 +43,15 @@ if ($got_resource) {
         // generate and autoincrement file ID
         $p = LDP_get_prefix($_metafile, $_metabase.$_metaname, 'http://ns.rww.io/ldpx#ldprPrefix');
         $prefix = ($p)?$p:LDPR_PREFIX;
-        $c = count(glob($_filename.$prefix.'*'));
-        $c++;
-        $metafile = $prefix.$c;
+        $g = glob($_filename.$prefix.'*');
+        $id = 0;
+        foreach ($g as $f) {
+            $i = substr($f, strlen($_filename.$prefix), strlen($_filename.$f));
+            if ((int)$i > $id)
+                $id = (int)$i;
+        }
+        $id++;
+        $metafile = $prefix.$id;
     }
     $_filename = $_filename.$metafile;
     $ldp_location = $_base.$metafile;
