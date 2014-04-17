@@ -8,7 +8,7 @@ if (isset($_SERVER['HTTP_LINK'])) {
     $link_header = http_parse_link_header($_SERVER['HTTP_LINK']);
 
     // look for an ldp:Container in the Link header
-    if (in_array('http://www.w3.org/ns/ldp#Container', $link_header)) {
+    if (in_array('http://www.w3.org/ns/ldp#Container', $link_header) || in_array('http://www.w3.org/ns/ldp#BasicContainer', $link_header)) {
         if (strlen($slug) > 0) {
             $_dir = $slug;
         } else {

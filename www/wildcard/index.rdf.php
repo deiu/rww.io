@@ -124,7 +124,7 @@ if($p < $pages) {
 
 // List LDPC info
 $ldpc = "@prefix ldp: <http://www.w3.org/ns/ldp#> . @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> . @prefix p: <http://www.w3.org/ns/posix/stat#> .".
-        "<".$_base."> a ldp:Container, p:Directory ; ".
+        "<".$_base."> a ldp:Container, ldp:BasicContainer, p:Directory ; ".
         "p:mtime ".filemtime($_filename)." ;".
         "p:size ".filesize($_filename)." ;";
 $g->append('turtle', $ldpc);
