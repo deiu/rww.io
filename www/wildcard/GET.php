@@ -223,7 +223,7 @@ if (isset($i_wait)) {
 
 // LDP type
 if (is_dir($_filename))
-    header("Link: <http://www.w3.org/ns/ldp#Container>; rel=\"type\"", false);
+    header("Link: <http://www.w3.org/ns/ldp#BasicContainer>; rel=\"type\"", false);
 else
     header("Link: <http://www.w3.org/ns/ldp#Resource>; rel=\"type\"", false);
 
