@@ -4,7 +4,6 @@
  */
 
 require_once('runtime.php');
-
 header('X-XRDS-Location: '.REQUEST_BASE.'/yadis');
 defined('HEADER') || include_once('header.php');
 

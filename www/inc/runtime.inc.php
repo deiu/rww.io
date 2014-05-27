@@ -79,8 +79,7 @@ if (isset($_SERVER['SSL_CLIENT_CERT'])) {
     require_once('webid.lib.php');
     $q = webid_claim();
     if (isset($q['uri']) && $q['uri'] != $_user) {        
-        $_user = webid_verify();
-        
+        $_user = webid_verify($q);
         $_webid = webid_getinfo($_user);
         
         if (DEBUG) {
@@ -135,5 +134,25 @@ if (sess('u:id')) {
         sess('u:name', $_user_name);
     }
 }
+
+header("User: $_user");
+
+// HTTP Access Control
+if (isset($_SERVER['HTTP_ACCESS_CONTROL_REQUEST_HEADERS']))
+    header('Access-Control-Allow-Headers: '.$_SERVER['HTTP_ACCESS_CONTROL_REQUEST_HEADERS']);
+if (isset($_SERVER['HTTP_ACCESS_CONTROL_REQUEST_METHOD']))
+    header('Access-Control-Allow-Methods: '.$_SERVER['HTTP_ACCESS_CONTROL_REQUEST_METHOD']);
+if (isset($_SERVER['HTTP_ORIGIN'])) {
+    $t = explode('/', $_SERVER['HTTP_ORIGIN']);
+    if (count($t) > 2) {
+        $n = "{$t[0]}//{$t[2]}";
+    } else {
+        $n = '*';
+    }   
+    header('Access-Control-Allow-Origin: '.$n);
+    header('Access-Control-Expose-Headers: User, Triples, Location, Link, Vary, Last-Modified');
+    header('Access-Control-Allow-Credentials: true');
+}
+
 
 TAG(__FILE__, __LINE__, '$Id$');

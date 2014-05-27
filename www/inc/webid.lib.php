@@ -1,25 +1,5 @@
 <?php
-/*
- *  Copyright (C) 2013 RWW.IO
- *  
- *  Permission is hereby granted, free of charge, to any person obtaining a copy
- *  of this software and associated documentation files (the "Software"), to deal 
- *  in the Software without restriction, including without limitation the rights 
- *  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell 
- *  copies of the Software, and to permit persons to whom the Software is furnished 
- *  to do so, subject to the following conditions:
 
- *  The above copyright notice and this permission notice shall be included in all 
- *  copies or substantial portions of the Software.
-
- *  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
- *  INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A 
- *  PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
- *  HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION 
- *  OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE 
- *  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- */
- 
 function webid_claim() {
     $r = array('uri'=>array());
     if (isset($_SERVER['SSL_CLIENT_CERT'])) {
@@ -48,10 +28,9 @@ function webid_claim() {
     return $r;
 }
 
-function webid_query($uri, $g=null) {
+function webid_query($uri) {
     $r = array();
-    if (is_null($g))
-        $g = new Graph('uri', $uri, '', $uri);
+    $g = new Graph('uri', $uri, '', $uri);
 
     $q = $g->SELECT(sprintf("PREFIX : <http://www.w3.org/ns/auth/cert#> SELECT ?m ?e WHERE { <%s> :key [ :modulus ?m; :exponent ?e; ] . }", $uri));
     if (isset($q['results']) && isset($q['results']['bindings']))
@@ -60,8 +39,9 @@ function webid_query($uri, $g=null) {
     return $r;
 }
 
-function webid_verify() {
-    $q = webid_claim();
+function webid_verify($q=null) {
+    if (is_null($q))
+        $q = webid_claim();
     if (isset($q['uri'])) {
         foreach ($q['uri'] as $uri) {
             foreach (webid_query($uri) as $elt) {
