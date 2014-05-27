@@ -99,7 +99,7 @@ if (substr($_user, 0, 4) == 'dns:') {
         <?php } else { ?>
             <div class="login">
                 <span class="login-links"><a class="white" href="https://<?=BASE_DOMAIN?>">WebID Login</a>
-                <br/><a class="white" href="#" onclick="showWebID(event)">Get a WebID</a></span>
+                <br/><a class="white" href="#" onclick="javascript: window.open('//<?php echo ROOT_DOMAIN; ?>/onboard/signup.html','','status=yes,toolbar=no,menubar=no,location=no,width=500,height=410,left=100,top=100');">Get a WebID</a></span>
                 <img class="login-photo" src="/common/images/nouser.png" />
             </div>
     <?php
