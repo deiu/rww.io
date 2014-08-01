@@ -12,6 +12,8 @@ if (isset($i_query)) {
     //exit;
 }
 
+$_method_type = "write";
+
 // permissions
 if (empty($_user)) 
     httpStatusExit(401, 'Unauthorized');
@@ -77,6 +79,7 @@ if (isset($_FILES["image"])) {
             }
         } else {
             echo 'The image size is too large. The maximum allowed size is 5MB.';
+            httpStatusExit(513, 'Request Entity Too Large');
         }
     }
     // refresh and exit
@@ -85,7 +88,7 @@ if (isset($_FILES["image"])) {
 }
 
 // check if we post using LDP (by posting to a dir)
-if (is_dir($_filename)) {  
+if (is_dir($_filename) && $_content_type == 'text/turtle') {
     include('ldp.php');
 } else {
     $metafile = '';
@@ -112,14 +115,55 @@ if ($_method == 'PATCH') {
         header('Location: '.$ldp_location);
         httpStatusExit(201, 'Created');
     }
-} elseif (!empty($_input) && ($g->append($_input, $_data) || 1)) {
+} else if (!empty($_input) && ($g->append($_input, $_data) || 1)) {
     librdf_php_last_log_level() && httpStatusExit(400, 'Bad Request', null, librdf_php_last_log_message());
     $g->save();
     header("Triples: ".$g->size(), false);
     header("Link: <".$_base.$metafile.">; rel=meta", false);
     header('Location: '.$ldp_location);
+    header('ETag: "'.md5_file($_filename).'"');
     httpStatusExit(201, 'Created');
-} elseif ($_content_type == 'application/sparql-update') {
+} else if ($_content_type == 'multipart/form-data') {
+    if(isset($_FILES)){
+        $errors= array();
+        var_dump($_FILES);
+        foreach($_FILES as $file){
+            $file_name = $file['name'];
+            $file_size = $file['size'];
+            $file_tmp  = $file['tmp_name'];
+            $file_type = $file['type'];
+            if($file_size > 10000000){
+                $errors[]='File size must be less than 10 MB. Size of '.$file_name.' is: '.$file_size;
+                httpStatusExit(513, 'Request Entity Too Large');
+            }
+
+            echo "Moved to ".$_filename.$file_name."\n";
+            if(is_dir($_filename)==false){
+                mkdir($_filename, 0700);        // Create directory if it does not exist
+            }
+            if(is_dir($_filename.$file_name)==false){
+                if (!move_uploaded_file($file_tmp,$_filename.$file_name)) {
+                    $errors[]='Cannot move file from '.$file_tmp.' to '.$_filename.$file_name;
+                }
+            }
+        }
+        if(empty($errors)){
+            if (sizeof($_FILES) == 1) {
+                $file_name = str_replace("+", "%20", urlencode($file_name));
+                header("Link: <".$_base.".meta.".$file_name.">; rel=meta", true);
+                header("Link: <".$_base.".acl.".$file_name.">; rel=acl", false);
+                header('Location: '.$_base.$file_name);
+                header('ETag: "'.md5_file($_filename.$file_name).'"');
+            }
+            httpStatusExit(201, 'Created');
+        } else {
+            httpStatusExit(501, print_r($errors));
+        }
+    } else {
+        echo "Empty FILES var.";
+        var_dump($_FILES);
+    }
+} else if ($_content_type == 'application/sparql-update') {
     require_once('SPARQL.php');
 } else {
     librdf_php_last_log_level() && httpStatusExit(400, 'Bad Request', null, librdf_php_last_log_message());
