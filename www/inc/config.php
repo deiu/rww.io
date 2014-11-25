@@ -7,7 +7,7 @@
 define('ROOT_DOMAIN', 'rww.io');
 
 // display debug info in syslog
-define('DEBUG', false);
+define('DEBUG', true);
 
 // respect caching - return 304 header and exit
 define('CACHING', false);
@@ -16,7 +16,7 @@ define('CACHING', false);
 define('IMAGE_SIZE', 3000000);
 
 // disk quota for each data store (default=10MB)
-define('DISK_QUOTA', 10);
+define('DISK_QUOTA', 100);
 
 // default filename for new resources created through LDPCs
 define('LDPR_PREFIX', 'resource_');

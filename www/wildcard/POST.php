@@ -119,7 +119,8 @@ if ($_method == 'PATCH') {
     librdf_php_last_log_level() && httpStatusExit(400, 'Bad Request', null, librdf_php_last_log_message());
     $g->save();
     header("Triples: ".$g->size(), false);
-    header("Link: <".$_base.$metafile.">; rel=meta", false);
+    header("Link: <".$_base.$metafile.">; rel=meta", true);
+    header("Link: <".$_base.$aclfile.">; rel=acl", false);
     header('Location: '.$ldp_location);
     header('ETag: "'.md5_file($_filename).'"');
     httpStatusExit(201, 'Created');
@@ -160,13 +161,14 @@ if ($_method == 'PATCH') {
             httpStatusExit(501, print_r($errors));
         }
     } else {
-        echo "Empty FILES var.";
-        var_dump($_FILES);
+        echo "Empty FILES var.\n";
+        httpStatusExit(501, var_dump($_FILES));
     }
 } else if ($_content_type == 'application/sparql-update') {
     require_once('SPARQL.php');
 } else {
     librdf_php_last_log_level() && httpStatusExit(400, 'Bad Request', null, librdf_php_last_log_message());
     header('Accept-Post: '.implode(',', $_content_types));
+    header("Link: <>; rel=meta", true);
     httpStatusExit(406, 'Content-Type ('.$_content_type.') Not Acceptable');
 }

@@ -53,7 +53,7 @@ if (isset($timings)) {
     <a href="https://github.com/deiu/rww.io" target="_blank">GitHub</a> | <a href="http://<?=ROOT_DOMAIN?>/help">Help?</a> | Show your support
 </span> 
 <span class="left">
-    <a data-code="ed957952a941abf15d50696973fa4b92" href="https://coinbase.com/checkouts/ed957952a941abf15d50696973fa4b92" target="_blank"><img src="/common/images/bitcoin.png" alt="Bitcoin donation" title="Bitcoin donation" border="0" /></a>
+    <a data-code="8f714ce8bf5591bef25701c600fb8262" href="https://coinbase.com/checkouts/8f714ce8bf5591bef25701c600fb8262" target="_blank"><img src="/common/images/bitcoin.png" alt="Bitcoin donation" title="Bitcoin donation" border="0" /></a>
 </span>
 <span class="left">
     <a href="http://flattr.com/thing/1748916/" target="_blank"><img src="/common/images/flattr.png" alt="Flattr this project" title="Flattr this project" border="0" /></a>

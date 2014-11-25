@@ -42,7 +42,7 @@ if (isset($_POST['SPKAC']) && isset($_POST['username'])) {
     // --- Cert ---
     $cert_cmd = 'python '.$_ENV['CLOUD_HOME'].'/py/pki.py '.
                     " -s '$spkac'" .
-                    " -n '$name'" .
+                    " -n '$name [RWW.IO]'" .
                     " -w '$webid'";
     
     // Send the certificate back to the user
@@ -59,17 +59,73 @@ if (isset($_POST['SPKAC']) && isset($_POST['username'])) {
     
     // --- Workspaces ---
     // create shared storage space
-    $storage_uri = $BASE.'/storage/';
-    $storage_file = $_root.'/storage/';
-    if (!mkdir($storage_file, 0755, true))
-        die('Cannot create storage space "'.$storage_file.'", please check permissions');   
+    $storage_uri = $BASE.'/';
+
+    if (!mkdir($_root.'/public/', 0755, true))
+        die('Cannot create public workspace", please check permissions');   
+
+    if (!mkdir($_root.'/private/', 0755, true))
+        die('Cannot create public workspace", please check permissions');   
+
+    if (!mkdir($_root.'/family/', 0755, true))
+        die('Cannot create public workspace", please check permissions');   
+    
+    if (!mkdir($_root.'/friends/', 0755, true))
+        die('Cannot create public workspace", please check permissions');   
     // end workspaces
+
+    // ------ ACLs ------
+    $acls = new Graph('', $_root.'/.acl', '', $BASE.'/.acl');
+    if (!$acls) {
+        echo "Cannot create a new acl graph!";
+        exit;
+    }
+
+    // Owner
+    $acls->append_objects($BASE.'/.acl#Owner',
+            'http://www.w3.org/1999/02/22-rdf-syntax-ns#type',
+             array(array('type'=>'uri', 'value'=>'http://www.w3.org/ns/auth/acl#Authorization')));
+    $acls->append_objects($BASE.'/.acl#Owner',
+            'http://www.w3.org/ns/auth/acl#accessTo',
+             array(array('type'=>'uri', 'value'=>$BASE.'/'),
+                    array('type'=>'uri', 'value'=>$BASE.'/.acl')));
+    $acls->append_objects($BASE.'/.acl#Owner',
+            'http://www.w3.org/ns/auth/acl#agent',
+             array(array('type'=>'uri', 'value'=>$BASE.'/'.$path)));
+    $acls->append_objects($BASE.'/.acl#Owner',
+            'http://www.w3.org/ns/auth/acl#defaultForNew',
+             array(array('type'=>'uri', 'value'=>$BASE.'/')));
+    $acls->append_objects($BASE.'/.acl#Owner',
+            'http://www.w3.org/ns/auth/acl#mode',
+             array(array('type'=>'uri', 'value'=>'http://www.w3.org/ns/auth/acl#Control'),
+                    array('type'=>'uri', 'value'=>'http://www.w3.org/ns/auth/acl#Read'),
+                    array('type'=>'uri', 'value'=>'http://www.w3.org/ns/auth/acl#Write')));
+
+    // Rest
+    $acls->append_objects($BASE.'/.acl#Rest',
+            'http://www.w3.org/1999/02/22-rdf-syntax-ns#type',
+             array(array('type'=>'uri', 'value'=>'http://www.w3.org/ns/auth/acl#Authorization')));
+    $acls->append_objects($BASE.'/.acl#Rest',
+            'http://www.w3.org/ns/auth/acl#accessTo',
+             array(array('type'=>'uri', 'value'=>$BASE.'/')));
+    $acls->append_objects($BASE.'/.acl#Rest',
+            'http://www.w3.org/ns/auth/acl#defaultForNew',
+             array(array('type'=>'uri', 'value'=>$BASE.'/')));
+    $acls->append_objects($BASE.'/.acl#Rest',
+            'http://www.w3.org/ns/auth/acl#agentClass',
+             array(array('type'=>'uri', 'value'=>'http://xmlns.com/foaf/0.1/Agent')));
+    $acls->append_objects($BASE.'/.acl#Rest',
+            'http://www.w3.org/ns/auth/acl#mode',
+             array(array('type'=>'uri', 'value'=>'http://www.w3.org/ns/auth/acl#Read')));
+
+    $acls->save();
+    // end ACLs
 
     // --- Profile --- 
     // Write the new profile to disk
     $document = new Graph('', $webid_file, '', $BASE.'/'.$profile);
     if (!$document) {
-        echo "Cannot create a new graph!";
+        echo "Cannot create a new profile graph!";
         exit;
     }
     

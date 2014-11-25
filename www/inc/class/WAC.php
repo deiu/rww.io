@@ -175,6 +175,15 @@ class WAC {
             $resource = $uri;
 
             if ($r != $this->_root_path) {
+                $path = (dirname($path) == $this->_root_path)?$path:dirname($path).'/';
+                $this->_debug[] = "PATH=".$path." / ROOT_PATH=".$this->_root_path;
+                $acl_file = (substr(basename($r), 0, 4) != '.acl')?'.acl.'.basename($r):basename($r);
+                $acl_path = $path.$acl_file;
+                $acl_uri = (dirname($uri) == $this->_root_uri)?$acl_file:dirname($uri).'/'.$acl_file;
+                $this->_debug[] = "Dir=".$r." | acl_path=".$acl_path." | acl_uri=".$acl_uri;
+                $uri = (dirname($uri) == $this->_root_uri)?$uri:dirname($uri).'/';
+                $this->_debug[] = 'Parent_path='.$path.' | parent_uri='.$uri;
+                /*
                 $acl_file = (substr(basename($r), 0, 4) != '.acl')?'/.acl.'.basename($r):'/'.basename($r);
                 $acl_path = $parent_path.$acl_file;
                 $acl_uri = (dirname($uri) == $this->_root_uri)?$acl_file:dirname($uri).$acl_file;
@@ -182,6 +191,7 @@ class WAC {
                 $path = (dirname($path) == $this->_root_path)?$path:dirname($path).'/';
                 $uri = (dirname($uri) == $this->_root_uri)?$uri:dirname($uri).'/';
                 $this->_debug[] = 'Parent_path='.$path.' | parent_uri='.$uri;
+                */
             } else {
                 $acl_path = $r.'.acl';
                 $acl_uri = $uri.'.acl';

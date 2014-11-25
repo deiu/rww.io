@@ -47,6 +47,16 @@ if (!file_exists($_filename) && in_array($_filename_ext, array('turtle','n3','js
     }
 }
 
+// add Vary header
+header("Vary: Accept, Origin, If-Modified-Since, If-None-Match");
+
+// LDP type
+if (is_dir($_filename))
+    header("Link: <http://www.w3.org/ns/ldp#BasicContainer>; rel=\"type\"", false);
+header("Link: <http://www.w3.org/ns/ldp#Resource>; rel=\"type\"", false);
+
+$_method_type = "read";
+
 // permissions
 if (empty($_user)) {
     httpStatusExit(401, 'Unauthorized', '401.php');
@@ -69,8 +79,11 @@ if ($can == false)  {
         httpStatusExit(403, 'Forbidden');
 } 
 
-// add Vary header
-header("Vary: Accept, Origin, If-Modified-Since, If-None-Match");
+// set default output
+if (empty($_output)) {
+    $_output = 'turtle';
+    $_output_type = 'text/turtle';
+}
 
 // directory indexing
 if (is_dir($_filename) || substr($_filename,-1) == '/') {
@@ -98,12 +111,6 @@ if (is_dir($_filename) || substr($_filename,-1) == '/') {
   		}
     }
 } 
-
-// set default output
-if (empty($_output)) {
-    $_output = 'turtle';
-    $_output_type = 'text/turtle';
-}
 
 // output raw
 if ($_output == 'raw') {
@@ -189,12 +196,21 @@ if (!isset($g))
 if ($_options->glob && (strpos($_filename, '*') !== false || strpos($_filename, '{') !== false)) {
     $last_mtime = 0;
     $glob_md5 = '';
-    foreach(glob($_filename, GLOB_BRACE|GLOB_NOSORT) as $item) {
+    $items = array_merge(glob($_filename, GLOB_BRACE|GLOB_NOSORT), glob(dirname($_filename).'/.'.basename($_filename), GLOB_BRACE|GLOB_NOSORT));
+
+    if (is_dir(dirname($_filename)) && (dirname($_filename) != $_filebase)) {
+        $metaf = dirname(dirname($_filename)).'/.meta.'.basename(dirname($_filename));
+        array_push($items, $metaf);
+    }
+
+    foreach($items as $item) {
+        //echo $item."\n";
+        if (basename($item) == '.' || basename($item) == '..') continue;
         if (!substr($item, 0, strlen($_filebase)) == $_filebase) continue;
         $item_ext = strrchr($item, '.');
         if ($item_ext == '.sqlite' || ($item_ext && in_array(substr($item_ext, 1), $_RAW_EXT))) continue;
         $item_uri = REQUEST_BASE.substr($item, strlen($_filebase));
-
+        
         // get file mtime and md5 
         $mtime = filemtime($item);
         if ($mtime > $last_mtime)
@@ -206,7 +222,6 @@ if ($_options->glob && (strpos($_filename, '*') !== false || strpos($_filename, 
         if ($wac->can('Read'))
             $g->append_file('turtle', "file://$item", $item_uri);        
     }
-
 } elseif (!empty($_filename) && !$g->exists() && !$g->size())
     if (!$_options->wiki)
         header('HTTP/1.1 404 Not Found');
@@ -220,12 +235,6 @@ if (isset($i_wait)) {
     }
     $g->reload();
 }
-
-// LDP type
-if (is_dir($_filename))
-    header("Link: <http://www.w3.org/ns/ldp#BasicContainer>; rel=\"type\"", false);
-else
-    header("Link: <http://www.w3.org/ns/ldp#Resource>; rel=\"type\"", false);
 
 // offer WebSocket updates
 $updatesVia = isHTTPS() ? 'wss:' : 'ws:';

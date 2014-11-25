@@ -18,13 +18,20 @@ if (isset($_SERVER['HTTP_LINK'])) {
             if (!$p)
                 $p = LDP_get_prefix($_metafile, $_metabase.$_metaname, 'http://ns.rww.io/ldpx#ldprPrefix');
             $prefix = ($p)?$p:LDPC_PREFIX;
-            $c = count(glob($_filename.$prefix.'*'));
-            $c++;
-            $_dir = $prefix.$c;
+            $g = glob($_filename.$prefix.'*');
+            $id = 0;
+            foreach ($g as $f) {
+                $i = substr($f, strlen($_filename.$prefix), strlen($_filename.$f));
+                if ((int)$i > $id)
+                    $id = (int)$i;
+            }
+            $id++;
+            $_dir = $prefix.$id;
         }
         $d = $_filename.$_dir;
         // set the filename to the .meta file (we might need to post triples about the container there)
         $metafile = '.meta.'.$_dir;
+        $aclfile = '.acl.'.$_dir;
         $_filename = $_filename.$metafile;
         $_dir = (strrpos($_dir, '/', -1))?$_dir:$_dir.'/'; // add trailing slash for dirs/containers        
         $ldp_location = $_base.$_dir;
@@ -53,6 +60,7 @@ if ($got_resource) {
         $id++;
         $metafile = $prefix.$id;
     }
+    $aclfile = '.acl.'.$metafile;
     $_filename = $_filename.$metafile;
     $ldp_location = $_base.$metafile;
 }

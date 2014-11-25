@@ -42,6 +42,7 @@ $_content_types = array(
     'text/plain;charset=utf-8',
     'application/rdf+xml;charset=utf-8',
     'application/json;charset=utf-8',
+    'multipart/form-data',
     'image/jpeg',
     'image/jpeg',
     'image/png',
@@ -110,18 +111,26 @@ foreach (array('REQUEST_METHOD', 'REDIRECT_REQUEST_METHOD') as $k) {
     }
 }
 
+// Add default headers
+header('Allow: '.METHODS_S);
+header('Accept-Patch: application/json');
+header('Accept-Post: '.implode(',', $_content_types));
+
 if ($_method == 'OPTIONS') {
     header('HTTP/1.1 200 OK');
+
+    // add LDP types
+    if (is_dir($_filename) || substr($_filename,-1) == '/')
+        header("Link: <http://www.w3.org/ns/ldp#BasicContainer>; rel=type", false);
+    // always add ldp#Resource
+    header("Link: <http://www.w3.org/ns/ldp#Resource>; rel=type", false);
 
     if (!isset($_SERVER['HTTP_ACCESS_CONTROL_REQUEST_METHOD']))
         header('Access-Control-Allow-Methods: '.METHODS_S);
     if (!isset($_SERVER['HTTP_ORIGIN']))
         header('Access-Control-Allow-Origin: *');
 
-    header('Allow: '.METHODS_S);
-    header('Accept-Patch: application/json');
     header('Access-Control-Expose-Headers: User');
-    header('Accept-Post: '.implode(',', $_content_types));
     exit;
 }
 
